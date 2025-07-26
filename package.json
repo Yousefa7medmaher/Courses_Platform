@@ -1,0 +1,35 @@
+{
+  "name": "crud-mongodb",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A professional CRUD API using MongoDB, Express, and Mongoose.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "lint": "eslint .",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mongodb",
+    "express",
+    "mongoose",
+    "crud",
+    "api"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.10"
+  }
+}
