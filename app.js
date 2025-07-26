@@ -13,12 +13,6 @@ app.use(express.json());
 app.use(cors());
 
 
-/**
- * Routes
- */
-app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: './view' });
-});
 
 app.get('/api', (req, res) => {
   res.send('API is running...');
