@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { adduser , showAllUsers } from './controllers/userApi.js';
+import { adduser  } from './controllers/userApi.js';
 
-router.post('/api/addUser',  adduser);
-router.get('/api/showAll',  showAllUsers); 
+router.post('/api/addUser',  adduser); 
 export default router;

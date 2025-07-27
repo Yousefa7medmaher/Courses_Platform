@@ -29,4 +29,4 @@ async function adduser(req, res, next) {
     }
 }
  
-export { adduser , showAllUsers };
+export { adduser  };
