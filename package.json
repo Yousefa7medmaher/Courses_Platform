@@ -26,7 +26,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "mongoose": "^8.16.5"
+    "mongoose": "^8.16.5",
+    "validator": "^13.15.15"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
