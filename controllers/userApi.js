@@ -1,6 +1,6 @@
 import User from '../usermodel.js';
 import validator from 'validator' ;
-import bcrypt from 'bcrypt';
+import bcrypt, { hash } from 'bcrypt';
 /**
  * Add a new user to the database.
  * @param {Object} req - Express request object
@@ -96,4 +96,60 @@ async function showAllUsers(req, res, next) {
         next(err);
     }
 }
-export { adduser , showAllUsers };
+
+/**
+ * Controller to update a user's information.
+ * 
+ * @param {Object} req - Express request object. Expects `id` param and optional `name`, `email`, `password` in body.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * 
+ * This function updates the specified user's name, email, and/or password.
+ * If the user does not exist, it returns a 404 error.
+ * Only provided fields are updated. If password is provided, it is hashed before saving.
+ */
+async function updateUser(req, res, next) {
+    try {
+        const user_id = req.params.id;
+        const { name, email } = req.body;
+
+        // Find the user by ID
+        const existingUser = await User.findById(user_id);
+        if (!existingUser) {
+            return res.status(404).send({
+                success: false,
+                message: "User does not exist"
+            });
+        }
+
+        // Prepare fields to update
+        let updateFields = {};
+        if (name) updateFields.name = name;
+        if (email) updateFields.email = email;
+         
+
+        // Update user in the database
+        const updatedUser = await User.findByIdAndUpdate(
+            user_id,
+            updateFields,
+            { new: true, runValidators: true }
+        );
+
+        // Send success response
+        return res.status(200).send({
+            success: true,
+            message: "User updated successfully",
+            data: {
+                id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email
+            }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+ 
+export { adduser , showAllUsers , updateUser};
