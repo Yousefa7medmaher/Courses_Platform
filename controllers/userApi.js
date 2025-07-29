@@ -151,5 +151,65 @@ async function updateUser(req, res, next) {
     }
 }
 
- 
-export { adduser , showAllUsers , updateUser};
+/**
+ * Change a user's password.
+ * 
+ * @param {Object} req - Express request object. 
+ *   Expects `id` param in req.params and 
+ *   `currentPassword`, `newPassword`, `confirmPassword` in req.body.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ */
+async function changePassword(req, res, next) {
+    try {
+        const userId = req.params.id;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        // Validate required fields
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).send({
+                success: false,
+                message: "All password fields (current, new, confirm) are required"
+            });
+        }
+
+        // Validate new password match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).send({
+                success: false,
+                message: "New password and confirm password do not match"
+            });
+        }
+
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: "User does not exist"
+            });
+        }
+
+        // Check current password
+        const isValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isValid) {
+            return res.status(401).send({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        // Hash and update new password
+        const hashed = await bcrypt.hash(newPassword, 10);
+        user.password = hashed;
+        await user.save();
+
+        return res.status(200).send({
+            success: true,
+            message: "Password updated successfully"
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+export { adduser , showAllUsers , updateUser , changePassword};
