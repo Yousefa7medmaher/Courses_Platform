@@ -212,4 +212,35 @@ async function changePassword(req, res, next) {
         next(err);
     }
 }
-export { adduser , showAllUsers , updateUser , changePassword};
+
+async function deleteUser(req, res, next) {
+    try {
+        const userId = req.params.id;
+
+        if (!userId) {
+            return res.status(400).send({
+                success: false,
+                message: "User ID parameter is required"
+            });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        await User.findByIdAndDelete(userId);
+
+        return res.status(200).send({
+            success: true,
+            message: "User deleted successfully"
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+export { adduser , showAllUsers , updateUser , changePassword , deleteUser};
