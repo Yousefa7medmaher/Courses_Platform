@@ -11,6 +11,9 @@ async function adduser(req, res, next) {
     try {
         const { name, email, password } = req.body;
 
+        // handle both file upload and manual path
+        const img_profile = req.file ? req.file.path : req.body.img_profile || "";
+
         if (!name || !email || !password) {
             return res.status(400).send({
                 success: false,
@@ -45,14 +48,21 @@ async function adduser(req, res, next) {
         const hashPassword = await bcrypt.hash(password, 10);
 
         // create a new User
-        const newUser = await User.create({ name, email, password: hashPassword });
+        const newUser = await User.create({ 
+            name, 
+            email, 
+            password: hashPassword,
+            img_profile // make sure this field is in your schema
+        });
+
         return res.status(201).send({
             success: true,
             message: "User created successfully.",
             data: {
                 id: newUser._id,
                 name: newUser.name,
-                email: newUser.email
+                email: newUser.email,
+                img_profile: newUser.img_profile
             }
         });
 
