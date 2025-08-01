@@ -34,11 +34,6 @@ const userSchema = new mongoose.Schema(
       default: 'local'
     },
 
-    facebookId: {
-      type: String,
-      default: null
-    },
-
     googleId: {
       type: String,
       default: null
@@ -49,10 +44,6 @@ const userSchema = new mongoose.Schema(
       default: ''
     },
 
-    facebookProfileUrl: {
-      type: String,
-      default: ''
-    },
 
     age: {
       type: Number,

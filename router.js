@@ -14,6 +14,10 @@ router.patch('/api/changePassword/:id',  changePassword);
 
 router.delete('/api/deleteUser/:id' , deleteUser);
 
+// Auth 
+router.post('/api/register', register); 
+router.post('/api/login' , login);
+
 
 // ✅ Google OAuth routes
 
