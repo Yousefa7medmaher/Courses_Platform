@@ -28,6 +28,25 @@ const userSchema = new mongoose.Schema(
       select: false // hide password in queries
     },
 
+    phone: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (v) {
+          // Accepts empty or valid phone numbers (basic international format)
+          return !v || validator.isMobilePhone(v + '', 'any', { strictMode: false });
+        },
+        message: 'Please provide a valid phone number'
+      }
+    },
+
+    role: {
+      type: String,
+      enum: ['client', 'driver'],
+      default: 'client',
+      required: [true, 'Role is required']
+    },
+
     authType: {
       type: String,
       enum: ['local', 'facebook', 'google'],
@@ -43,7 +62,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
-
 
     age: {
       type: Number,

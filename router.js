@@ -31,7 +31,7 @@ router.get('/auth/google',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
       // 🔁 بعد تسجيل الدخول بنجاح، المستخدم يروح لصفحة معينة
-      res.redirect('/profile'); // عدّل حسب ما تحب
+      res.redirect('http://127.0.0.1:5500/index.html'); // عدّل حسب ما تحب
     }
   );
   

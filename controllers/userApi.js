@@ -70,7 +70,6 @@ async function adduser(req, res, next) {
         next(err);
     }
 }
-
 /**
  * Controller to fetch and return all users.
  * 
@@ -79,25 +78,26 @@ async function adduser(req, res, next) {
  * @param {Function} next - Express next middleware function.
  * 
  * This function retrieves all users from the database,
- * selecting only the _id, name, and email fields for privacy and efficiency.
- * It then formats the data to return a list of users with id, name, and email.
+ * selecting _id, name, email, img_profile, and role fields for response.
+ * It then formats the data to return a list of users with id, name, email, img_profile, and role.
  * In case of an error, it passes the error to the next middleware.
  */
 async function showAllUsers(req, res, next) {
     try {
-        // Fetch all users, selecting _id, name, email, and img_profile fields
-        const users = await User.find({}, '_id name email img_profile');
-        
+        // Fetch all users, selecting specific fields for privacy and efficiency
+        const users = await User.find({}, '_id name email img_profile role').lean();
+
         // Format the user data to return only necessary fields
         const formattedUsers = users.map(user => ({
             id: user._id,
             name: user.name,
             email: user.email,
-            img_profile: user.img_profile
+            img_profile: user.img_profile,
+            role: user.role
         }));
 
         // Send a successful response with the formatted user data
-        return res.status(200).send({
+        return res.status(200).json({
             success: true,
             message: "Show all users",
             data: formattedUsers

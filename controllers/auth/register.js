@@ -5,7 +5,7 @@ import validator from 'validator';
 /**
  * Register a new user in the system.
  *
- * @param {Object} req - Express request object containing user registration data (name, email, password)
+ * @param {Object} req - Express request object containing user registration data (name, email, phone, password, role)
  * @param {Object} res - Express response object for sending responses
  * @param {Function} next - Express next middleware function for error handling
  *
@@ -13,16 +13,27 @@ import validator from 'validator';
  */
 const register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        // Destructure role first, then phone after email
+        const { role, name, email, phone, password } = req.body;
 
         // Validate required fields
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "Please provide name, email, and password." });
+        if (!role || !name || !email || !phone || !password) {
+            return res.status(400).json({ message: "Please provide role, name, email, phone, and password." });
+        }
+
+        // Validate role
+        if (!['client', 'driver', 'admin'].includes(role)) {
+            return res.status(400).json({ message: "Role must be either 'client' or 'driver'." });
         }
 
         // Validate email format
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: "Invalid email format." });
+        }
+
+        // Validate phone format (allow empty or valid phone)
+        if (phone && !validator.isMobilePhone(phone + '', 'any', { strictMode: false })) {
+            return res.status(400).json({ message: "Invalid phone number." });
         }
 
         // Validate password length
@@ -41,8 +52,10 @@ const register = async (req, res, next) => {
 
         // Create and save the new user
         const newUser = new User({
+            role,
             name,
             email,
+            phone,
             password: hashedPassword,
             authType: 'local'
         });

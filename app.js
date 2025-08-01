@@ -11,10 +11,12 @@ app.use(express.json());
 
 // Enable CORS for all routes and allow requests from the frontend and admin panel
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:3000',
   'http://localhost:5500',
-  'http://127.0.0.1:5500'
+  'http://127.0.0.1:5500',
+  'http://localhost:3000',      // frontend React مثلاً
+  'http://127.0.0.1:3000',
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {
