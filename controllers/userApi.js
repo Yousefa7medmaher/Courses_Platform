@@ -85,14 +85,15 @@ async function adduser(req, res, next) {
  */
 async function showAllUsers(req, res, next) {
     try {
-        // Fetch all users, selecting only _id, name, and email fields
-        const users = await User.find({}, '_id name email');
+        // Fetch all users, selecting _id, name, email, and img_profile fields
+        const users = await User.find({}, '_id name email img_profile');
         
         // Format the user data to return only necessary fields
         const formattedUsers = users.map(user => ({
             id: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            img_profile: user.img_profile
         }));
 
         // Send a successful response with the formatted user data
