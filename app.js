@@ -3,10 +3,13 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './db.js';
 import router from './router.js';
+import cookieParser from 'cookie-parser';
+
 
 dotenv.config();
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 
 // Enable CORS for all routes and allow requests from the frontend and admin panel

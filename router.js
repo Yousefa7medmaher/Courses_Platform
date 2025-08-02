@@ -1,13 +1,14 @@
 import express from "express";
 const router = express.Router();
 import upload from "./middlewares/upload.js";
-import { adduser  , showAllUsers ,updateUser , changePassword ,deleteUser } from './controllers/userApi.js';
+import { addUser  , showAllUsers ,updateUser , changePassword ,deleteUser } from './controllers/userController.js';
+
 import passport from './config/passport.js'; 
 
 import login from './controllers/auth/login.js';
 import register from './controllers/auth/register.js';
 
-router.post('/api/addUser' , upload.single("img_profile") ,   adduser); 
+router.post('/api/addUser' , upload.single("photo") ,   addUser); 
 router.get('/api/users',  showAllUsers); 
 router.put('/api/updateUser/:id',  updateUser); 
 router.patch('/api/changePassword/:id',  changePassword); 

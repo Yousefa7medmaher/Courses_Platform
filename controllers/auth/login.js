@@ -1,67 +1,73 @@
 import dotenv from 'dotenv';
-dotenv.config(); // ✅ Load environment variables
+dotenv.config();
 
-import User from '../../usermodel.js';
+import User from '../../models/usermodel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 /**
- * Handles user login via local strategy (email & password)
- * Returns JWT on success
+ * Generate Access Token - short lived (15 min)
  */
-const login = async (req, res, next) => {
+const generateAccessToken = (userId) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+};
+
+/**
+ * Generate Refresh Token - long lived (7 days)
+ */
+const generateRefreshToken = (userId) => {
+  return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+};
+
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 🔍 Validate input presence
-    if (!email || !password) {
-      return res.status(400).json({ message: "Please provide both email and password." });
-    }
+    if (!email || !password)
+      return res.status(400).json({ message: 'Please provide both email and password.' });
 
-    // 🔍 Find user by email, include password explicitly (as it's hidden by default)
     const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password');
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password." });
-    }
 
-    // ⚠️ Block login for accounts created with Google or Facebook
-    if (user.authType !== 'local') {
-      return res.status(400).json({ message: "Please login using your Google or Facebook account." });
-    }
+    if (!user)
+      return res.status(401).json({ message: 'Invalid email or password.' });
 
-    // ❌ Check if password is missing
-    if (!user.password) {
-      return res.status(400).json({ message: "Password not set for this account." });
-    }
+    if (user.authType !== 'local')
+      return res.status(400).json({ message: 'Please login using your Google or Facebook account.' });
 
-    // 🔐 Compare entered password with hashed one in DB
+    if (!user.password)
+      return res.status(400).json({ message: 'Password not set for this account.' });
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid email or password." });
-    }
+    if (!isPasswordValid)
+      return res.status(401).json({ message: 'Invalid email or password.' });
 
-    // 🔑 Generate JWT token for the authenticated user
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    // ✅ Generate tokens
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
-    // ✅ Respond with token and user info
+    // ✅ Send refreshToken in secure httpOnly cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    // ✅ Send accessToken + user info in body
     return res.status(200).json({
-      token,
+      accessToken,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role, 
+        role: user.role,
         photo: user.photo || null
       }
     });
 
   } catch (err) {
-    console.error('Login error:', err); // 🐞 Log internal error
-    return res.status(500).json({ message: "Internal server error." });
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Internal server error.' });
   }
 };
 

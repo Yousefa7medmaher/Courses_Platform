@@ -1,4 +1,4 @@
-import User from '../../usermodel.js';
+import User from '../../models/usermodel.js';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 
@@ -46,9 +46,7 @@ const register = async (req, res, next) => {
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+ 
 
         // Create and save the new user
         const newUser = new User({
@@ -56,7 +54,7 @@ const register = async (req, res, next) => {
             name,
             email,
             phone,
-            password: hashedPassword,
+            password: password,
             authType: 'local'
         });
         await newUser.save();
