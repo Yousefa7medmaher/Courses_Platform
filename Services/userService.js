@@ -2,6 +2,8 @@ import User from '../models/usermodel.js';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 
+import path from "path";
+
 export async function registerUser({ name, email, password, photo }) {
   const normalizedEmail = validator.normalizeEmail(email);
   const existingUser = await User.findOne({ email: normalizedEmail });
@@ -90,7 +92,35 @@ export async function changePassword(userId, { currentPassword, newPassword, con
   user.password = hashed;
   await user.save();
 }
+export async function getUserById(id) {
+  const user = await User.findById(id, '_id name email photo role').lean(); // ✅ use photo
+  if (!user) {
+    const err = new Error("User not found");
+    err.status = 404;
+    throw err;
+  }
 
+  return user;
+}
+
+export async function updateImg(id, photoPath) {
+  const existingUser = await User.findById(id);
+  if (!existingUser) {
+    const err = new Error("User does not exist");
+    err.status = 404;
+    throw err;
+  }
+
+  existingUser.photo = photoPath;
+  await existingUser.save();
+
+  return {
+    id: existingUser._id,
+    name: existingUser.name,
+    email: existingUser.email,
+    photo: `/uploads/${path.basename(existingUser.photo)}`, 
+  };
+}
 export async function deleteUser(id) {
   const user = await User.findById(id);
   if (!user) {

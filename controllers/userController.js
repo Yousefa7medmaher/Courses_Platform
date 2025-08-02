@@ -30,7 +30,23 @@ export async function updateUser(req, res, next) {
     next(err);
   }
 }
+export async function getUserById(req, res, next) {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    return sendResponse(res, 200, "User found successfully", user);
+  } catch (err) {
+    next(err);
+  }
+}
 
+export async function profile(req, res, next) {
+  try { 
+    const user = await userService.getUserById(req.user.userId);
+    return sendResponse(res, 200, "User found successfully", user);
+  } catch (err) {
+    next(err);
+  }
+}
 export async function changePassword(req, res, next) {
   try {
     await userService.changePassword(req.params.id, req.body);
@@ -44,6 +60,21 @@ export async function deleteUser(req, res, next) {
   try {
     await userService.deleteUser(req.params.id);
     return sendResponse(res, 200, "User deleted successfully");
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateImg(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Photo file is required" });
+    }
+    const updatedUser = await userService.updateImg(req.params.id, req.file.path);
+    return res.status(200).json({
+      message: "User updated successfully",
+      data: updatedUser
+    });
   } catch (err) {
     next(err);
   }

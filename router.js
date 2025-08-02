@@ -4,13 +4,28 @@ import upload from "./middlewares/upload.js";
 import passport from './config/passport.js'; 
 import login from './controllers/auth/login.js';
 import register from './controllers/auth/register.js';
-import { addUser  , showAllUsers ,updateUser , changePassword ,deleteUser } from './controllers/userController.js';
+import { addUser  , showAllUsers ,getUserById,updateUser , changePassword ,deleteUser, profile , updateImg } from './controllers/userController.js';
 const router = express.Router();
-
+import {authenticate} from './middlewares/auth.js';
+import multer from "multer";
 
 
 router.post('/api/addUser' , upload.single("photo") ,   addUser); 
 router.get('/api/users',  showAllUsers); 
+router.get('/api/users/me',authenticate,  profile); 
+
+router.patch('/api/users/updateimg/:id', (req, res, next) => {
+  upload.single('photo')(req, res, function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ message: err.message });
+    } else if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+}, updateImg);
+
+
 router.put('/api/updateUser/:id',  updateUser); 
 router.patch('/api/changePassword/:id',  changePassword); 
 
