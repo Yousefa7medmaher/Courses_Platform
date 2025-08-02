@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-
+import cookieParser from 'cookie-parser'; 
+import dotenv from 'dotenv';
+dotenv.config();
 /**
  * Middleware to authenticate user using JWT token.
  * Checks if the token is valid and attaches user info to req.user.
@@ -34,4 +36,19 @@ export function authorize(...allowedRoles) {
         }
         next();
     };
+}
+
+export function verifyRefreshToken(req, res, next) {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+        return res.status(401).json({ message: 'Refresh token missing.' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        req.user = decoded; // فقط يحتوي على userId غالبًا
+        next();
+    } catch (err) {
+        return res.status(403).json({ message: 'Invalid refresh token.' });
+    }
 }

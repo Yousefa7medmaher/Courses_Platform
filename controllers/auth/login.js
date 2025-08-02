@@ -44,15 +44,14 @@ const login = async (req, res) => {
     // ✅ Generate tokens
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
-
-    // ✅ Send refreshToken in secure httpOnly cookie
+ 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
+      httpOnly: true, // ✅ JavaScript can't access
+      secure: true,   // ✅ only sent over HTTPS
+      sameSite: 'Strict', // 🔐 prevent CSRF attacks
+      path: '/refresh-token', // ✅ sent only to this endpoint
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
-
     // ✅ Send accessToken + user info in body
     return res.status(200).json({
       accessToken,

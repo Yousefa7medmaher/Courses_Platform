@@ -42,14 +42,14 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ['client', 'driver', 'admin'],
-      default: 'client',
+      enum: ['student', 'instructor', 'manager'],
+      default: 'student',
       required: [true, 'Role is required']
     },
 
     authType: {
       type: String,
-      enum: ['local', 'facebook', 'google'],
+      enum: ['local', 'google'],
       default: 'local'
     },
 

@@ -22,8 +22,8 @@ const register = async (req, res, next) => {
         }
 
         // Validate role
-        if (!['client', 'driver', 'admin'].includes(role)) {
-            return res.status(400).json({ message: "Role must be either 'client' or 'driver'." });
+        if (!['student', 'instructor', 'manager'].includes(role)) {
+            return res.status(400).json({ message: "Role must be either student, instructor, or manager." });
         }
 
         // Validate email format

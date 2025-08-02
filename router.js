@@ -1,12 +1,13 @@
 import express from "express";
-const router = express.Router();
+import { verifyRefreshToken } from './middlewares/auth.js';
 import upload from "./middlewares/upload.js";
-import { addUser  , showAllUsers ,updateUser , changePassword ,deleteUser } from './controllers/userController.js';
-
 import passport from './config/passport.js'; 
-
 import login from './controllers/auth/login.js';
 import register from './controllers/auth/register.js';
+import { addUser  , showAllUsers ,updateUser , changePassword ,deleteUser } from './controllers/userController.js';
+const router = express.Router();
+
+
 
 router.post('/api/addUser' , upload.single("photo") ,   addUser); 
 router.get('/api/users',  showAllUsers); 
@@ -15,6 +16,15 @@ router.patch('/api/changePassword/:id',  changePassword);
 
 router.delete('/api/deleteUser/:id' , deleteUser);
 
+router.get('/refresh-token', verifyRefreshToken, (req, res) => {
+  const accessToken = jwt.sign(
+      { id: req.user.id },  
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+  );
+
+  res.json({ accessToken });
+});
 // Auth 
 router.post('/api/register', register); 
 router.post('/api/login' , login);

@@ -2,7 +2,7 @@ import User from '../models/usermodel.js';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 
-export async function registerUser({ name, email, password, img_profile }) {
+export async function registerUser({ name, email, password, photo }) {
   const normalizedEmail = validator.normalizeEmail(email);
   const existingUser = await User.findOne({ email: normalizedEmail });
 
@@ -17,24 +17,24 @@ export async function registerUser({ name, email, password, img_profile }) {
     name,
     email: normalizedEmail,
     password: hashPassword,
-    img_profile,
+    photo, // ✅ store photo
   });
 
   return {
     id: newUser._id,
     name: newUser.name,
     email: newUser.email,
-    img_profile: newUser.img_profile,
+    photo: newUser.photo,
   };
 }
 
 export async function getAllUsers() {
-  const users = await User.find({}, '_id name email img_profile role').lean();
+  const users = await User.find({}, '_id name email photo role').lean(); // ✅ use photo
   return users.map(user => ({
     id: user._id,
     name: user.name,
     email: user.email,
-    img_profile: user.img_profile,
+    photo: user.photo,
     role: user.role
   }));
 }
@@ -50,15 +50,18 @@ export async function updateUser(id, data) {
   const updateFields = {};
   if (data.name) updateFields.name = data.name;
   if (data.email) updateFields.email = data.email;
+  if (data.photo) updateFields.photo = data.photo; // ✅ allow photo update
 
   const updatedUser = await User.findByIdAndUpdate(id, updateFields, {
-    new: true, runValidators: true
+    new: true,
+    runValidators: true
   });
 
   return {
     id: updatedUser._id,
     name: updatedUser.name,
     email: updatedUser.email,
+    photo: updatedUser.photo,
   };
 }
 

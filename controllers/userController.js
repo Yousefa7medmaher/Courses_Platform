@@ -4,9 +4,9 @@ import * as userService from '../Services/userService.js';
 export async function addUser(req, res, next) {
   try {
     const { name, email, password } = req.body;
-    const img_profile = req.file ? req.file.path : req.body.img_profile || "";
-
-    const user = await userService.registerUser({ name, email, password, img_profile });
+    const photo = req.file ? req.file.path : req.body.photo || "";
+ 
+    const user = await userService.registerUser({ name, email, password, photo });
     return sendResponse(res, 201, "User created successfully", user);
   } catch (err) {
     next(err);
