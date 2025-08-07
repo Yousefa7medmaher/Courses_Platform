@@ -19,10 +19,10 @@ const deleteAllData = async () => {
     // await Course.deleteMany();
     // await Enrollment.deleteMany();
 
-    console.log("✅ All data deleted from the database.");
+    console.log(" All data deleted from the database.");
     process.exit(0); // Exit success
   } catch (err) {
-    console.error("❌ Error deleting data:", err);
+    console.error("  Error deleting data:", err);
     process.exit(1); // Exit with failure
   }
 };
