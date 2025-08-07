@@ -46,7 +46,7 @@ export function verifyRefreshToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-        req.user = decoded; // فقط يحتوي على userId غالبًا
+        req.user = decoded;
         next();
     } catch (err) {
         return res.status(403).json({ message: 'Invalid refresh token.' });
