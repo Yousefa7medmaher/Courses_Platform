@@ -1,0 +1,432 @@
+<link rel="stylesheet" href="/css/courses.css">
+
+<!-- Enhanced Hero Section -->
+<section class="course-hero">
+  <div class="hero-content">
+    <h2>Explore Our Courses</h2>
+    <p>Discover amazing courses and boost your skills with expert instructors!</p>
+  </div>
+</section>
+
+<!-- Enhanced Search Section -->
+<section class="course-search-section">
+  <div class="search-container">
+    <form id="course-search-form">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          id="course-search-input" 
+          placeholder="Search courses by title, instructor, or tag..." 
+          autocomplete="off"
+        />
+        <i class="fas fa-times clear-search" id="clear-search"></i>
+      </div>
+      <button type="submit" id="course-search-btn">
+        <i class="fas fa-search"></i>
+        <span>Search</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- Results Counter -->
+<div id="results-counter" class="results-counter" style="display: none;"></div>
+
+<!-- Courses List Section -->
+<section id="courses-list">
+  <div id="courses-loading" class="loading-state">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>Loading courses...</span>
+  </div>
+  <div id="courses-error" class="error-state" style="display:none;"></div>
+  <div id="courses-container" class="courses-grid" style="display:none;"></div>
+</section>
+
+<script>
+  // Static fallback data with enhanced information
+  const staticCourses = [
+    {
+      _id: "1",
+      title: "Modern JavaScript Bootcamp",
+      description: "Master ES6+, async programming, and build real-world applications with modern JavaScript techniques.",
+      instructor: "Sarah Lee",
+      price: 49,
+      tags: ["JavaScript", "Web", "Frontend"],
+      duration: 12,
+      level: "Beginner",
+      imageUrl: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=200&fit=crop",
+      students: 1250,
+      rating: 4.8
+    },
+    {
+      _id: "2",
+      title: "Python for Data Science",
+      description: "Data analysis, visualization, and machine learning with Python. Perfect for aspiring data scientists.",
+      instructor: "Dr. Ahmed Nasser",
+      price: 59,
+      tags: ["Python", "Data Science", "ML"],
+      duration: 15,
+      level: "Intermediate",
+      imageUrl: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=200&fit=crop",
+      students: 890,
+      rating: 4.9
+    },
+    {
+      _id: "3",
+      title: "React & Redux Complete Guide",
+      description: "Build scalable single-page applications with React, Redux, and modern hooks patterns.",
+      instructor: "Emily Chen",
+      price: 0,
+      tags: ["React", "Redux", "Frontend"],
+      duration: 10,
+      level: "Intermediate",
+      imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=200&fit=crop",
+      students: 2100,
+      rating: 4.7
+    },
+    {
+      _id: "4",
+      title: "Node.js & Express API Mastery",
+      description: "Create RESTful APIs, implement authentication, and deploy production-ready Node.js applications.",
+      instructor: "Mohamed Salah",
+      price: 39,
+      tags: ["Node.js", "Backend", "API"],
+      duration: 9,
+      level: "Advanced",
+      imageUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=200&fit=crop",
+      students: 650,
+      rating: 4.6
+    },
+    {
+      _id: "5",
+      title: "UI/UX Design Fundamentals",
+      description: "Learn design thinking, user research, and create beautiful interfaces that users love.",
+      instructor: "Lisa Rodriguez",
+      price: 79,
+      tags: ["Design", "UI/UX", "Creative"],
+      duration: 14,
+      level: "Beginner",
+      imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=200&fit=crop",
+      students: 980,
+      rating: 4.8
+    },
+    {
+      _id: "6",
+      title: "Machine Learning with TensorFlow",
+      description: "Dive deep into neural networks, deep learning, and AI model development with TensorFlow.",
+      instructor: "Dr. James Park",
+      price: 99,
+      tags: ["ML", "AI", "TensorFlow"],
+      duration: 20,
+      level: "Advanced",
+      imageUrl: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=200&fit=crop",
+      students: 420,
+      rating: 4.9
+    }
+  ];
+
+  // Helper: escape HTML
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, function(m) {
+      return ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m];
+    });
+  }
+
+  // Generate star rating HTML
+  function generateStarRating(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let starsHTML = '';
+    
+    for (let i = 0; i < fullStars; i++) {
+      starsHTML += '<i class="fas fa-star"></i>';
+    }
+    
+    if (hasHalfStar) {
+      starsHTML += '<i class="fas fa-star-half-alt"></i>';
+    }
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+      starsHTML += '<i class="far fa-star"></i>';
+    }
+    
+    return starsHTML;
+  }
+
+  // Render a single course card with enhanced design
+  function renderCourseCard(course) {
+    const imgSrc = course.imageUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop';
+    const title = escapeHTML(course.title || 'Untitled Course');
+    const desc = escapeHTML(course.description || 'No description available.');
+    const instructor = escapeHTML(course.instructor || 'Unknown Instructor');
+    const price = course.price ? `$${course.price}` : 'Free';
+    const tags = Array.isArray(course.tags) ? course.tags : [];
+    const duration = course.duration ? `${course.duration} hrs` : '';
+    const level = course.level ? escapeHTML(course.level) : '';
+    const students = course.students ? course.students.toLocaleString() : '';
+    const rating = course.rating || 0;
+
+    const levelIcon = {
+      'Beginner': 'fa-seedling',
+      'Intermediate': 'fa-star-half-alt',
+      'Advanced': 'fa-crown'
+    }[level] || 'fa-bookmark';
+
+    const levelClass = {
+      'Beginner': 'level-beginner',
+      'Intermediate': 'level-intermediate',
+      'Advanced': 'level-advanced'
+    }[level] || '';
+
+    return `
+      <div class="course-card" data-level="${level.toLowerCase()}">
+        <div class="course-card-header">
+          <img class="course-card-img" src="${imgSrc}" alt="${title}" loading="lazy">
+          <div class="course-level-badge ${levelClass}">
+            <i class="fas ${levelIcon}"></i>
+            ${level}
+          </div>
+        </div>
+        <div class="course-card-body">
+          <div class="course-title">${title}</div>
+          <div class="course-desc">${desc}</div>
+          
+          <div class="course-stats">
+            ${rating > 0 ? `
+              <div class="course-rating">
+                <div class="stars">${generateStarRating(rating)}</div>
+                <span class="rating-number">${rating}</span>
+              </div>
+            ` : ''}
+            ${students ? `<div class="course-students"><i class="fas fa-users"></i> ${students} students</div>` : ''}
+          </div>
+
+          <div class="course-meta">
+            ${duration ? `<span class="meta-item"><i class="far fa-clock"></i> ${duration}</span>` : ''}
+          </div>
+          
+          <div class="course-tags">
+            ${tags.map(tag => `<span class="course-tag">${escapeHTML(tag)}</span>`).join('')}
+          </div>
+          
+          <div class="course-card-footer">
+            <div class="course-instructor">
+              <i class="fas fa-user-tie"></i>
+              <span>${instructor}</span>
+            </div>
+            <div class="course-price-section">
+              <span class="course-price">${price}</span>
+              ${course.price > 0 ? '<button class="enroll-btn">Enroll Now</button>' : '<button class="enroll-btn free">Start Free</button>'}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // State management
+  let allCourses = [];
+  let filteredCourses = [];
+
+  // Update results counter
+  function updateResultsCounter(count, query = '') {
+    const counter = document.getElementById('results-counter');
+    if (count === allCourses.length && !query) {
+      counter.style.display = 'none';
+      return;
+    }
+    
+    counter.style.display = 'block';
+    if (query) {
+      counter.innerHTML = `<i class="fas fa-search"></i> Found ${count} course${count !== 1 ? 's' : ''} for "${escapeHTML(query)}"`;
+    } else {
+      counter.innerHTML = `<i class="fas fa-graduation-cap"></i> Showing ${count} course${count !== 1 ? 's' : ''}`;
+    }
+  }
+
+  // Fetch and render courses with enhanced error handling
+  function fetchAndRenderCourses() {
+    const loading = document.getElementById('courses-loading');
+    const container = document.getElementById('courses-container');
+    const errorDiv = document.getElementById('courses-error');
+    
+    loading.style.display = 'flex';
+    container.style.display = 'none';
+    errorDiv.style.display = 'none';
+    container.innerHTML = '';
+
+    // Use static data as fallback (replace with your actual API call)
+    setTimeout(() => {
+      allCourses = staticCourses;
+      filteredCourses = [...allCourses];
+      loading.style.display = 'none';
+      renderCourses(allCourses);
+      updateResultsCounter(allCourses.length);
+    }, 800);
+
+    /*
+    // Uncomment for actual API integration
+    fetch('/api/courses')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          allCourses = data;
+        } else {
+          allCourses = staticCourses;
+        }
+        filteredCourses = [...allCourses];
+        loading.style.display = 'none';
+        renderCourses(allCourses);
+        updateResultsCounter(allCourses.length);
+      })
+      .catch(err => {
+        console.error('Failed to fetch courses:', err);
+        allCourses = staticCourses;
+        filteredCourses = [...allCourses];
+        loading.style.display = 'none';
+        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = `
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>Could not load courses from server</div>
+          <div class="error-details">Showing sample courses instead</div>
+        `;
+        renderCourses(allCourses);
+        updateResultsCounter(allCourses.length);
+      });
+    */
+  }
+
+  // Enhanced render function with animations
+  function renderCourses(courses) {
+    const container = document.getElementById('courses-container');
+    container.innerHTML = '';
+    
+    if (Array.isArray(courses) && courses.length > 0) {
+      courses.forEach((course, index) => {
+        const courseElement = document.createElement('div');
+        courseElement.innerHTML = renderCourseCard(course);
+        courseElement.firstElementChild.style.animationDelay = `${index * 0.1}s`;
+        container.appendChild(courseElement.firstElementChild);
+      });
+    } else {
+      container.innerHTML = `
+        <div class="no-results">
+          <i class="fas fa-search-minus"></i>
+          <h3>No courses found</h3>
+          <p>Try adjusting your search terms or browse all courses</p>
+          <button class="clear-filters-btn" onclick="clearSearch()">
+            <i class="fas fa-times"></i> Clear Search
+          </button>
+        </div>
+      `;
+    }
+    
+    container.style.display = 'grid';
+  }
+
+  // Enhanced search with better filtering
+  function filterCourses(query) {
+    const searchQuery = query.trim().toLowerCase();
+    
+    if (!searchQuery) {
+      filteredCourses = [...allCourses];
+      renderCourses(filteredCourses);
+      updateResultsCounter(filteredCourses.length);
+      return;
+    }
+    
+    filteredCourses = allCourses.filter(course => {
+      const title = (course.title || '').toLowerCase();
+      const instructor = (course.instructor || '').toLowerCase();
+      const description = (course.description || '').toLowerCase();
+      const tags = Array.isArray(course.tags) ? course.tags.join(' ').toLowerCase() : '';
+      const level = (course.level || '').toLowerCase();
+      
+      return (
+        title.includes(searchQuery) ||
+        instructor.includes(searchQuery) ||
+        description.includes(searchQuery) ||
+        tags.includes(searchQuery) ||
+        level.includes(searchQuery)
+      );
+    });
+    
+    renderCourses(filteredCourses);
+    updateResultsCounter(filteredCourses.length, query);
+  }
+
+  // Clear search function
+  function clearSearch() {
+    const searchInput = document.getElementById('course-search-input');
+    const clearBtn = document.getElementById('clear-search');
+    
+    searchInput.value = '';
+    clearBtn.classList.remove('visible');
+    filterCourses('');
+    searchInput.focus();
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    fetchAndRenderCourses();
+
+    const searchInput = document.getElementById('course-search-input');
+    const searchForm = document.getElementById('course-search-form');
+    const clearBtn = document.getElementById('clear-search');
+
+    // Enhanced search with debouncing
+    let searchTimeout;
+    searchInput.addEventListener('input', function(e) {
+      const value = e.target.value;
+      
+      // Show/hide clear button
+      if (value.trim()) {
+        clearBtn.classList.add('visible');
+      } else {
+        clearBtn.classList.remove('visible');
+      }
+      
+      // Debounced search
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        filterCourses(value);
+      }, 300);
+    });
+
+    // Clear search functionality
+    clearBtn.addEventListener('click', clearSearch);
+
+    // Form submit handling
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearTimeout(searchTimeout);
+      filterCourses(searchInput.value);
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Focus search on Ctrl+K or Cmd+K
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
+      
+      // Clear search on Escape
+      if (e.key === 'Escape' && searchInput === document.activeElement) {
+        clearSearch();
+      }
+    });
+  });
+</script>

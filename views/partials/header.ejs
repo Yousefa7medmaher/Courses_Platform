@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JooCourses - Dark Theme Header</title> 
+    <link rel="stylesheet" href="/css/header.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>JooCourses</h1>
+            
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="/" class="nav-item-home">Home</a> 
+                <a href="/courses" class="nav-item-courses">Courses</a>
+                <a href="/login" class="nav-item-login">Login</a>
+                <a href="/register" class="nav-item-register">Register</a>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <h2>Menu</h2>
+            <button class="close-sidebar" onclick="toggleMobileMenu()">×</button>
+        </div>
+        <nav class="mobile-nav">
+            <a href="/" class="nav-item-home" onclick="closeMobileMenu()">Home</a>
+            <a href="/courses" class="nav-item-courses" onclick="closeMobileMenu()">Courses</a>
+            <a href="/login" class="nav-item-login" onclick="closeMobileMenu()">Login</a>
+            <a href="/register" class="nav-item-register" onclick="closeMobileMenu()">Register</a>
+        </nav>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+ 
+    <script>
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('overlay');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('overlay');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            toggle.classList.remove('active');
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('mobileSidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (!sidebar.contains(event.target) && !toggle.contains(event.target) && sidebar.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>
