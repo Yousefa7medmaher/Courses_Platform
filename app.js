@@ -9,7 +9,7 @@ import connectDB from './config/db.js';
 import router from './routes/router.js';
 import cookieParser from 'cookie-parser';
 import expressLayouts from 'express-ejs-layouts';
-
+import routerCourse from './routes/routeCourse.js';
 
 dotenv.config();
 
@@ -54,7 +54,7 @@ app.use(cors({
 
 // Routes
 app.use(router);
-
+app.use('/courses/',routerCourse)
 const PORT = process.env.PORT || 5000;
 
 // HTTPS setup

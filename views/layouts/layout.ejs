@@ -3,35 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title><%= title || 'JooCourses' %></title> 
-  <style>
-    /* Ensure the layout takes full height and footer stays at the bottom */
-    html, body {
-      width: 100vw;
-      height: 100vh;
-      min-width: 100vw;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      width: 100vw;
-      height: 100vh;
-      min-width: 100vw;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-    }
-    main {
-      flex: 1 0 auto;
-      /* Optionally add padding or max-width here */
-    }
-    /* The footer is styled in partials/footer.ejs, but ensure it doesn't shrink */
-    .site-footer {
-      flex-shrink: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/layouts.css">
 </head>
 <body>
   <%- include('../partials/header.ejs') %>

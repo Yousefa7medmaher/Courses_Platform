@@ -8,6 +8,12 @@ import { addUser  , showAllUsers ,getUserById,updateUser , changePassword ,delet
 const router = express.Router();
 import {authenticate} from '../middlewares/auth.js';
 import multer from "multer";
+import { createCourse,
+  getAllCourses,
+  getCourseById,
+  updateCourse,
+  deleteCourse} from '../controllers/courseController.js';
+
 
 
 router.post('/api/addUser' , upload.single("photo") ,   addUser); 
@@ -67,22 +73,22 @@ router.get('/auth/google',
       res.redirect('/');
     });
   });
-  
- 
-  router.get('/', (req, res) => {
-    res.render('index', { title: 'Home | JooCourses' });
-  });
-   
-  
-  router.get('/courses', (req, res) => {
-    res.render('pages/courses', { title: 'courses | JooCourses' });
-  });
-  
-  router.get('/login', (req, res) => {
-    res.render('pages/login', { title: 'Contact | JooCourses' });
-  });
 
-  router.get('/register', (req, res) => {
-    res.render('pages/register', { title: 'Contact | JooCourses' });
-  });
+
+router.get('/', (req, res) => {
+  res.render('index', { title: 'Home | JooCourses' });
+});
+ 
+
+router.get('/courses', (req, res) => {
+  res.render('pages/courses', { title: 'courses | JooCourses' });
+});
+
+router.get('/login', (req, res) => {
+  res.render('pages/login', { title: 'Contact | JooCourses' });
+});
+
+router.get('/register', (req, res) => {
+  res.render('pages/register', { title: 'Contact | JooCourses' });
+});
 export default router;
