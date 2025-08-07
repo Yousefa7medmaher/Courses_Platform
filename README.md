@@ -12,8 +12,17 @@ This is the backend server for the **Courses Platform** — a full-featured lear
 - 📦 RESTful APIs
 - 🖼️ File upload support (images, videos, PDFs using Multer)
 - 🔒 Secure route protection and input validation
-- 🌍 EJS frontend integration for views
-- 📬 Email or notification system (optional)
+- 🌍 EJS frontend integration for views 
+
+---
+
+## 🚧 Still in Progress
+
+- Creating full Admin and Instructor APIs
+- Building dashboard pages for each role
+- Implementing redirection logic for different user pages
+- Designing and developing the enrollment lifecycle
+- Finalizing role-based views and permissions
 
 ---
 
