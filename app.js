@@ -3,24 +3,43 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
-import connectDB from './db.js';
-import router from './router.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import connectDB from './config/db.js';
+import router from './routes/router.js';
 import cookieParser from 'cookie-parser';
+import expressLayouts from 'express-ejs-layouts';
+
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
-// Enable CORS
+// add ejs 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Add expressLayouts 
+app.use(expressLayouts);
+app.set('layout', 'layouts/layout');
+
+app.use(express.static('public'));
+
+// CORS
 const allowedOrigins = [
   'http://localhost:5500',
   'http://127.0.0.1:5500',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ];
-
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -38,7 +57,7 @@ app.use(router);
 
 const PORT = process.env.PORT || 5000;
 
-// Load HTTPS certificates
+// HTTPS setup
 const httpsOptions = {
   key: fs.readFileSync('./certs/localhost-key.pem'),
   cert: fs.readFileSync('./certs/localhost.pem'),
