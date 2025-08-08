@@ -91,4 +91,16 @@ router.get('/login', (req, res) => {
 router.get('/register', (req, res) => {
   res.render('pages/register', { title: 'Contact | JooCourses' });
 });
+
+router.get('/instructor_Dashboard', (req, res) => {
+  res.render('pages/instructor_Dashboard', { title: 'Contact | JooCourses' });
+});
+
+router.get('/manager_Dashboard', (req, res) => {
+  res.render('pages/manager_Dashboard', { title: 'Contact | JooCourses' });
+});
+
+router.get('/Student_Dashboard', (req, res) => {
+  res.render('pages/Student_Dashboard', { title: 'Contact | JooCourses' });
+});
 export default router;

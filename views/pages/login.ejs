@@ -1,0 +1,90 @@
+<link rel="stylesheet" href="/css/login.css">
+  <div class="login-wrapper">
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+        <p>Sign in to your JooCourses account to continue your learning journey</p>
+      </div>
+      
+      <div id="login-error" class="login-error" role="alert" aria-live="polite"></div>
+      <div id="login-success" class="login-success" role="alert" aria-live="polite"></div>
+      
+      <form id="login-form" class="login-form" autocomplete="on" novalidate>
+        <div class="input-group">
+          <label for="email" class="input-label">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-envelope"></i></span>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="Enter your email address" 
+              required 
+              autocomplete="email"
+              aria-describedby="email-error"
+            />
+          </div>
+          <div id="email-error" class="sr-only" role="alert"></div>
+        </div>
+        
+        <div class="input-group">
+          <label for="password" class="input-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-lock"></i></span>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Enter your password" 
+              required 
+              autocomplete="current-password"
+              aria-describedby="password-error"
+            />
+            <span class="password-toggle" onclick="togglePassword()">
+              <i class="fas fa-eye" id="password-icon"></i>
+            </span>
+          </div>
+          <div id="password-error" class="sr-only" role="alert"></div>
+        </div>
+        
+        <div class="login-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" name="remember" />
+            Remember me
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        
+        <button type="submit" class="login-btn" id="login-btn">
+          <span class="loading-spinner" id="loading-spinner"></span>
+          <i class="fas fa-arrow-right-to-bracket" id="login-icon"></i>
+          <span id="btn-text">Sign In</span>
+        </button>
+      </form>
+      
+      <div class="divider">
+        <span>Need an account?</span>
+      </div>
+      
+      <div class="signup-link">
+        Don't have an account? <a href="/signup">Create one here</a>
+      </div>
+      
+      <div class="security-tips">
+        <h4><i class="fas fa-shield-alt"></i> Security Tips</h4>
+        <ul>
+          <li>Use a strong, unique password</li>
+          <li>Enable two-factor authentication</li>
+          <li>Always log out from shared computers</li>
+          <li>Never share your login credentials</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>
