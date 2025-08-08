@@ -138,10 +138,9 @@
           // Redirect based on user role
           setTimeout(() => {
             const redirectMap = {
-              'student': '/student-dashboard',
+              'student': '/Student_Dashboard',
               'instructor': '/instructor_Dashboard', 
-              'manager': '/manager-dashboard',
-              'admin': '/admin-dashboard'
+              'manager': '/manager_Dashboard' 
             };
             
             const redirectUrl = redirectMap[data.user.role] || '/dashboard';

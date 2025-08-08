@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+  <div class="register-wrapper">
+    <div class="register-container">
+      <div class="register-header">
+        <div class="logo">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h2><i class="fas fa-graduation-cap"></i> Join JooCourses</h2>
+        <p>Create your account to start your learning journey with us</p>
+      </div>
+      
+      <div id="register-error" class="register-error" role="alert" aria-live="polite"></div>
+      <div id="register-success" class="register-success" role="alert" aria-live="polite"></div>
+      
+      <form id="register-form" class="register-form" autocomplete="on" novalidate>
+        <div class="input-group">
+          <label for="name" class="input-label">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-user"></i></span>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              placeholder="Enter your full name" 
+              required 
+              autocomplete="name"
+              aria-describedby="name-error"
+            />
+          </div>
+          <div id="name-error" class="sr-only" role="alert"></div>
+        </div>
+        
+        <div class="input-group">
+          <label for="email" class="input-label">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-envelope"></i></span>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="Enter your email address" 
+              required 
+              autocomplete="email"
+              aria-describedby="email-error"
+            />
+          </div>
+          <div id="email-error" class="sr-only" role="alert"></div>
+        </div>
+
+        <div class="input-group">
+          <label for="phone" class="input-label">Phone Number</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-phone"></i></span>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              placeholder="Enter your phone number" 
+              required 
+              autocomplete="tel"
+              aria-describedby="phone-error"
+            />
+          </div>
+          <div id="phone-error" class="sr-only" role="alert"></div>
+        </div>
+        
+
+        
+        <div class="input-group">
+          <label for="password" class="input-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon"><i class="fas fa-lock"></i></span>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Create a strong password" 
+              required 
+              autocomplete="new-password"
+              aria-describedby="password-error"
+            />
+            <span class="password-toggle" onclick="togglePassword('password')">
+              <i class="fas fa-eye" id="password-icon"></i>
+            </span>
+          </div>
+          <div class="password-strength">
+            <div class="password-strength-bar" id="password-strength-bar"></div>
+          </div>
+          <div class="password-requirements">
+            <strong>Password must contain:</strong>
+            <ul>
+              <li id="length-req" class="invalid"><i class="fas fa-times"></i> At least 6 characters</li>
+            </ul>
+          </div>
+          <div id="password-error" class="sr-only" role="alert"></div>
+        </div>
+        
+        <div class="terms-checkbox">
+          <input type="checkbox" id="terms" name="terms" required />
+          <label for="terms">
+            I agree to the <a href="/terms" target="_blank">Terms of Service</a> and 
+            <a href="/privacy" target="_blank">Privacy Policy</a>
+          </label>
+        </div>
+        
+        <button type="submit" class="register-btn" id="register-btn">
+          <span class="loading-spinner" id="loading-spinner"></span>
+          <i class="fas fa-user-plus" id="register-icon"></i>
+          <span id="btn-text">Create Account</span>
+        </button>
+      </form>
+      
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+      
+      <div class="login-link">
+        Already registered? <a href="/login">Sign in here</a>
+      </div>
+      
+      <div class="security-tips">
+        <h4><i class="fas fa-shield-alt"></i> Account Security</h4>
+        <ul>
+          <li>Use a unique, strong password</li>
+          <li>Keep your account information private</li>
+          <li>Verify your email address after registration</li>
+          <li>Enable two-factor authentication later</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<script src="/js/register.js"></script>
+</body>
+</html>
