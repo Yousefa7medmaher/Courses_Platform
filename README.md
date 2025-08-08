@@ -20,7 +20,6 @@ This is the backend server for the **Courses Platform** — a full-featured lear
 
 - Creating full Admin and Instructor APIs
 - Building dashboard pages for each role
-- Implementing redirection logic for different user pages
 - Designing and developing the enrollment lifecycle
 - Finalizing role-based views and permissions
 
