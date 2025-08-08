@@ -8,12 +8,7 @@ import { addUser  , showAllUsers ,getUserById,updateUser , changePassword ,delet
 const router = express.Router();
 import {authenticate} from '../middlewares/auth.js';
 import multer from "multer";
-import { createCourse,
-  getAllCourses,
-  getCourseById,
-  updateCourse,
-  deleteCourse} from '../controllers/courseController.js';
-
+import logout from '../controllers/auth/logout.js';
 
 
 router.post('/api/addUser' , upload.single("photo") ,   addUser); 
@@ -50,6 +45,8 @@ router.get('/refresh-token', verifyRefreshToken, (req, res) => {
 router.post('/api/register', register); 
 router.post('/api/login' , login);
 
+// Add logout route
+router.post('/api/logout', logout);
 
 // ✅ Google OAuth routes
 
