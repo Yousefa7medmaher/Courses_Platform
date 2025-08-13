@@ -1,11 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>welocme to student </h1>
-</body>
-</html>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Student Dashboard</h1>
+        <p class="page-subtitle">Welcome back, <%= user.name %>! Continue your learning journey.</p>
+    </div>
+</div>
+
+<!-- Dashboard Content -->
+<div class="page-content">
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="enrolled-courses">0</div>
+                    <div class="stat-label">Enrolled Courses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="completed-courses">0</div>
+                    <div class="stat-label">Completed Courses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="certificates-earned">0</div>
+                    <div class="stat-label">Certificates Earned</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="learning-hours">0</div>
+                    <div class="stat-label">Hours Learned</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Continue Learning -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-play"></i>
+                        Continue Learning
+                    </h2>
+                    <a href="/student/courses" class="section-link">View All</a>
+                </div>
+                
+                <div class="continue-learning" id="continue-learning">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        Recent Activity
+                    </h2>
+                </div>
+                
+                <div class="activity-feed" id="activity-feed">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Recommended Courses -->
+            <div class="dashboard-section full-width">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Recommended for You
+                    </h2>
+                    <a href="/courses" class="section-link">Browse All</a>
+                </div>
+                
+                <div class="recommended-courses" id="recommended-courses">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Learning Goals -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-target"></i>
+                        Learning Goals
+                    </h2>
+                    <button class="btn btn-sm btn-outline" onclick="openModal('goals-modal')">
+                        <i class="fas fa-plus"></i>
+                        Add Goal
+                    </button>
+                </div>
+                
+                <div class="learning-goals" id="learning-goals">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i>
+                        Achievements
+                    </h2>
+                </div>
+                
+                <div class="achievements-grid" id="achievements">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                <a href="/courses" class="action-card">
+                    <i class="fas fa-search"></i>
+                    <span>Browse Courses</span>
+                </a>
+                <a href="/student/wishlist" class="action-card">
+                    <i class="fas fa-heart"></i>
+                    <span>My Wishlist</span>
+                </a>
+                <a href="/student/certificates" class="action-card">
+                    <i class="fas fa-certificate"></i>
+                    <span>My Certificates</span>
+                </a>
+                <a href="/profile" class="action-card">
+                    <i class="fas fa-user-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Goals Modal -->
+<div id="goals-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Learning Goal</h3>
+            <button type="button" class="modal-close" onclick="JooCourses.closeModal('goals-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="goal-form">
+                <div class="form-group">
+                    <label for="goal-title" class="form-label">Goal Title</label>
+                    <input type="text" id="goal-title" name="title" class="form-control" placeholder="e.g., Complete JavaScript Fundamentals" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal-description" class="form-label">Description (Optional)</label>
+                    <textarea id="goal-description" name="description" class="form-control" rows="3" placeholder="Describe your learning goal..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal-deadline" class="form-label">Target Date</label>
+                    <input type="date" id="goal-deadline" name="deadline" class="form-control" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="JooCourses.closeModal('goals-modal')">Cancel</button>
+            <button type="submit" form="goal-form" class="btn btn-primary">Add Goal</button>
+        </div>
+    </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+<% end %>
+
+<% contentFor('script') %>
+<script src="/js/student-dashboard.js"></script>
+<% end %>

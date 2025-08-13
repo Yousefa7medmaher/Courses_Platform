@@ -1,0 +1,242 @@
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Explore Courses</h1>
+        <p class="page-subtitle">Discover thousands of courses from expert instructors</p>
+    </div>
+</div>
+
+<!-- Courses Content -->
+<div class="page-content">
+    <div class="container">
+        <div class="courses-layout">
+            <!-- Filters Sidebar -->
+            <aside class="courses-sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-filter"></i>
+                        Filters
+                    </h3>
+                    
+                    <form id="courses-filter-form" class="filters-form">
+                        <!-- Search -->
+                        <div class="filter-group">
+                            <label class="filter-label">Search</label>
+                            <div class="search-input-group">
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    id="search-input"
+                                    class="form-control" 
+                                    placeholder="Search courses..."
+                                    value="<%= typeof filters !== 'undefined' && filters.search ? filters.search : '' %>"
+                                >
+                                <button type="button" class="search-clear" id="search-clear">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="filter-group">
+                            <label class="filter-label">Category</label>
+                            <select name="category" class="form-control">
+                                <option value="">All Categories</option>
+                                <option value="Development" <%= typeof filters !== 'undefined' && filters.category === 'Development' ? 'selected' : '' %>>Development</option>
+                                <option value="Business" <%= typeof filters !== 'undefined' && filters.category === 'Business' ? 'selected' : '' %>>Business</option>
+                                <option value="Finance & Accounting" <%= typeof filters !== 'undefined' && filters.category === 'Finance & Accounting' ? 'selected' : '' %>>Finance & Accounting</option>
+                                <option value="IT & Software" <%= typeof filters !== 'undefined' && filters.category === 'IT & Software' ? 'selected' : '' %>>IT & Software</option>
+                                <option value="Office Productivity" <%= typeof filters !== 'undefined' && filters.category === 'Office Productivity' ? 'selected' : '' %>>Office Productivity</option>
+                                <option value="Personal Development" <%= typeof filters !== 'undefined' && filters.category === 'Personal Development' ? 'selected' : '' %>>Personal Development</option>
+                                <option value="Design" <%= typeof filters !== 'undefined' && filters.category === 'Design' ? 'selected' : '' %>>Design</option>
+                                <option value="Marketing" <%= typeof filters !== 'undefined' && filters.category === 'Marketing' ? 'selected' : '' %>>Marketing</option>
+                                <option value="Lifestyle" <%= typeof filters !== 'undefined' && filters.category === 'Lifestyle' ? 'selected' : '' %>>Lifestyle</option>
+                                <option value="Photography & Video" <%= typeof filters !== 'undefined' && filters.category === 'Photography & Video' ? 'selected' : '' %>>Photography & Video</option>
+                                <option value="Health & Fitness" <%= typeof filters !== 'undefined' && filters.category === 'Health & Fitness' ? 'selected' : '' %>>Health & Fitness</option>
+                                <option value="Music" <%= typeof filters !== 'undefined' && filters.category === 'Music' ? 'selected' : '' %>>Music</option>
+                                <option value="Teaching & Academics" <%= typeof filters !== 'undefined' && filters.category === 'Teaching & Academics' ? 'selected' : '' %>>Teaching & Academics</option>
+                            </select>
+                        </div>
+
+                        <!-- Level -->
+                        <div class="filter-group">
+                            <label class="filter-label">Level</label>
+                            <select name="level" class="form-control">
+                                <option value="">All Levels</option>
+                                <option value="Beginner" <%= typeof filters !== 'undefined' && filters.level === 'Beginner' ? 'selected' : '' %>>Beginner</option>
+                                <option value="Intermediate" <%= typeof filters !== 'undefined' && filters.level === 'Intermediate' ? 'selected' : '' %>>Intermediate</option>
+                                <option value="Advanced" <%= typeof filters !== 'undefined' && filters.level === 'Advanced' ? 'selected' : '' %>>Advanced</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-group">
+                            <label class="filter-label">Price Range</label>
+                            <div class="price-inputs">
+                                <input 
+                                    type="number" 
+                                    name="minPrice" 
+                                    class="form-control" 
+                                    placeholder="Min"
+                                    min="0"
+                                    value="<%= typeof filters !== 'undefined' && filters.minPrice ? filters.minPrice : '' %>"
+                                >
+                                <span class="price-separator">-</span>
+                                <input 
+                                    type="number" 
+                                    name="maxPrice" 
+                                    class="form-control" 
+                                    placeholder="Max"
+                                    min="0"
+                                    value="<%= typeof filters !== 'undefined' && filters.maxPrice ? filters.maxPrice : '' %>"
+                                >
+                            </div>
+                            <div class="price-presets">
+                                <button type="button" class="price-preset" data-min="0" data-max="0">Free</button>
+                                <button type="button" class="price-preset" data-min="1" data-max="50">$1-$50</button>
+                                <button type="button" class="price-preset" data-min="51" data-max="100">$51-$100</button>
+                                <button type="button" class="price-preset" data-min="101" data-max="">$100+</button>
+                            </div>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="filter-group">
+                            <label class="filter-label">Minimum Rating</label>
+                            <div class="rating-filter">
+                                <% for (let i = 5; i >= 1; i--) { %>
+                                    <label class="rating-option">
+                                        <input 
+                                            type="radio" 
+                                            name="minRating" 
+                                            value="<%= i %>"
+                                            <%= typeof filters !== 'undefined' && filters.minRating == i ? 'checked' : '' %>
+                                        >
+                                        <div class="stars">
+                                            <% for (let j = 1; j <= 5; j++) { %>
+                                                <i class="fas fa-star <%= j <= i ? 'active' : '' %>"></i>
+                                            <% } %>
+                                        </div>
+                                        <span><%= i %>+ stars</span>
+                                    </label>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Filter Actions -->
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-search"></i>
+                                Apply Filters
+                            </button>
+                            <button type="button" class="btn btn-outline btn-block" id="clear-filters">
+                                <i class="fas fa-times"></i>
+                                Clear All
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="courses-main">
+                <!-- Results Header -->
+                <div class="results-header">
+                    <div class="results-info">
+                        <h2 class="results-title">
+                            <% if (typeof courses !== 'undefined' && courses && courses.length > 0) { %>
+                                <%= typeof pagination !== 'undefined' && pagination ? pagination.totalCourses : courses.length %> 
+                                <%= (typeof pagination !== 'undefined' && pagination ? pagination.totalCourses : courses.length) === 1 ? 'course' : 'courses' %> found
+                            <% } else { %>
+                                No courses found
+                            <% } %>
+                        </h2>
+                        <% if (typeof filters !== 'undefined' && filters && (filters.search || filters.category || filters.level)) { %>
+                            <div class="active-filters">
+                                <% if (filters.search) { %>
+                                    <span class="filter-tag">
+                                        Search: "<%= filters.search %>"
+                                        <button type="button" class="filter-remove" data-filter="search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                <% } %>
+                                <% if (filters.category) { %>
+                                    <span class="filter-tag">
+                                        Category: <%= filters.category %>
+                                        <button type="button" class="filter-remove" data-filter="category">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                <% } %>
+                                <% if (filters.level) { %>
+                                    <span class="filter-tag">
+                                        Level: <%= filters.level %>
+                                        <button type="button" class="filter-remove" data-filter="level">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="results-controls">
+                        <div class="sort-controls">
+                            <label for="sort-select">Sort by:</label>
+                            <select id="sort-select" name="sortBy" class="form-control">
+                                <option value="createdAt" <%= typeof filters !== 'undefined' && filters.sortBy === 'createdAt' ? 'selected' : '' %>>Newest</option>
+                                <option value="averageRating" <%= typeof filters !== 'undefined' && filters.sortBy === 'averageRating' ? 'selected' : '' %>>Highest Rated</option>
+                                <option value="totalStudents" <%= typeof filters !== 'undefined' && filters.sortBy === 'totalStudents' ? 'selected' : '' %>>Most Popular</option>
+                                <option value="price" <%= typeof filters !== 'undefined' && filters.sortBy === 'price' ? 'selected' : '' %>>Price: Low to High</option>
+                                <option value="-price" <%= typeof filters !== 'undefined' && filters.sortBy === '-price' ? 'selected' : '' %>>Price: High to Low</option>
+                            </select>
+                        </div>
+
+                        <div class="view-controls">
+                            <button type="button" class="view-toggle active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button type="button" class="view-toggle" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-container">
+                    <% if (typeof courses !== 'undefined' && courses && courses.length > 0) { %>
+                        <div class="courses-grid" id="courses-grid">
+                            <% courses.forEach(function(course) { %>
+                                <%- include('../partials/course-card', { course: course, user: user }) %>
+                            <% }); %>
+                        </div>
+
+                        <!-- Pagination -->
+                        <% if (typeof pagination !== 'undefined' && pagination && pagination.totalPages > 1) { %>
+                            <%- include('../partials/pagination', { pagination: pagination }) %>
+                        <% } %>
+                    <% } else { %>
+                        <div class="no-results">
+                            <div class="no-results-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3>No courses found</h3>
+                            <p>Try adjusting your search criteria or browse all courses</p>
+                            <a href="/courses" class="btn btn-primary">
+                                <i class="fas fa-refresh"></i>
+                                View All Courses
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+@import url('/css/courses.css');
+</style>
+
+<script src="/js/courses.js"></script>

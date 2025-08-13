@@ -1,230 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JooCourses - Dark Theme Header</title> 
-    <link rel="stylesheet" href="/css/header.css">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1>JooCourses</h1>
-            
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav" id="desktopNav">
-                <a href="/" class="nav-item-home">Home</a> 
-                <a href="/courses" class="nav-item-courses">Courses</a>
-                <% if (typeof user !== 'undefined' && user) { %>
-                    <% if (user.role === 'student') { %>
-                        <a href="/Student_Dashboard" class="nav-item-student-dashboard">Student Dashboard</a>
-                    <% } else if (user.role === 'instructor') { %>
-                        <a href="/instructor_Dashboard" class="nav-item-instructor-dashboard">Instructor Dashboard</a>
-                    <% } else if (user.role === 'manager') { %>
-                        <a href="/manager_Dashboard" class="nav-item-manager-dashboard">Manager Dashboard</a>
-                    <% } %>
-                    <a href="#" class="nav-item-logout" id="logoutBtn">Logout</a>
-                <% } else { %>
-                    <a href="/login" class="nav-item-login">Login</a>
-                    <a href="/register" class="nav-item-register">Register</a>
-                <% } %>
-            </nav>
+<header class="main-header">
+    <nav class="navbar">
+        <div class="container">
+            <!-- Logo -->
+            <div class="navbar-brand">
+                <a href="/" class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>JooCourses</span>
+                </a>
+            </div>
 
             <!-- Mobile Menu Toggle -->
-            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                <div class="hamburger-line"></div>
-                <div class="hamburger-line"></div>
-                <div class="hamburger-line"></div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="navbar-nav" id="navbar-nav">
+                <div class="nav-links">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="/courses" class="nav-link">
+                        <i class="fas fa-book"></i>
+                        <span>Courses</span>
+                    </a>
+                    <a href="/about" class="nav-link">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About</span>
+                    </a>
+                    <a href="/contact" class="nav-link">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="nav-actions">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <!-- Authenticated User -->
+                        <div class="user-menu">
+                            <button class="user-menu-toggle" id="user-menu-toggle">
+                                <% if (user.photo) { %>
+                                    <img src="<%= user.photo %>" alt="<%= user.name %>" class="user-avatar">
+                                <% } else { %>
+                                    <div class="user-avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                <% } %>
+                                <span class="user-name"><%= user.name %></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            
+                            <div class="user-dropdown" id="user-dropdown">
+                                <div class="user-info">
+                                    <p class="user-email"><%= user.email %></p>
+                                    <span class="user-role badge badge-<%= user.role %>"><%= user.role %></span>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <% if (user.role === 'student') { %>
+                                    <a href="/student/dashboard" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a href="/student/courses" class="dropdown-item">
+                                        <i class="fas fa-book-open"></i>
+                                        <span>My Courses</span>
+                                    </a>
+                                <% } else if (user.role === 'instructor') { %>
+                                    <a href="/instructor/dashboard" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a href="/instructor/courses" class="dropdown-item">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                        <span>My Courses</span>
+                                    </a>
+                                    <a href="/instructor/courses/new" class="dropdown-item">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Create Course</span>
+                                    </a>
+                                <% } else if (user.role === 'admin') { %>
+                                    <a href="/admin/dashboard" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Admin Dashboard</span>
+                                    </a>
+                                    <a href="/admin/users" class="dropdown-item">
+                                        <i class="fas fa-users"></i>
+                                        <span>Manage Users</span>
+                                    </a>
+                                    <a href="/admin/courses" class="dropdown-item">
+                                        <i class="fas fa-book"></i>
+                                        <span>Manage Courses</span>
+                                    </a>
+                                <% } %>
+                                
+                                <a href="/profile" class="dropdown-item">
+                                    <i class="fas fa-user-edit"></i>
+                                    <span>Edit Profile</span>
+                                </a>
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <button onclick="logout()" class="dropdown-item logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <!-- Guest User -->
+                        <div class="auth-buttons">
+                            <a href="/login" class="btn btn-outline">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </a>
+                            <a href="/register" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Sign Up</span>
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
-    </header>
-
-    <!-- Mobile Sidebar -->
-    <div class="mobile-sidebar" id="mobileSidebar">
-        <div class="mobile-sidebar-header">
-            <h2>Menu</h2>
-            <button class="close-sidebar" onclick="toggleMobileMenu()">×</button>
-        </div>
-        <nav class="mobile-nav" id="mobileNav">
-            <a href="/" class="nav-item-home" onclick="closeMobileMenu()">Home</a>
-            <a href="/courses" class="nav-item-courses" onclick="closeMobileMenu()">Courses</a>
-            <% if (typeof user !== 'undefined' && user) { %>
-                <% if (user.role === 'student') { %>
-                    <a href="/Student_Dashboard" class="nav-item-student-dashboard" onclick="closeMobileMenu()">Student Dashboard</a>
-                <% } else if (user.role === 'instructor') { %>
-                    <a href="/instructor_Dashboard" class="nav-item-instructor-dashboard" onclick="closeMobileMenu()">Instructor Dashboard</a>
-                <% } else if (user.role === 'manager') { %>
-                    <a href="/manager_Dashboard" class="nav-item-manager-dashboard" onclick="closeMobileMenu()">Manager Dashboard</a>
-                <% } %>
-                <a href="#" class="nav-item-logout" id="logoutBtnMobile" onclick="closeMobileMenu()">Logout</a>
-            <% } else { %>
-                <a href="/login" class="nav-item-login" onclick="closeMobileMenu()">Login</a>
-                <a href="/register" class="nav-item-register" onclick="closeMobileMenu()">Register</a>
-            <% } %>
-        </nav>
-    </div>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
- 
-    <script>
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('overlay');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            toggle.classList.toggle('active');
-        }
-
-        function closeMobileMenu() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('overlay');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            toggle.classList.remove('active');
-        }
-
-        // Close sidebar when clicking outside
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('mobileSidebar');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (!sidebar.contains(event.target) && !toggle.contains(event.target) && sidebar.classList.contains('active')) {
-                closeMobileMenu();
-            }
-        });
-
-        // Close sidebar on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeMobileMenu();
-            }
-        });
-
-        // Attach logout handler for both desktop and mobile logout buttons
-        function attachLogoutHandlers() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
-            async function doLogout(e) {
-                e.preventDefault();
-                try {
-                    // Call backend logout endpoint
-                    await fetch('https://localhost:5000/api/logout', {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-                } catch (err) {
-                    // Ignore errors, proceed with client-side cleanup
-                }
-                // Remove tokens/cookies (as in login.js)
-                document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                sessionStorage.removeItem('user');
-                window.location.href = '/login';
-            }
-            if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
-            if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', doLogout);
-        }
-
-        // Attach logout handlers on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', function() {
-            attachLogoutHandlers();
-        });
-
-        // --- Dynamic Navbar based on login.js logic (client-side fallback) ---
-        // This is a progressive enhancement: if user is not set server-side, try to detect from sessionStorage (as in login.js)
-    </script>
-    <% if (!(typeof user !== 'undefined' && user)) { %>
-    <script>
-        (function() {
-            function getUserFromSession() {
-                try {
-                    const userStr = sessionStorage.getItem('user');
-                    if (!userStr) return null;
-                    return JSON.parse(userStr);
-                } catch (e) {
-                    return null;
-                }
-            }
-
-            function updateNavbars(user) {
-                // Desktop Nav
-                const desktopNav = document.getElementById('desktopNav');
-                const mobileNav = document.getElementById('mobileNav');
-                if (!desktopNav || !mobileNav) return;
-
-                let desktopHtml = `
-                    <a href="/" class="nav-item-home">Home</a>
-                    <a href="/courses" class="nav-item-courses">Courses</a>
-                `;
-                let mobileHtml = `
-                    <a href="/" class="nav-item-home" onclick="closeMobileMenu()">Home</a>
-                    <a href="/courses" class="nav-item-courses" onclick="closeMobileMenu()">Courses</a>
-                `;
-
-                if (user && user.role) {
-                    if (user.role === 'student') {
-                        desktopHtml += `<a href="/Student_Dashboard" class="nav-item-student-dashboard">Student Dashboard</a>`;
-                        mobileHtml += `<a href="/Student_Dashboard" class="nav-item-student-dashboard" onclick="closeMobileMenu()">Student Dashboard</a>`;
-                    } else if (user.role === 'instructor') {
-                        desktopHtml += `<a href="/instructor_Dashboard" class="nav-item-instructor-dashboard">Instructor Dashboard</a>`;
-                        mobileHtml += `<a href="/instructor_Dashboard" class="nav-item-instructor-dashboard" onclick="closeMobileMenu()">Instructor Dashboard</a>`;
-                    } else if (user.role === 'manager') {
-                        desktopHtml += `<a href="/manager_Dashboard" class="nav-item-manager-dashboard">Manager Dashboard</a>`;
-                        mobileHtml += `<a href="/manager_Dashboard" class="nav-item-manager-dashboard" onclick="closeMobileMenu()">Manager Dashboard</a>`;
-                    }
-                    desktopHtml += `<a href="#" class="nav-item-logout" id="logoutBtn">Logout</a>`;
-                    mobileHtml += `<a href="#" class="nav-item-logout" id="logoutBtnMobile" onclick="closeMobileMenu()">Logout</a>`;
-                } else {
-                    desktopHtml += `<a href="/login" class="nav-item-login">Login</a>
-                                    <a href="/register" class="nav-item-register">Register</a>`;
-                    mobileHtml += `<a href="/login" class="nav-item-login" onclick="closeMobileMenu()">Login</a>
-                                   <a href="/register" class="nav-item-register" onclick="closeMobileMenu()">Register</a>`;
-                }
-
-                desktopNav.innerHTML = desktopHtml;
-                mobileNav.innerHTML = mobileHtml;
-
-                // Attach logout handler if present
-                attachLogoutHandlers();
-            }
-
-            // Attach logout handler for both desktop and mobile logout buttons
-            function attachLogoutHandlers() {
-                const logoutBtn = document.getElementById('logoutBtn');
-                const logoutBtnMobile = document.getElementById('logoutBtnMobile');
-                async function doLogout(e) {
-                    e.preventDefault();
-                    try {
-                        // Call backend logout endpoint
-                        await fetch('https://localhost:5000/api/logout', {
-                            method: 'POST',
-                            credentials: 'include'
-                        });
-                    } catch (err) {
-                        // Ignore errors, proceed with client-side cleanup
-                    }
-                    // Remove tokens/cookies (as in login.js)
-                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    sessionStorage.removeItem('user');
-                    window.location.href = '/login';
-                }
-                if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
-                if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', doLogout);
-            }
-
-            // On page load, try to update navbars
-            document.addEventListener('DOMContentLoaded', function() {
-                const user = getUserFromSession();
-                updateNavbars(user);
-            });
-        })();
-    </script>
-    <% } %>
-</body>
-</html>
+    </nav>
+</header>

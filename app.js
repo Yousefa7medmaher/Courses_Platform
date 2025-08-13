@@ -1,15 +1,19 @@
 import express from 'express';
 import dotenv from 'dotenv';
-// import cors from 'cors';
+import session from 'express-session';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
-import router from './routes/router.js';
 import cookieParser from 'cookie-parser';
 import expressLayouts from 'express-ejs-layouts';
-import routerCourse from './routes/routeCourse.js';
+
+// Import routes
+import authRoutes from './routes/authRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import webRoutes from './routes/webRoutes.js';
 
 dotenv.config();
 
@@ -17,21 +21,50 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Middleware setup
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// add ejs 
+// Session middleware for flash messages
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Flash messages middleware
+app.use((req, res, next) => {
+  req.flash = (type, message) => {
+    if (!req.session.flash) req.session.flash = {};
+    if (!req.session.flash[type]) req.session.flash[type] = [];
+    req.session.flash[type].push(message);
+  };
+
+  res.locals.messages = req.session.flash || {};
+  req.session.flash = {};
+  next();
+});
+
+// EJS setup with express-ejs-layouts
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('view cache', false); // Disable view caching in development
 
-
-// Add expressLayouts 
+// Express layouts configuration - MUST be before routes
 app.use(expressLayouts);
 app.set('layout', 'layouts/layout');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
 
-app.use(express.static('public'));
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // // CORS
 // const allowedOrigins = [
@@ -53,8 +86,38 @@ app.use(express.static('public'));
 // }));
 
 // Routes
-app.use(router);
-app.use('/courses/',routerCourse)
+app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/', webRoutes);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).render('error', {
+    title: 'Page Not Found',
+    message: 'The page you are looking for does not exist.',
+    error: { status: 404 }
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+
+  if (req.originalUrl.startsWith('/api/')) {
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
+  }
+
+  res.status(err.status || 500).render('error', {
+    title: 'Error',
+    message: err.message || 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : { status: err.status || 500 }
+  });
+});
 const PORT = process.env.PORT || 5000;
 
 // HTTPS setup

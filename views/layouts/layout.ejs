@@ -1,19 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || 'JooCourses' %></title>
-  <link rel="stylesheet" href="/css/layouts.css">
-  <link rel="stylesheet" href="/css/mobile-fixes.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JooCourses - Professional Online Learning Platform">
+    <meta name="keywords" content="online courses, learning, education, programming, development">
+    <meta name="author" content="JooCourses">
+    
+    <title><%= title || 'JooCourses - Learn. Grow. Succeed.' %></title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/layouts.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/mobile-fixes.css">
+    
+    <!-- Page-specific CSS -->
+    <%- style %>
 </head>
-<body class="<%= typeof bodyClass !== 'undefined' ? bodyClass : '' %>">
-  <%- include('../partials/header.ejs') %>
+<body>
+    <!-- Flash Messages -->
+    <% if (typeof messages !== 'undefined' && messages) { %>
+        <div id="flash-messages">
+            <% if (messages.success && messages.success.length > 0) { %>
+                <% messages.success.forEach(function(message) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+            
+            <% if (messages.error && messages.error.length > 0) { %>
+                <% messages.error.forEach(function(message) { %>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+            
+            <% if (messages.warning && messages.warning.length > 0) { %>
+                <% messages.warning.forEach(function(message) { %>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+            
+            <% if (messages.info && messages.info.length > 0) { %>
+                <% messages.info.forEach(function(message) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    <% } %>
 
-  <main>
-    <%- body %>
-  </main>
+    <!-- Header -->
+    <%- include('../partials/header') %>
 
-  <%- include('../partials/footer.ejs') %>
+    <!-- Main Content -->
+    <main id="main-content">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <%- include('../partials/footer') %>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Core JavaScript -->
+    <script src="/js/main.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <%- script %>
 </body>
 </html>

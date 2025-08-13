@@ -1,0 +1,289 @@
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <p class="page-subtitle">Welcome back, <%= user.name %>! Manage the JooCourses platform.</p>
+    </div>
+</div>
+
+<!-- Dashboard Content -->
+<div class="page-content">
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-users">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-courses">0</div>
+                    <div class="stat-label">Total Courses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="active-students">0</div>
+                    <div class="stat-label">Active Students</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="active-instructors">0</div>
+                    <div class="stat-label">Active Instructors</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Platform Overview -->
+            <div class="dashboard-section full-width">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Platform Overview
+                    </h2>
+                    <div class="overview-controls">
+                        <select id="overview-period" class="form-control">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 3 months</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="overview-content">
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <h4>User Registrations</h4>
+                            <div class="chart-container">
+                                <canvas id="registrations-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <h4>Course Enrollments</h4>
+                            <div class="chart-container">
+                                <canvas id="enrollments-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <h4>Revenue</h4>
+                            <div class="chart-container">
+                                <canvas id="revenue-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <h4>Platform Activity</h4>
+                            <div class="activity-metrics" id="activity-metrics">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Users -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        Recent Users
+                    </h2>
+                    <a href="/admin/users" class="section-link">Manage All</a>
+                </div>
+                
+                <div class="recent-users" id="recent-users">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Course Management -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-book-open"></i>
+                        Course Management
+                    </h2>
+                    <a href="/admin/courses" class="section-link">Manage All</a>
+                </div>
+                
+                <div class="course-management" id="course-management">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- System Health -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-heartbeat"></i>
+                        System Health
+                    </h2>
+                </div>
+                
+                <div class="system-health" id="system-health">
+                    <div class="health-metric">
+                        <div class="metric-label">Server Status</div>
+                        <div class="metric-value status-online">
+                            <i class="fas fa-circle"></i>
+                            Online
+                        </div>
+                    </div>
+                    
+                    <div class="health-metric">
+                        <div class="metric-label">Database</div>
+                        <div class="metric-value status-online">
+                            <i class="fas fa-circle"></i>
+                            Connected
+                        </div>
+                    </div>
+                    
+                    <div class="health-metric">
+                        <div class="metric-label">Storage</div>
+                        <div class="metric-value" id="storage-status">
+                            <i class="fas fa-circle"></i>
+                            <span id="storage-usage">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="health-metric">
+                        <div class="metric-label">CDN</div>
+                        <div class="metric-value status-online">
+                            <i class="fas fa-circle"></i>
+                            Active
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        Platform Activity
+                    </h2>
+                </div>
+                
+                <div class="platform-activity" id="platform-activity">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="admin-actions">
+            <h3>Admin Actions</h3>
+            <div class="actions-grid">
+                <a href="/admin/users" class="action-card">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Manage Users</span>
+                </a>
+                <a href="/admin/courses" class="action-card">
+                    <i class="fas fa-book-medical"></i>
+                    <span>Manage Courses</span>
+                </a>
+                <a href="/admin/analytics" class="action-card">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="/admin/reports" class="action-card">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="/admin/settings" class="action-card">
+                    <i class="fas fa-cog"></i>
+                    <span>Platform Settings</span>
+                </a>
+                <a href="/admin/backup" class="action-card">
+                    <i class="fas fa-database"></i>
+                    <span>Backup & Restore</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- System Alerts -->
+        <div class="system-alerts" id="system-alerts">
+            <h3>
+                <i class="fas fa-exclamation-triangle"></i>
+                System Alerts
+            </h3>
+            <div class="alerts-list" id="alerts-list">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Management Modal -->
+<div id="user-modal" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 class="modal-title">User Details</h3>
+            <button type="button" class="modal-close" onclick="JooCourses.closeModal('user-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="user-details-content">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="JooCourses.closeModal('user-modal')">Close</button>
+            <button type="button" class="btn btn-primary" id="save-user-changes">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Course Management Modal -->
+<div id="course-modal" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 class="modal-title">Course Management</h3>
+            <button type="button" class="modal-close" onclick="JooCourses.closeModal('course-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="course-details-content">
+                <!-- Course details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="JooCourses.closeModal('course-modal')">Close</button>
+            <button type="button" class="btn btn-primary" id="save-course-changes">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/admin-dashboard.css">
+<% end %>
+
+<% contentFor('script') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/admin-dashboard.js"></script>
+<% end %>

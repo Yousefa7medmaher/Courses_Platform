@@ -1,11 +1,246 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    fjdbkfsb
-</body>
-</html>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">Instructor Dashboard</h1>
+        <p class="page-subtitle">Welcome back, <%= user.name %>! Manage your courses and track your teaching success.</p>
+    </div>
+</div>
+
+<!-- Dashboard Content -->
+<div class="page-content">
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-courses">0</div>
+                    <div class="stat-label">My Courses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-students">0</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="average-rating">0.0</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="total-earnings">$0</div>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Course Management -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        My Courses
+                    </h2>
+                    <a href="/instructor/courses/new" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i>
+                        Create Course
+                    </a>
+                </div>
+                
+                <div class="instructor-courses" id="instructor-courses">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Recent Enrollments -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        Recent Enrollments
+                    </h2>
+                </div>
+                
+                <div class="recent-enrollments" id="recent-enrollments">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Performance Analytics -->
+            <div class="dashboard-section full-width">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Performance Analytics
+                    </h2>
+                    <div class="analytics-controls">
+                        <select id="analytics-period" class="form-control">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 3 months</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="analytics-content">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Course Views</h4>
+                            <div class="chart-container">
+                                <canvas id="views-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-card">
+                            <h4>New Enrollments</h4>
+                            <div class="chart-container">
+                                <canvas id="enrollments-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-card">
+                            <h4>Revenue</h4>
+                            <div class="chart-container">
+                                <canvas id="revenue-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-card">
+                            <h4>Course Ratings</h4>
+                            <div class="ratings-breakdown" id="ratings-breakdown">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Reviews -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-comments"></i>
+                        Recent Reviews
+                    </h2>
+                </div>
+                
+                <div class="recent-reviews" id="recent-reviews">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Course Status -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        Course Status
+                    </h2>
+                </div>
+                
+                <div class="course-status-list" id="course-status">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                <a href="/instructor/courses/new" class="action-card">
+                    <i class="fas fa-plus"></i>
+                    <span>Create New Course</span>
+                </a>
+                <a href="/instructor/courses" class="action-card">
+                    <i class="fas fa-edit"></i>
+                    <span>Manage Courses</span>
+                </a>
+                <a href="/instructor/analytics" class="action-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>View Analytics</span>
+                </a>
+                <a href="/instructor/students" class="action-card">
+                    <i class="fas fa-users"></i>
+                    <span>My Students</span>
+                </a>
+                <a href="/instructor/earnings" class="action-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Earnings Report</span>
+                </a>
+                <a href="/profile" class="action-card">
+                    <i class="fas fa-user-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tips for Instructors -->
+        <div class="instructor-tips">
+            <h3>
+                <i class="fas fa-lightbulb"></i>
+                Tips for Success
+            </h3>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Create Engaging Videos</h4>
+                        <p>Keep videos concise and interactive to maintain student engagement.</p>
+                    </div>
+                </div>
+                
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Respond to Students</h4>
+                        <p>Actively engage with student questions and feedback.</p>
+                    </div>
+                </div>
+                
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Keep Content Updated</h4>
+                        <p>Regularly update your course content to stay current.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+<% end %>
+
+<% contentFor('script') %>
+<script src="/js/instructor-dashboard.js"></script>
+<% end %>

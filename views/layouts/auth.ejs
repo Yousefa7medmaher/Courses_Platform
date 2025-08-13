@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JooCourses - Professional Online Learning Platform">
+    <title><%= title || 'JooCourses - Learn. Grow. Succeed.' %></title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/auth-pages.css">
+    
+    <!-- Page-specific CSS -->
+    <%- style %>
+</head>
+<body class="auth-body">
+    <!-- Flash Messages -->
+    <% if (typeof messages !== 'undefined' && messages) { %>
+        <div id="flash-messages">
+            <% if (messages.success && messages.success.length > 0) { %>
+                <% messages.success.forEach(function(message) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+            
+            <% if (messages.error && messages.error.length > 0) { %>
+                <% messages.error.forEach(function(message) { %>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <%= message %>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    <% } %>
+
+    <!-- Auth Header -->
+    <header class="auth-header">
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>JooCourses</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="auth-main">
+        <%- body %>
+    </main>
+
+    <!-- Auth Footer -->
+    <footer class="auth-footer">
+        <div class="container">
+            <p>&copy; 2024 JooCourses. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Core JavaScript -->
+    <script src="/js/main.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <%- script %>
+</body>
+</html>

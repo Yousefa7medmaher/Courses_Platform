@@ -1,0 +1,452 @@
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <div class="container">
+        <ul class="breadcrumb-list">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/courses">Courses</a></li>
+            <li class="breadcrumb-item"><a href="/courses?category=<%= course.category %>"><%= course.category %></a></li>
+            <li class="breadcrumb-item active"><%= course.title %></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Course Details -->
+<div class="page-content">
+    <div class="container">
+        <div class="course-details-layout">
+            <!-- Main Content -->
+            <main class="course-main">
+                <!-- Course Header -->
+                <div class="course-header">
+                    <div class="course-header-content">
+                        <div class="course-meta">
+                            <span class="course-category"><%= course.category %></span>
+                            <div class="course-rating">
+                                <div class="stars">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= Math.floor(course.averageRating) ? 'active' : '' %>"></i>
+                                    <% } %>
+                                </div>
+                                <span class="rating-text">
+                                    <%= course.averageRating.toFixed(1) %> (<%= course.totalReviews %> reviews)
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <h1 class="course-title"><%= course.title %></h1>
+                        <p class="course-subtitle"><%= course.description %></p>
+                        
+                        <div class="course-instructor-info">
+                            <div class="instructor-avatar">
+                                <% if (course.instructor.photo) { %>
+                                    <img src="<%= course.instructor.photo %>" alt="<%= course.instructor.name %>">
+                                <% } else { %>
+                                    <div class="avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="instructor-details">
+                                <h3 class="instructor-name"><%= course.instructor.name %></h3>
+                                <p class="instructor-title">Course Instructor</p>
+                            </div>
+                        </div>
+                        
+                        <div class="course-stats-header">
+                            <div class="stat">
+                                <i class="fas fa-users"></i>
+                                <span><%= course.totalStudents %> students enrolled</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-clock"></i>
+                                <span><%= course.duration %> hours total</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-play-circle"></i>
+                                <span><%= course.videos ? course.videos.length : 0 %> videos</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-signal"></i>
+                                <span><%= course.level %> level</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-image">
+                        <% if (course.imageUrl) { %>
+                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
+                        <% } else { %>
+                            <div class="course-image-placeholder">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Course Content Tabs -->
+                <div class="course-tabs">
+                    <nav class="tabs-nav">
+                        <button class="tab-button active" data-tab="overview">
+                            <i class="fas fa-info-circle"></i>
+                            Overview
+                        </button>
+                        <button class="tab-button" data-tab="curriculum">
+                            <i class="fas fa-list"></i>
+                            Curriculum
+                        </button>
+                        <button class="tab-button" data-tab="instructor">
+                            <i class="fas fa-user"></i>
+                            Instructor
+                        </button>
+                        <button class="tab-button" data-tab="reviews">
+                            <i class="fas fa-star"></i>
+                            Reviews (<%= course.totalReviews %>)
+                        </button>
+                    </nav>
+
+                    <div class="tabs-content">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane active" id="overview">
+                            <div class="course-description">
+                                <h3>About This Course</h3>
+                                <p><%= course.description %></p>
+                            </div>
+
+                            <% if (course.tags && course.tags.length > 0) { %>
+                                <div class="course-tags-section">
+                                    <h3>Tags</h3>
+                                    <div class="course-tags">
+                                        <% course.tags.forEach(function(tag) { %>
+                                            <span class="tag">#<%= tag %></span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <div class="course-requirements">
+                                <h3>What You'll Learn</h3>
+                                <ul class="learning-objectives">
+                                    <li>Master the fundamentals and advanced concepts</li>
+                                    <li>Build real-world projects and applications</li>
+                                    <li>Gain practical skills for your career</li>
+                                    <li>Access to course materials and resources</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Curriculum Tab -->
+                        <div class="tab-pane" id="curriculum">
+                            <div class="curriculum-content">
+                                <% if (course.lessons && course.lessons.length > 0) { %>
+                                    <h3>Course Lessons</h3>
+                                    <div class="lessons-list">
+                                        <% course.lessons.forEach(function(lesson, index) { %>
+                                            <div class="lesson-item">
+                                                <div class="lesson-header">
+                                                    <div class="lesson-info">
+                                                        <span class="lesson-number"><%= index + 1 %></span>
+                                                        <h4 class="lesson-title"><%= lesson.title %></h4>
+                                                    </div>
+                                                    <div class="lesson-meta">
+                                                        <% if (lesson.duration) { %>
+                                                            <span class="lesson-duration">
+                                                                <i class="fas fa-clock"></i>
+                                                                <%= lesson.duration %>m
+                                                            </span>
+                                                        <% } %>
+                                                        <% if (lesson.videoUrl) { %>
+                                                            <span class="lesson-type">
+                                                                <i class="fas fa-play"></i>
+                                                                Video
+                                                            </span>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <% if (lesson.content) { %>
+                                                    <p class="lesson-description"><%= lesson.content.substring(0, 150) %>...</p>
+                                                <% } %>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                <% } %>
+
+                                <% if (course.videos && course.videos.length > 0) { %>
+                                    <h3>Course Videos</h3>
+                                    <div class="videos-list">
+                                        <% course.videos.forEach(function(video, index) { %>
+                                            <div class="video-item">
+                                                <div class="video-thumbnail">
+                                                    <% if (video.thumbnail) { %>
+                                                        <img src="<%= video.thumbnail %>" alt="<%= video.title %>">
+                                                    <% } else { %>
+                                                        <div class="video-placeholder">
+                                                            <i class="fas fa-play"></i>
+                                                        </div>
+                                                    <% } %>
+                                                    <span class="video-duration"><%= video.duration %>m</span>
+                                                </div>
+                                                <div class="video-info">
+                                                    <h4 class="video-title"><%= video.title %></h4>
+                                                    <span class="video-order">Video <%= video.order %></span>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Instructor Tab -->
+                        <div class="tab-pane" id="instructor">
+                            <div class="instructor-profile">
+                                <div class="instructor-header">
+                                    <div class="instructor-avatar-large">
+                                        <% if (course.instructor.photo) { %>
+                                            <img src="<%= course.instructor.photo %>" alt="<%= course.instructor.name %>">
+                                        <% } else { %>
+                                            <div class="avatar-placeholder">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="instructor-info">
+                                        <h3><%= course.instructor.name %></h3>
+                                        <p class="instructor-bio">Professional instructor with years of experience in <%= course.category.toLowerCase() %>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane" id="reviews">
+                            <div class="reviews-content">
+                                <% if (course.ratings && course.ratings.length > 0) { %>
+                                    <div class="reviews-summary">
+                                        <div class="rating-overview">
+                                            <div class="average-rating">
+                                                <span class="rating-number"><%= course.averageRating.toFixed(1) %></span>
+                                                <div class="stars-large">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <i class="fas fa-star <%= i <= Math.floor(course.averageRating) ? 'active' : '' %>"></i>
+                                                    <% } %>
+                                                </div>
+                                                <p><%= course.totalReviews %> reviews</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="reviews-list">
+                                        <% course.ratings.slice(0, 5).forEach(function(rating) { %>
+                                            <div class="review-item">
+                                                <div class="review-header">
+                                                    <div class="reviewer-info">
+                                                        <span class="reviewer-name"><%= rating.user.name %></span>
+                                                        <div class="review-rating">
+                                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                                <i class="fas fa-star <%= i <= rating.rating ? 'active' : '' %>"></i>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <span class="review-date"><%= new Date(rating.createdAt).toLocaleDateString() %></span>
+                                                </div>
+                                                <% if (rating.review) { %>
+                                                    <p class="review-text"><%= rating.review %></p>
+                                                <% } %>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                <% } else { %>
+                                    <div class="no-reviews">
+                                        <i class="fas fa-star"></i>
+                                        <h3>No reviews yet</h3>
+                                        <p>Be the first to review this course!</p>
+                                    </div>
+                                <% } %>
+
+                                <!-- Add Review Form (for enrolled students) -->
+                                <% if (typeof user !== 'undefined' && user && user.role === 'student' && typeof isEnrolled !== 'undefined' && isEnrolled) { %>
+                                    <div class="add-review-section">
+                                        <h3>Leave a Review</h3>
+                                        <form id="review-form" class="review-form">
+                                            <div class="form-group">
+                                                <label class="form-label">Rating</label>
+                                                <div class="rating-input" id="rating-input">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <button type="button" class="star-btn" data-rating="<%= i %>">
+                                                            <i class="fas fa-star"></i>
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+                                                <input type="hidden" name="rating" id="rating-value" required>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="review-text" class="form-label">Review (Optional)</label>
+                                                <textarea 
+                                                    id="review-text" 
+                                                    name="review" 
+                                                    class="form-control" 
+                                                    rows="4"
+                                                    placeholder="Share your thoughts about this course..."
+                                                    maxlength="1000"
+                                                ></textarea>
+                                                <div class="character-count">
+                                                    <span id="char-count">0</span>/1000 characters
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-star"></i>
+                                                Submit Review
+                                            </button>
+                                        </form>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="course-sidebar">
+                <div class="course-card-sidebar">
+                    <!-- Course Preview -->
+                    <div class="course-preview">
+                        <% if (course.imageUrl) { %>
+                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>" class="preview-image">
+                        <% } else { %>
+                            <div class="preview-placeholder">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        <% } %>
+                        
+                        <% if (course.videos && course.videos.length > 0) { %>
+                            <button class="preview-play" onclick="playPreview()">
+                                <i class="fas fa-play"></i>
+                                Preview Course
+                            </button>
+                        <% } %>
+                    </div>
+
+                    <!-- Price and Actions -->
+                    <div class="course-pricing">
+                        <div class="price-section">
+                            <% if (course.price === 0) { %>
+                                <span class="price-free">Free Course</span>
+                            <% } else { %>
+                                <span class="price-current">$<%= course.price %></span>
+                            <% } %>
+                        </div>
+
+                        <div class="course-actions">
+                            <% if (typeof user !== 'undefined' && user) { %>
+                                <% if (typeof isEnrolled !== 'undefined' && isEnrolled) { %>
+                                    <a href="/student/courses/<%= course._id %>" class="btn btn-success btn-block btn-lg">
+                                        <i class="fas fa-play"></i>
+                                        Continue Learning
+                                    </a>
+                                <% } else if (user.role === 'student') { %>
+                                    <button class="btn btn-primary btn-block btn-lg enroll-btn" data-course-id="<%= course._id %>">
+                                        <i class="fas fa-plus"></i>
+                                        Enroll Now
+                                    </button>
+                                <% } else if (typeof canEdit !== 'undefined' && canEdit) { %>
+                                    <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-edit"></i>
+                                        Edit Course
+                                    </a>
+                                <% } %>
+                                
+                                <button class="btn btn-outline btn-block wishlist-btn" data-course-id="<%= course._id %>">
+                                    <i class="far fa-heart"></i>
+                                    Add to Wishlist
+                                </button>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-primary btn-block btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login to Enroll
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Course Info -->
+                    <div class="course-info">
+                        <h4>Course Information</h4>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">Level:</span>
+                                <span class="info-value"><%= course.level %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Duration:</span>
+                                <span class="info-value"><%= course.duration %> hours</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Videos:</span>
+                                <span class="info-value"><%= course.videos ? course.videos.length : 0 %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Students:</span>
+                                <span class="info-value"><%= course.totalStudents %></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Language:</span>
+                                <span class="info-value">English</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Last Updated:</span>
+                                <span class="info-value"><%= new Date(course.updatedAt).toLocaleDateString() %></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Share Course -->
+                    <div class="course-share">
+                        <h4>Share This Course</h4>
+                        <div class="share-buttons">
+                            <button class="share-btn" data-platform="facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+                            <button class="share-btn" data-platform="twitter">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+                            <button class="share-btn" data-platform="linkedin">
+                                <i class="fab fa-linkedin-in"></i>
+                            </button>
+                            <button class="share-btn" data-platform="copy">
+                                <i class="fas fa-link"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Course Preview Modal -->
+<div id="preview-modal" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 class="modal-title">Course Preview</h3>
+            <button type="button" class="modal-close" onclick="JooCourses.closeModal('preview-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="video-container" id="preview-video-container">
+                <!-- Video will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<% contentFor('style') %>
+<link rel="stylesheet" href="/css/course-details.css">
+<% end %>
+
+<% contentFor('script') %>
+<script src="/js/course-details.js"></script>
+<% end %>

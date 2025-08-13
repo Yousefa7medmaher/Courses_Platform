@@ -1,0 +1,114 @@
+<div class="course-card" data-course-id="<%= course._id %>">
+    <div class="course-image">
+        <% if (course.imageUrl) { %>
+            <img src="<%= course.imageUrl %>" alt="<%= course.title %>" loading="lazy">
+        <% } else { %>
+            <div class="course-image-placeholder">
+                <i class="fas fa-book"></i>
+            </div>
+        <% } %>
+        
+        <div class="course-badges">
+            <span class="badge badge-<%= course.level.toLowerCase() %>"><%= course.level %></span>
+            <% if (course.price === 0) { %>
+                <span class="badge badge-success">Free</span>
+            <% } %>
+        </div>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+            <button class="course-wishlist" data-course-id="<%= course._id %>">
+                <i class="far fa-heart"></i>
+            </button>
+        <% } %>
+    </div>
+    
+    <div class="course-content">
+        <div class="course-meta">
+            <span class="course-category"><%= course.category %></span>
+            <div class="course-rating">
+                <div class="stars">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= Math.floor(course.averageRating) ? 'active' : '' %>"></i>
+                    <% } %>
+                </div>
+                <span class="rating-text">
+                    <%= course.averageRating.toFixed(1) %> (<%= course.totalReviews %>)
+                </span>
+            </div>
+        </div>
+        
+        <h3 class="course-title">
+            <a href="/courses/<%= course._id %>"><%= course.title %></a>
+        </h3>
+        
+        <p class="course-description">
+            <%= course.description.length > 120 ? course.description.substring(0, 120) + '...' : course.description %>
+        </p>
+        
+        <div class="course-instructor">
+            <% if (course.instructor.photo) { %>
+                <img src="<%= course.instructor.photo %>" alt="<%= course.instructor.name %>" class="instructor-avatar">
+            <% } else { %>
+                <div class="instructor-avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            <% } %>
+            <span class="instructor-name"><%= course.instructor.name %></span>
+        </div>
+        
+        <div class="course-stats">
+            <div class="stat">
+                <i class="fas fa-users"></i>
+                <span><%= course.totalStudents %> students</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-clock"></i>
+                <span><%= course.duration %>h total</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-play-circle"></i>
+                <span><%= course.videos ? course.videos.length : 0 %> videos</span>
+            </div>
+        </div>
+
+        <% if (course.tags && course.tags.length > 0) { %>
+            <div class="course-tags">
+                <% course.tags.slice(0, 3).forEach(function(tag) { %>
+                    <span class="tag">#<%= tag %></span>
+                <% }); %>
+                <% if (course.tags.length > 3) { %>
+                    <span class="tag-more">+<%= course.tags.length - 3 %> more</span>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+    
+    <div class="course-footer">
+        <div class="course-price">
+            <% if (course.price === 0) { %>
+                <span class="price-free">Free</span>
+            <% } else { %>
+                <span class="price">$<%= course.price %></span>
+            <% } %>
+        </div>
+        
+        <div class="course-actions">
+            <% if (typeof user !== 'undefined' && user && typeof isEnrolled !== 'undefined' && isEnrolled) { %>
+                <a href="/student/courses/<%= course._id %>" class="btn btn-success btn-sm">
+                    <i class="fas fa-play"></i>
+                    Continue Learning
+                </a>
+            <% } else if (typeof user !== 'undefined' && user && user.role === 'student') { %>
+                <button class="btn btn-primary btn-sm enroll-btn" data-course-id="<%= course._id %>">
+                    <i class="fas fa-plus"></i>
+                    Enroll Now
+                </button>
+            <% } else { %>
+                <a href="/courses/<%= course._id %>" class="btn btn-primary btn-sm">
+                    <i class="fas fa-eye"></i>
+                    View Details
+                </a>
+            <% } %>
+        </div>
+    </div>
+</div>

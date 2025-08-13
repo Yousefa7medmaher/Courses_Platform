@@ -1,81 +1,200 @@
-import { sendResponse } from '../utils/sendResponse.js';
-import * as userService from '../Services/userService.js';
+import authService from '../services/authService.js';
 
-export async function addUser(req, res, next) {
-  try {
-    const { name, email, password } = req.body;
-    const photo = req.file ? req.file.path : req.body.photo || "";
- 
-    const user = await userService.registerUser({ name, email, password, photo });
-    return sendResponse(res, 201, "User created successfully", user);
-  } catch (err) {
-    next(err);
-  }
-}
+class UserController {
+  async getAllUsers(req, res) {
+    try {
+      const filters = {
+        role: req.query.role,
+        search: req.query.search
+      };
 
-export async function showAllUsers(req, res, next) {
-  try {
-    const users = await userService.getAllUsers();
-    return sendResponse(res, 200, "Show all users", users);
-  } catch (err) {
-    next(err);
-  }
-}
+      const pagination = {
+        page: req.query.page,
+        limit: req.query.limit
+      };
 
-export async function updateUser(req, res, next) {
-  try {
-    const updatedUser = await userService.updateUser(req.params.id, req.body);
-    return sendResponse(res, 200, "User updated successfully", updatedUser);
-  } catch (err) {
-    next(err);
-  }
-}
-export async function getUserById(req, res, next) {
-  try {
-    const user = await userService.getUserById(req.params.id);
-    return sendResponse(res, 200, "User found successfully", user);
-  } catch (err) {
-    next(err);
-  }
-}
+      const result = await authService.getAllUsers(filters, pagination);
 
-export async function profile(req, res, next) {
-  try { 
-    const user = await userService.getUserById(req.user.userId);
-    return sendResponse(res, 200, "User found successfully", user);
-  } catch (err) {
-    next(err);
-  }
-}
-export async function changePassword(req, res, next) {
-  try {
-    await userService.changePassword(req.params.id, req.body);
-    return sendResponse(res, 200, "Password updated successfully");
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function deleteUser(req, res, next) {
-  try {
-    await userService.deleteUser(req.params.id);
-    return sendResponse(res, 200, "User deleted successfully");
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function updateImg(req, res, next) {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Photo file is required" });
+      res.status(200).json({
+        success: true,
+        message: 'Users retrieved successfully',
+        data: result
+      });
+    } catch (error) {
+      console.error('Error retrieving users:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
     }
-    const updatedUser = await userService.updateImg(req.params.id, req.file.path);
-    return res.status(200).json({
-      message: "User updated successfully",
-      data: updatedUser
-    });
-  } catch (err) {
-    next(err);
+  }
+
+  async getUserById(req, res) {
+    try {
+      const user = await authService.getUserById(req.params.id);
+
+      res.status(200).json({
+        success: true,
+        message: 'User retrieved successfully',
+        data: { user }
+      });
+    } catch (error) {
+      console.error('Error retrieving user:', error);
+      res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async updateUser(req, res) {
+    try {
+      const updateData = { ...req.body };
+
+      if (req.file) {
+        updateData.photo = req.file.path || `/uploads/${req.file.filename}`;
+      }
+
+      const user = await authService.updateUserProfile(req.params.id, updateData);
+
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully',
+        data: { user }
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async deleteUser(req, res) {
+    try {
+      if (req.params.id === req.user.id) {
+        return res.status(400).json({
+          success: false,
+          message: 'You cannot delete your own account'
+        });
+      }
+
+      const User = (await import('../models/usermodel.js')).default;
+      const user = await User.findByIdAndDelete(req.params.id);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully'
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async updateUserRole(req, res) {
+    try {
+      const { role } = req.body;
+
+      if (!role || !['student', 'instructor', 'admin'].includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Valid role is required (student, instructor, or admin)'
+        });
+      }
+
+      if (req.params.id === req.user.id) {
+        return res.status(400).json({
+          success: false,
+          message: 'You cannot change your own role'
+        });
+      }
+
+      const User = (await import('../models/usermodel.js')).default;
+      const user = await User.findByIdAndUpdate(
+        req.params.id,
+        { role },
+        { new: true, runValidators: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'User role updated successfully',
+        data: { user }
+      });
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getUserStats(req, res) {
+    try {
+      const User = (await import('../models/usermodel.js')).default;
+      const CourseModel = (await import('../models/coursemodel.js')).default;
+
+      const [
+        totalUsers,
+        totalStudents,
+        totalInstructors,
+        totalAdmins,
+        totalCourses,
+        recentUsers
+      ] = await Promise.all([
+        User.countDocuments(),
+        User.countDocuments({ role: 'student' }),
+        User.countDocuments({ role: 'instructor' }),
+        User.countDocuments({ role: 'admin' }),
+        CourseModel.countDocuments(),
+        User.find()
+          .select('-password')
+          .sort({ createdAt: -1 })
+          .limit(10)
+      ]);
+
+      const stats = {
+        totalUsers,
+        totalStudents,
+        totalInstructors,
+        totalAdmins,
+        totalCourses,
+        recentUsers
+      };
+
+      res.status(200).json({
+        success: true,
+        message: 'User statistics retrieved successfully',
+        data: { stats }
+      });
+    } catch (error) {
+      console.error('Error retrieving user stats:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
   }
 }
+
+export default new UserController();
