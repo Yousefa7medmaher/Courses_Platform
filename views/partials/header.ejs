@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JooCourses - Dark Theme Header</title> 
+    <link rel="stylesheet" href="/css/header.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>JooCourses</h1>
+            
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav" id="desktopNav">
+                <a href="/" class="nav-item-home">Home</a> 
+                <a href="/courses" class="nav-item-courses">Courses</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.role === 'student') { %>
+                        <a href="/Student_Dashboard" class="nav-item-student-dashboard">Student Dashboard</a>
+                    <% } else if (user.role === 'instructor') { %>
+                        <a href="/instructor_Dashboard" class="nav-item-instructor-dashboard">Instructor Dashboard</a>
+                    <% } else if (user.role === 'manager') { %>
+                        <a href="/manager_Dashboard" class="nav-item-manager-dashboard">Manager Dashboard</a>
+                    <% } %>
+                    <a href="#" class="nav-item-logout" id="logoutBtn">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="nav-item-login">Login</a>
+                    <a href="/register" class="nav-item-register">Register</a>
+                <% } %>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <h2>Menu</h2>
+            <button class="close-sidebar" onclick="toggleMobileMenu()">×</button>
+        </div>
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="/" class="nav-item-home" onclick="closeMobileMenu()">Home</a>
+            <a href="/courses" class="nav-item-courses" onclick="closeMobileMenu()">Courses</a>
+            <% if (typeof user !== 'undefined' && user) { %>
+                <% if (user.role === 'student') { %>
+                    <a href="/Student_Dashboard" class="nav-item-student-dashboard" onclick="closeMobileMenu()">Student Dashboard</a>
+                <% } else if (user.role === 'instructor') { %>
+                    <a href="/instructor_Dashboard" class="nav-item-instructor-dashboard" onclick="closeMobileMenu()">Instructor Dashboard</a>
+                <% } else if (user.role === 'manager') { %>
+                    <a href="/manager_Dashboard" class="nav-item-manager-dashboard" onclick="closeMobileMenu()">Manager Dashboard</a>
+                <% } %>
+                <a href="#" class="nav-item-logout" id="logoutBtnMobile" onclick="closeMobileMenu()">Logout</a>
+            <% } else { %>
+                <a href="/login" class="nav-item-login" onclick="closeMobileMenu()">Login</a>
+                <a href="/register" class="nav-item-register" onclick="closeMobileMenu()">Register</a>
+            <% } %>
+        </nav>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+ 
+    <script>
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('overlay');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('overlay');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            toggle.classList.remove('active');
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('mobileSidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (!sidebar.contains(event.target) && !toggle.contains(event.target) && sidebar.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Attach logout handler for both desktop and mobile logout buttons
+        function attachLogoutHandlers() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+            async function doLogout(e) {
+                e.preventDefault();
+                try {
+                    // Call backend logout endpoint
+                    await fetch('https://localhost:5000/api/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                } catch (err) {
+                    // Ignore errors, proceed with client-side cleanup
+                }
+                // Remove tokens/cookies (as in login.js)
+                document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                sessionStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+            if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+            if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', doLogout);
+        }
+
+        // Attach logout handlers on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            attachLogoutHandlers();
+        });
+
+        // --- Dynamic Navbar based on login.js logic (client-side fallback) ---
+        // This is a progressive enhancement: if user is not set server-side, try to detect from sessionStorage (as in login.js)
+    </script>
+    <% if (!(typeof user !== 'undefined' && user)) { %>
+    <script>
+        (function() {
+            function getUserFromSession() {
+                try {
+                    const userStr = sessionStorage.getItem('user');
+                    if (!userStr) return null;
+                    return JSON.parse(userStr);
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function updateNavbars(user) {
+                // Desktop Nav
+                const desktopNav = document.getElementById('desktopNav');
+                const mobileNav = document.getElementById('mobileNav');
+                if (!desktopNav || !mobileNav) return;
+
+                let desktopHtml = `
+                    <a href="/" class="nav-item-home">Home</a>
+                    <a href="/courses" class="nav-item-courses">Courses</a>
+                `;
+                let mobileHtml = `
+                    <a href="/" class="nav-item-home" onclick="closeMobileMenu()">Home</a>
+                    <a href="/courses" class="nav-item-courses" onclick="closeMobileMenu()">Courses</a>
+                `;
+
+                if (user && user.role) {
+                    if (user.role === 'student') {
+                        desktopHtml += `<a href="/Student_Dashboard" class="nav-item-student-dashboard">Student Dashboard</a>`;
+                        mobileHtml += `<a href="/Student_Dashboard" class="nav-item-student-dashboard" onclick="closeMobileMenu()">Student Dashboard</a>`;
+                    } else if (user.role === 'instructor') {
+                        desktopHtml += `<a href="/instructor_Dashboard" class="nav-item-instructor-dashboard">Instructor Dashboard</a>`;
+                        mobileHtml += `<a href="/instructor_Dashboard" class="nav-item-instructor-dashboard" onclick="closeMobileMenu()">Instructor Dashboard</a>`;
+                    } else if (user.role === 'manager') {
+                        desktopHtml += `<a href="/manager_Dashboard" class="nav-item-manager-dashboard">Manager Dashboard</a>`;
+                        mobileHtml += `<a href="/manager_Dashboard" class="nav-item-manager-dashboard" onclick="closeMobileMenu()">Manager Dashboard</a>`;
+                    }
+                    desktopHtml += `<a href="#" class="nav-item-logout" id="logoutBtn">Logout</a>`;
+                    mobileHtml += `<a href="#" class="nav-item-logout" id="logoutBtnMobile" onclick="closeMobileMenu()">Logout</a>`;
+                } else {
+                    desktopHtml += `<a href="/login" class="nav-item-login">Login</a>
+                                    <a href="/register" class="nav-item-register">Register</a>`;
+                    mobileHtml += `<a href="/login" class="nav-item-login" onclick="closeMobileMenu()">Login</a>
+                                   <a href="/register" class="nav-item-register" onclick="closeMobileMenu()">Register</a>`;
+                }
+
+                desktopNav.innerHTML = desktopHtml;
+                mobileNav.innerHTML = mobileHtml;
+
+                // Attach logout handler if present
+                attachLogoutHandlers();
+            }
+
+            // Attach logout handler for both desktop and mobile logout buttons
+            function attachLogoutHandlers() {
+                const logoutBtn = document.getElementById('logoutBtn');
+                const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+                async function doLogout(e) {
+                    e.preventDefault();
+                    try {
+                        // Call backend logout endpoint
+                        await fetch('https://localhost:5000/api/logout', {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+                    } catch (err) {
+                        // Ignore errors, proceed with client-side cleanup
+                    }
+                    // Remove tokens/cookies (as in login.js)
+                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    sessionStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
+                if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+                if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', doLogout);
+            }
+
+            // On page load, try to update navbars
+            document.addEventListener('DOMContentLoaded', function() {
+                const user = getUserFromSession();
+                updateNavbars(user);
+            });
+        })();
+    </script>
+    <% } %>
+</body>
+</html>

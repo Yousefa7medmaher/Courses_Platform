@@ -1,0 +1,135 @@
+/* Authentication Pages - Background Fix */
+
+/* Ensure full viewport coverage for auth pages */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Apply background to entire page for auth pages */
+body.login-page,
+body.register-page {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  height: 100%;
+}
+
+/* Ensure main content fills viewport */
+body.login-page main,
+body.register-page main {
+  background: transparent;
+  min-height: 100vh;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Make wrappers fill the viewport */
+.login-wrapper,
+.register-wrapper {
+  min-height: 100vh;
+  height: 100%;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Ensure header and footer are positioned correctly */
+body.login-page header,
+body.register-page header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+body.login-page .site-footer,
+body.register-page .site-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  margin-top: 0;
+}
+
+/* Adjust main content to account for fixed header/footer */
+body.login-page .login-wrapper,
+body.register-page .register-wrapper {
+  padding-top: 80px; /* Adjust based on header height */
+  padding-bottom: 60px; /* Adjust based on footer height */
+  min-height: calc(100vh - 140px);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  body.login-page .login-wrapper,
+  body.register-page .register-wrapper {
+    padding-top: 70px;
+    padding-bottom: 50px;
+    min-height: calc(100vh - 120px);
+  }
+
+  body.login-page header,
+  body.register-page header {
+    padding: 1rem;
+  }
+
+  body.login-page .site-footer,
+  body.register-page .site-footer {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body.login-page .login-wrapper,
+  body.register-page .register-wrapper {
+    padding-top: 60px;
+    padding-bottom: 40px;
+    min-height: calc(100vh - 100px);
+  }
+
+  body.login-page header,
+  body.register-page header {
+    padding: 0.8rem;
+  }
+
+  body.login-page .site-footer,
+  body.register-page .site-footer {
+    padding: 0.8rem;
+  }
+}
+
+/* Remove any default margins that might cause gaps */
+body.login-page * {
+  margin-top: 0;
+}
+
+body.register-page * {
+  margin-top: 0;
+}
+
+/* Ensure seamless background coverage */
+body.login-page::before,
+body.register-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  z-index: -1;
+}

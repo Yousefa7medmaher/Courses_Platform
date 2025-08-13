@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'JooCourses' %></title>
+  <link rel="stylesheet" href="/css/layouts.css">
+  <link rel="stylesheet" href="/css/mobile-fixes.css">
+</head>
+<body class="<%= typeof bodyClass !== 'undefined' ? bodyClass : '' %>">
+  <%- include('../partials/header.ejs') %>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <%- include('../partials/footer.ejs') %>
+</body>
+</html>

@@ -1,0 +1,99 @@
+/* Modern Layout Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #e0e6ed;
+  min-height: 100vh;
+}
+
+/* Ensure main content fills available space */
+main {
+  flex: 1 0 auto;
+  width: 100%;
+  position: relative;
+  background: inherit;
+  min-height: calc(100vh - 140px); /* Adjust based on header + footer height */
+}
+
+/* For login and register pages specifically */
+.login-wrapper,
+.register-wrapper {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100%;
+}
+
+/* Ensure footer stays at bottom */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* Remove any potential gaps between sections */
+header, main, footer {
+  display: block;
+  width: 100%;
+}
+
+/* Ensure no margin/padding gaps */
+header {
+  margin-bottom: 0;
+}
+
+main {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+}
+
+.site-footer {
+  margin-top: 0;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+  transition: all 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+
+/* Custom selection colors */
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #ffffff;
+}
