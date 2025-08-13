@@ -84,37 +84,15 @@
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-photo">
-                        <img src="/images/team/ceo.jpg" alt="CEO" class="img-fluid">
+                        <img src="/images/jooahmed.png" alt="Yousef Ahmed Elazaly" class="img-fluid">
                     </div>
-                    <h3 class="member-name">Sarah Johnson</h3>
-                    <p class="member-role">Chief Executive Officer</p>
+                    <h3 class="member-name">Yousef Ahmed Elazaly</h3>
+                    <p class="member-role">Founder & CEO</p>
                     <p class="member-bio">
-                        Sarah has over 15 years of experience in educational technology and is passionate about 
-                        making quality education accessible to all.
-                    </p>
-                </div>
-                
-                <div class="team-member">
-                    <div class="member-photo">
-                        <img src="/images/team/cto.jpg" alt="CTO" class="img-fluid">
-                    </div>
-                    <h3 class="member-name">Michael Chen</h3>
-                    <p class="member-role">Chief Technology Officer</p>
-                    <p class="member-bio">
-                        Michael leads our technical team with expertise in scalable web applications and 
-                        innovative learning technologies.
-                    </p>
-                </div>
-                
-                <div class="team-member">
-                    <div class="member-photo">
-                        <img src="/images/team/ceo.jpg" alt="Head of Education" class="img-fluid">
-                    </div>
-                    <h3 class="member-name">Dr. Emily Rodriguez</h3>
-                    <p class="member-role">Head of Education</p>
-                    <p class="member-bio">
-                        Dr. Rodriguez ensures our platform maintains the highest educational standards and 
-                        pedagogical best practices.
+                        Yousef Ahmed Elazaly is the visionary behind JooCourses, leading the platform with a mission to 
+                        make high-quality education accessible to everyone worldwide. With a strong background in fullstack 
+                        development, DevOps, and system design, he ensures the platform is both innovative and reliable. 
+                        His passion is empowering learners and instructors alike to achieve their fullest potential.
                     </p>
                 </div>
             </div>
@@ -160,6 +138,14 @@
 </div>
 
 <style>
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.705);
+}
+
+.page-title { 
+    color: white; 
+}
+
 .about-section {
     margin-bottom: var(--spacing-4xl);
 }
@@ -228,9 +214,8 @@
 }
 
 .team-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-2xl);
+    display: flex;
+    justify-content: center;
     margin-top: var(--spacing-2xl);
 }
 
@@ -240,6 +225,8 @@
     background: var(--bg-primary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    max-width: 400px;
+    width: 100%;
 }
 
 .member-photo {
@@ -338,14 +325,24 @@
 
 @media (max-width: 768px) {
     .values-grid,
-    .team-grid,
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .row {
+        flex-direction: column;
     }
     
     .cta-actions {
         flex-direction: column;
         align-items: center;
     }
+    
+    .team-member {
+        max-width: none;
+    }
 }
 </style>
+
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

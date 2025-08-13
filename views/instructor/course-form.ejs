@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Form validation
+    // Form validation and processing
     const form = document.getElementById('courseForm');
     form.addEventListener('submit', function(e) {
         const title = document.getElementById('title').value.trim();
@@ -475,13 +475,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const category = document.getElementById('category').value;
         const level = document.getElementById('level').value;
         const price = document.getElementById('price').value;
-        
+        const tagsInput = document.getElementById('tags');
+
         if (!title || !description || !category || !level || !price) {
             e.preventDefault();
             alert('Please fill in all required fields.');
             return false;
         }
-        
+
+        // Process tags before submission
+        if (tagsInput && tagsInput.value.trim()) {
+            const tagsValue = tagsInput.value.trim();
+            let tags = [];
+
+            try {
+                // Try to parse as JSON first
+                tags = JSON.parse(tagsValue);
+            } catch (e) {
+                // If not JSON, treat as comma-separated string
+                tags = tagsValue.split(',').map(tag => tag.trim()).filter(tag => tag);
+            }
+
+            // Validate tag count
+            if (tags.length > 10) {
+                e.preventDefault();
+                alert('Maximum 10 tags allowed. You have ' + tags.length + ' tags.');
+                return false;
+            }
+
+            // Set the processed tags back to the input
+            tagsInput.value = tags.join(', ');
+        }
+
         // Show loading state
         const submitButtons = form.querySelectorAll('button[type="submit"]');
         submitButtons.forEach(btn => {
@@ -489,5 +514,26 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         });
     });
+
+    // Add tags input helper
+    const tagsInput = document.getElementById('tags');
+    if (tagsInput) {
+        tagsInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value) {
+                const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                if (tags.length > 10) {
+                    alert('Maximum 10 tags allowed. Please remove ' + (tags.length - 10) + ' tags.');
+                    this.focus();
+                } else {
+                    // Clean up the tags display
+                    this.value = tags.join(', ');
+                }
+            }
+        });
+
+        // Add placeholder text
+        tagsInput.placeholder = 'e.g., javascript, web development, programming (max 10 tags)';
+    }
 });
 </script>

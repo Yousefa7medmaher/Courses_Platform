@@ -83,10 +83,38 @@ export const validateCourse = [
     .isFloat({ min: 0.5 })
     .withMessage('Duration must be at least 0.5 hours'),
   
-  // body('tags')
-  //   .optional()
-  //   .isArray({ max:50 })
-  //   .withMessage('Maximum 10 tags allowed'),
+  body('tags')
+    .optional()
+    .custom((value) => {
+      if (typeof value === 'string') {
+        try {
+          // Try to parse as JSON first
+          const parsed = JSON.parse(value);
+          if (!Array.isArray(parsed)) {
+            throw new Error('Tags must be an array');
+          }
+          if (parsed.length > 10) {
+            throw new Error('Maximum 10 tags allowed');
+          }
+          return true;
+        } catch (e) {
+          // If not JSON, treat as comma-separated string
+          const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+          if (tags.length > 10) {
+            throw new Error('Maximum 10 tags allowed');
+          }
+          return true;
+        }
+      } else if (Array.isArray(value)) {
+        if (value.length > 10) {
+          throw new Error('Maximum 10 tags allowed');
+        }
+        return true;
+      } else if (value === null || value === undefined || value === '') {
+        return true; // Allow empty tags
+      }
+      throw new Error('Tags must be an array or comma-separated string');
+    }),
   
   handleValidationErrors
 ];

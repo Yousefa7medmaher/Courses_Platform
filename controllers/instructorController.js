@@ -207,6 +207,11 @@ class InstructorController {
         }
       }
 
+      // Validate tags count
+      if (courseData.tags && courseData.tags.length > 10) {
+        throw new Error('Maximum 10 tags allowed');
+      }
+
       const course = await instructorService.createCourse(courseData, instructorId);
 
       if (req.originalUrl.startsWith('/api/')) {
@@ -257,6 +262,11 @@ class InstructorController {
         } catch (e) {
           updateData.tags = updateData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
         }
+      }
+
+      // Validate tags count
+      if (updateData.tags && updateData.tags.length > 10) {
+        throw new Error('Maximum 10 tags allowed');
       }
 
       const course = await instructorService.updateCourse(courseId, updateData, instructorId);

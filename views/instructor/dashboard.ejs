@@ -4,11 +4,38 @@
     <div class="dashboard-header">
         <div class="container">
             <div class="header-content">
-                <div class="welcome-section">
-                    <h1 class="dashboard-title">Welcome back, <%= user.name %>!</h1>
-                    <p class="dashboard-subtitle">Manage your courses and track your teaching progress</p>
+                <div class="instructor-profile-section">
+                    <div class="instructor-avatar">
+                        <% if (user.photo) { %>
+                            <img src="<%= user.photo %>" alt="<%= user.name %>" class="profile-image">
+                        <% } else { %>
+                            <div class="profile-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="welcome-section">
+                        <h1 class="dashboard-title">Welcome back, <%= user.name %>!</h1>
+                        <p class="dashboard-subtitle">Manage your courses and track your teaching progress</p>
+                        <div class="instructor-info">
+                            <span class="instructor-role">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                Instructor
+                            </span>
+                            <% if (user.location) { %>
+                                <span class="instructor-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <%= user.location %>
+                                </span>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
                 <div class="header-actions">
+                    <a href="/profile" class="btn btn-outline">
+                        <i class="fas fa-user-edit"></i>
+                        Edit Profile
+                    </a>
                     <a href="/instructor/courses/new" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
                         Create New Course
@@ -83,6 +110,25 @@
                     <div class="stat-content">
                         <div class="stat-number"><%= stats.totalReviews %></div>
                         <div class="stat-label">Total Reviews</div>
+                    </div>
+                </div>
+
+                <!-- Quick Course Actions -->
+                <div class="stat-card quick-actions-card">
+                    <div class="stat-icon actions">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="quick-actions-list">
+                            <a href="/instructor/courses/new" class="quick-action-btn">
+                                <i class="fas fa-plus"></i>
+                                New Course
+                            </a>
+                            <a href="/instructor/courses" class="quick-action-btn">
+                                <i class="fas fa-list"></i>
+                                All Courses
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -256,6 +302,58 @@
     gap: var(--spacing-xl);
 }
 
+.instructor-profile-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.instructor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.instructor-avatar .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.instructor-avatar .profile-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 2rem;
+}
+
+.instructor-info {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.instructor-role,
+.instructor-location {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.instructor-role i,
+.instructor-location i {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .dashboard-title {
     font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-bold);
@@ -320,6 +418,36 @@
 .stat-icon.revenue { background: var(--warning); }
 .stat-icon.rating { background: #fbbf24; }
 .stat-icon.reviews { background: var(--secondary); }
+.stat-icon.actions { background: #8b5cf6; }
+
+.quick-actions-card {
+    grid-column: span 2;
+}
+
+.quick-actions-list {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--primary);
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
+}
+
+.quick-action-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
 
 .stat-number {
     font-size: var(--font-size-2xl);

@@ -3,55 +3,135 @@
     <!-- Page Header -->
     <div class="page-header">
         <div class="container">
+            <!-- Breadcrumb Navigation -->
+            <div class="breadcrumb-nav">
+                <a href="/instructor/dashboard" class="breadcrumb-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <a href="/instructor/courses" class="breadcrumb-link">My Courses</a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <span class="breadcrumb-current">Course Details</span>
+            </div>
+
             <div class="header-content">
                 <div class="course-info">
-                    <div class="course-image">
-                        <% if (course.imageUrl) { %>
-                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
-                        <% } else { %>
-                            <div class="course-placeholder">
-                                <i class="fas fa-book"></i>
+                    <div class="course-image-container">
+                        <div class="course-image">
+                            <% if (course.imageUrl) { %>
+                                <img src="<%= course.imageUrl %>" alt="<%= course.title %>" class="course-img">
+                            <% } else { %>
+                                <div class="course-placeholder">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            <% } %>
+                            <div class="course-status-badge status-<%= course.status %>">
+                                <i class="fas fa-<%= course.status === 'published' ? 'globe' : course.status === 'pending' ? 'clock' : 'edit' %>"></i>
+                                <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
                             </div>
-                        <% } %>
-                        <div class="course-status-badge status-<%= course.status %>">
-                            <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
+                        </div>
+                        <div class="image-overlay">
+                            <a href="/instructor/courses/<%= course._id %>/edit" class="overlay-btn">
+                                <i class="fas fa-camera"></i>
+                                Change Image
+                            </a>
                         </div>
                     </div>
                     <div class="course-meta">
-                        <h1 class="course-title"><%= course.title %></h1>
+                        <div class="course-header">
+                            <h1 class="course-title"><%= course.title %></h1>
+                            <div class="course-badges">
+                                <span class="category-badge">
+                                    <i class="fas fa-tag"></i>
+                                    <%= course.category %>
+                                </span>
+                                <span class="level-badge level-<%= course.level.toLowerCase() %>">
+                                    <i class="fas fa-signal"></i>
+                                    <%= course.level %>
+                                </span>
+                            </div>
+                        </div>
                         <p class="course-description"><%= course.description %></p>
                         <div class="course-stats">
                             <div class="stat">
-                                <i class="fas fa-users"></i>
-                                <span><%= course.totalStudents || 0 %> students</span>
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number"><%= course.totalStudents || 0 %></span>
+                                    <span class="stat-label">Students</span>
+                                </div>
                             </div>
                             <div class="stat">
-                                <i class="fas fa-star"></i>
-                                <span><%= (course.averageRating || 0).toFixed(1) %> (<%= course.totalReviews || 0 %> reviews)</span>
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number"><%= (course.averageRating || 0).toFixed(1) %></span>
+                                    <span class="stat-label"><%= course.totalReviews || 0 %> Reviews</span>
+                                </div>
                             </div>
                             <div class="stat">
-                                <i class="fas fa-dollar-sign"></i>
-                                <span>$<%= course.price || 0 %></span>
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number">$<%= course.price || 0 %></span>
+                                    <span class="stat-label">Price</span>
+                                </div>
                             </div>
                             <div class="stat">
-                                <i class="fas fa-calendar"></i>
-                                <span>Created <%= new Date(course.createdAt).toLocaleDateString() %></span>
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number"><%= new Date(course.createdAt).toLocaleDateString() %></span>
+                                    <span class="stat-label">Created</span>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Tags Display -->
+                        <% if (course.tags && course.tags.length > 0) { %>
+                            <div class="course-tags">
+                                <% course.tags.forEach(tag => { %>
+                                    <span class="tag">#<%= tag %></span>
+                                <% }); %>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
                 <div class="header-actions">
-                    <a href="/instructor/courses" class="btn btn-outline">
-                        <i class="fas fa-arrow-left"></i>
-                        Back to Courses
-                    </a>
-                    <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary">
-                        <i class="fas fa-edit"></i>
-                        Edit Course
-                    </a>
+                    <div class="action-buttons">
+                        <a href="/instructor/courses" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Courses
+                        </a>
+                        <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                            Edit Course
+                        </a>
+                        <% if (course.status !== 'published') { %>
+                            <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-globe"></i>
+                                    Publish Course
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-eye-slash"></i>
+                                    Unpublish
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+
                     <div class="dropdown">
                         <button class="btn btn-outline dropdown-toggle" type="button">
-                            <i class="fas fa-ellipsis-v"></i>
+                            <i class="fas fa-cog"></i>
                             More Actions
                         </button>
                         <div class="dropdown-menu">
@@ -63,16 +143,18 @@
                                 <i class="fas fa-video"></i>
                                 Manage Videos
                             </a>
+                            <a class="dropdown-item" href="/courses/<%= course._id %>" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                View Public Page
+                            </a>
                             <div class="dropdown-divider"></div>
-                            <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
-                                <button type="submit" class="dropdown-item">
-                                    <i class="fas fa-<%= course.status === 'published' ? 'eye-slash' : 'globe' %>"></i>
-                                    <%= course.status === 'published' ? 'Unpublish' : 'Publish' %>
-                                </button>
-                            </form>
+                            <a class="dropdown-item" href="/instructor/courses/<%= course._id %>/analytics">
+                                <i class="fas fa-chart-bar"></i>
+                                View Analytics
+                            </a>
                             <div class="dropdown-divider"></div>
-                            <form method="POST" action="/instructor/courses/<%= course._id %>/delete" 
-                                  onsubmit="return confirm('Are you sure you want to delete this course?')" style="display: inline;">
+                            <form method="POST" action="/instructor/courses/<%= course._id %>/delete"
+                                  onsubmit="return confirm('Are you sure you want to delete this course? This action cannot be undone.')" style="display: inline;">
                                 <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-trash"></i>
                                     Delete Course
@@ -336,7 +418,53 @@
 .page-header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: var(--text-white);
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-xl) 0 var(--spacing-2xl) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    position: relative;
+    z-index: 2;
+}
+
+.breadcrumb-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: color var(--transition-fast);
+}
+
+.breadcrumb-link:hover {
+    color: var(--text-white);
+}
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: var(--font-size-xs);
+}
+
+.breadcrumb-current {
+    color: var(--text-white);
+    font-weight: var(--font-weight-medium);
 }
 
 .header-content {
@@ -344,6 +472,8 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--spacing-2xl);
+    position: relative;
+    z-index: 2;
 }
 
 .course-info {
@@ -352,19 +482,30 @@
     flex: 1;
 }
 
-.course-image {
+.course-image-container {
     position: relative;
-    width: 200px;
-    height: 120px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
     flex-shrink: 0;
 }
 
-.course-image img {
+.course-image {
+    position: relative;
+    width: 280px;
+    height: 180px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.course-image .course-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--transition-normal);
+}
+
+.course-image:hover .course-img {
+    transform: scale(1.05);
 }
 
 .course-placeholder {
@@ -374,27 +515,88 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 3rem;
     color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    border-radius: var(--radius-lg);
+}
+
+.course-image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+.overlay-btn {
+    background: var(--primary);
+    color: var(--text-white);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-fast);
+}
+
+.overlay-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 .course-status-badge {
     position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.status-draft { background: rgba(107, 114, 128, 0.9); color: white; }
-.status-pending { background: rgba(217, 119, 6, 0.9); color: white; }
-.status-published { background: rgba(5, 150, 105, 0.9); color: white; }
+.status-draft {
+    background: rgba(107, 114, 128, 0.95);
+    color: white;
+    border: 1px solid rgba(156, 163, 175, 0.3);
+}
+.status-pending {
+    background: rgba(217, 119, 6, 0.95);
+    color: white;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.status-published {
+    background: rgba(5, 150, 105, 0.95);
+    color: white;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
 
 .course-meta {
     flex: 1;
+    min-width: 0;
+}
+
+.course-header {
+    margin-bottom: var(--spacing-lg);
 }
 
 .course-title {
@@ -403,37 +605,223 @@
     color: var(--text-white);
     margin-bottom: var(--spacing-md);
     line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.course-badges {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.category-badge,
+.level-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    backdrop-filter: blur(10px);
+}
+
+.category-badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-white);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.level-badge {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.level-beginner {
+    background: rgba(34, 197, 94, 0.2);
+    color: #bbf7d0;
+}
+
+.level-intermediate {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fef3c7;
+}
+
+.level-advanced {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fecaca;
 }
 
 .course-description {
     font-size: var(--font-size-lg);
     color: rgba(255, 255, 255, 0.9);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
     line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .course-stats {
-    display: flex;
-    gap: var(--spacing-xl);
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
 }
 
 .stat {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    color: rgba(255, 255, 255, 0.9);
-    font-size: var(--font-size-sm);
+    gap: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all var(--transition-fast);
 }
 
-.stat i {
-    color: rgba(255, 255, 255, 0.7);
+.stat:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-white);
+    font-size: var(--font-size-lg);
+}
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-number {
+    display: block;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-white);
+    line-height: 1.2;
+}
+
+.stat-label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: var(--spacing-xs);
+}
+
+.course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.tag {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-white);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .header-actions {
     display: flex;
+    flex-direction: column;
     gap: var(--spacing-md);
-    align-items: flex-start;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--text-white);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-white);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--text-white);
+    border-color: var(--success);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.btn-success:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-white);
+    border-color: var(--warning);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.btn-warning:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+}
+
+.btn-outline {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
 .analytics-section {
@@ -832,32 +1220,88 @@
 }
 
 @media (max-width: 768px) {
+    .page-header {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .breadcrumb-nav {
+        margin-bottom: var(--spacing-md);
+    }
+
     .header-content {
         flex-direction: column;
         gap: var(--spacing-lg);
+        align-items: center;
     }
-    
+
     .course-info {
         flex-direction: column;
         text-align: center;
+        width: 100%;
     }
-    
+
     .course-image {
         width: 100%;
+        max-width: 300px;
         height: 200px;
+        margin: 0 auto;
     }
-    
+
     .course-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .course-badges {
         justify-content: center;
     }
-    
+
     .header-actions {
+        width: 100%;
+        align-items: center;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .btn {
         width: 100%;
         justify-content: center;
     }
-    
+
     .metrics-grid {
         grid-template-columns: 1fr;
+    }
+
+    .course-tags {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .course-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat {
+        padding: var(--spacing-sm);
+    }
+
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        font-size: var(--font-size-base);
+    }
+
+    .breadcrumb-nav {
+        font-size: var(--font-size-xs);
     }
 }
 </style>

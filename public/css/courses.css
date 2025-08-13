@@ -1,5 +1,7 @@
 /* ===== COURSES PAGE STYLES ===== */
-
+.page-title , .page-subtitle { 
+    color: white;
+}
 /* ===== COURSES LAYOUT ===== */
 .courses-layout {
     display: grid;

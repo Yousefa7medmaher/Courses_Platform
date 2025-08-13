@@ -1,6 +1,12 @@
 /* ===== HOME PAGE STYLES ===== */
 
 /* ===== COURSES GRID ===== */
+.hero-title  { 
+    color : white
+}
+.hero-subtitle { 
+    color: rgba(245, 245, 245, 0.777);
+}
 .courses-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
