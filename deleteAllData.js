@@ -18,7 +18,7 @@ const deleteAllData = async () => {
     await User.deleteMany();
     // await Course.deleteMany();
     // await Enrollment.deleteMany();
-
+      
     console.log(" All data deleted from the database.");
     process.exit(0); // Exit success
   } catch (err) {

@@ -1,0 +1,894 @@
+<!-- Instructor Course Details -->
+<div class="course-details-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="course-info">
+                    <div class="course-image">
+                        <% if (course.imageUrl) { %>
+                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
+                        <% } else { %>
+                            <div class="course-placeholder">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        <% } %>
+                        <div class="course-status-badge status-<%= course.status %>">
+                            <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
+                        </div>
+                    </div>
+                    <div class="course-meta">
+                        <h1 class="course-title"><%= course.title %></h1>
+                        <p class="course-description"><%= course.description %></p>
+                        <div class="course-stats">
+                            <div class="stat">
+                                <i class="fas fa-users"></i>
+                                <span><%= course.totalStudents || 0 %> students</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-star"></i>
+                                <span><%= (course.averageRating || 0).toFixed(1) %> (<%= course.totalReviews || 0 %> reviews)</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>$<%= course.price || 0 %></span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>Created <%= new Date(course.createdAt).toLocaleDateString() %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="/instructor/courses" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Courses
+                    </a>
+                    <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary">
+                        <i class="fas fa-edit"></i>
+                        Edit Course
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline dropdown-toggle" type="button">
+                            <i class="fas fa-ellipsis-v"></i>
+                            More Actions
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/instructor/courses/<%= course._id %>/lessons">
+                                <i class="fas fa-list"></i>
+                                Manage Lessons
+                            </a>
+                            <a class="dropdown-item" href="/instructor/courses/<%= course._id %>/videos">
+                                <i class="fas fa-video"></i>
+                                Manage Videos
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-<%= course.status === 'published' ? 'eye-slash' : 'globe' %>"></i>
+                                    <%= course.status === 'published' ? 'Unpublish' : 'Publish' %>
+                                </button>
+                            </form>
+                            <div class="dropdown-divider"></div>
+                            <form method="POST" action="/instructor/courses/<%= course._id %>/delete" 
+                                  onsubmit="return confirm('Are you sure you want to delete this course?')" style="display: inline;">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-trash"></i>
+                                    Delete Course
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Analytics -->
+    <div class="analytics-section">
+        <div class="container">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Performance Overview
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-value"><%= course.totalStudents || 0 %></div>
+                                <div class="metric-label">Total Enrollments</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">$<%= ((course.price || 0) * (course.totalStudents || 0)).toLocaleString() %></div>
+                                <div class="metric-label">Total Revenue</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value"><%= (course.averageRating || 0).toFixed(1) %></div>
+                                <div class="metric-label">Average Rating</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value"><%= course.totalReviews || 0 %></div>
+                                <div class="metric-label">Total Reviews</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-star"></i>
+                            Rating Distribution
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <% if (analytics && analytics.ratingDistribution) { %>
+                            <div class="rating-bars">
+                                <% for (let i = 5; i >= 1; i--) { %>
+                                    <div class="rating-bar">
+                                        <span class="rating-label"><%= i %> stars</span>
+                                        <div class="bar-container">
+                                            <div class="bar-fill"  <%= course.totalReviews > 0 ? ((analytics.ratingDistribution[i] || 0) / course.totalReviews * 100) : 0 %>%></div>
+                                        </div>
+                                        <span class="rating-count"><%= analytics.ratingDistribution[i] || 0 %></span>
+                                    </div>
+                                <% } %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state-small">
+                                <p>No ratings yet</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="content-section">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Course Details -->
+                <div class="content-main">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                Course Information
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Category</label>
+                                    <span><%= course.category || 'Not specified' %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Level</label>
+                                    <span><%= course.level || 'Not specified' %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Duration</label>
+                                    <span><%= course.duration ? course.duration + ' hours' : 'Not specified' %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Price</label>
+                                    <span>$<%= course.price || 0 %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Status</label>
+                                    <span class="status-badge status-<%= course.status %>">
+                                        <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Featured</label>
+                                    <span><%= course.featured ? 'Yes' : 'No' %></span>
+                                </div>
+                            </div>
+                            
+                            <% if (course.tags && course.tags.length > 0) { %>
+                                <div class="tags-section">
+                                    <label>Tags</label>
+                                    <div class="tags-list">
+                                        <% course.tags.forEach(function(tag) { %>
+                                            <span class="tag"><%= tag %></span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Course Content Structure -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-list"></i>
+                                Course Content
+                            </h3>
+                            <div class="card-actions">
+                                <a href="/instructor/courses/<%= course._id %>/lessons" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    Manage Lessons
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <% if (course.lessons && course.lessons.length > 0) { %>
+                                <div class="lessons-list">
+                                    <% course.lessons.forEach(function(lesson, index) { %>
+                                        <div class="lesson-item">
+                                            <div class="lesson-number"><%= index + 1 %></div>
+                                            <div class="lesson-info">
+                                                <h4 class="lesson-title"><%= lesson.title %></h4>
+                                                <p class="lesson-description"><%= lesson.description %></p>
+                                                <div class="lesson-meta">
+                                                    <span class="lesson-duration">
+                                                        <i class="fas fa-clock"></i>
+                                                        <%= lesson.duration || 'No duration set' %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="empty-state-small">
+                                    <i class="fas fa-list"></i>
+                                    <p>No lessons added yet</p>
+                                    <a href="/instructor/courses/<%= course._id %>/lessons" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        Add First Lesson
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="content-sidebar">
+                    <!-- Recent Reviews -->
+                    <div class="sidebar-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-comments"></i>
+                                Recent Reviews
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <% if (analytics && analytics.recentReviews && analytics.recentReviews.length > 0) { %>
+                                <div class="reviews-list">
+                                    <% analytics.recentReviews.forEach(function(review) { %>
+                                        <div class="review-item">
+                                            <div class="review-header">
+                                                <div class="reviewer-info">
+                                                    <strong><%= review.user ? review.user.name : 'Anonymous' %></strong>
+                                                    <div class="review-rating">
+                                                        <% for (let i = 1; i <= 5; i++) { %>
+                                                            <i class="fas fa-star <%= i <= review.rating ? 'active' : '' %>"></i>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <span class="review-date">
+                                                    <%= new Date(review.createdAt).toLocaleDateString() %>
+                                                </span>
+                                            </div>
+                                            <p class="review-text"><%= review.review %></p>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="empty-state-small">
+                                    <p>No reviews yet</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="sidebar-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                Quick Actions
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions">
+                                <a href="/instructor/courses/<%= course._id %>/edit" class="quick-action">
+                                    <i class="fas fa-edit"></i>
+                                    <span>Edit Course</span>
+                                </a>
+                                <a href="/instructor/courses/<%= course._id %>/lessons" class="quick-action">
+                                    <i class="fas fa-list"></i>
+                                    <span>Manage Lessons</span>
+                                </a>
+                                <a href="/instructor/courses/<%= course._id %>/videos" class="quick-action">
+                                    <i class="fas fa-video"></i>
+                                    <span>Manage Videos</span>
+                                </a>
+                                <a href="/courses/<%= course._id %>" class="quick-action" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <span>View Public Page</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.course-details-page {
+    min-height: 100vh;
+    background: var(--bg-secondary);
+}
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--text-white);
+    padding: var(--spacing-2xl) 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-2xl);
+}
+
+.course-info {
+    display: flex;
+    gap: var(--spacing-xl);
+    flex: 1;
+}
+
+.course-image {
+    position: relative;
+    width: 200px;
+    height: 120px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.course-status-badge {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+}
+
+.status-draft { background: rgba(107, 114, 128, 0.9); color: white; }
+.status-pending { background: rgba(217, 119, 6, 0.9); color: white; }
+.status-published { background: rgba(5, 150, 105, 0.9); color: white; }
+
+.course-meta {
+    flex: 1;
+}
+
+.course-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-white);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+}
+
+.course-description {
+    font-size: var(--font-size-lg);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+}
+
+.course-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: var(--font-size-sm);
+}
+
+.stat i {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+}
+
+.analytics-section {
+    padding: var(--spacing-2xl) 0;
+    background: var(--bg-primary);
+    margin-top: -var(--spacing-xl);
+    position: relative;
+    z-index: 2;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.analytics-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.card-title i {
+    color: var(--primary);
+}
+
+.card-content {
+    padding: var(--spacing-xl);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.metric {
+    text-align: center;
+}
+
+.metric-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.metric-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: var(--font-weight-medium);
+}
+
+.rating-bars {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.rating-label {
+    width: 60px;
+    color: var(--text-secondary);
+}
+
+.bar-container {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #fbbf24;
+    transition: width var(--transition-normal);
+}
+
+.rating-count {
+    width: 30px;
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+.content-section {
+    padding: var(--spacing-2xl) 0;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.content-card,
+.sidebar-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.info-item label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.info-item span {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.status-badge {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.tags-section {
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-light);
+}
+
+.tags-section label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-md);
+    display: block;
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.tag {
+    background: var(--primary-50);
+    color: var(--primary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.lesson-item {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+}
+
+.lesson-number {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: var(--text-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+}
+
+.lesson-info {
+    flex: 1;
+}
+
+.lesson-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.lesson-description {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.5;
+}
+
+.lesson-meta {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.review-item {
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.reviewer-info strong {
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.review-rating {
+    display: flex;
+    gap: 2px;
+    margin-top: var(--spacing-xs);
+}
+
+.review-rating i {
+    font-size: var(--font-size-xs);
+    color: var(--border-medium);
+}
+
+.review-rating i.active {
+    color: #fbbf24;
+}
+
+.review-date {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.review-text {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+}
+
+.quick-action:hover {
+    background: var(--bg-secondary);
+    color: var(--primary);
+}
+
+.quick-action i {
+    width: 20px;
+    color: var(--primary);
+}
+
+.empty-state-small {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--text-secondary);
+}
+
+.empty-state-small i {
+    font-size: 2rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-md);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+}
+
+.dropdown.show .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-primary);
+    text-decoration: none;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: var(--font-size-sm);
+}
+
+.dropdown-item:hover {
+    background: var(--bg-secondary);
+}
+
+.dropdown-item.text-danger {
+    color: var(--error);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: var(--spacing-xs) 0;
+}
+
+@media (max-width: 1024px) {
+    .analytics-grid,
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    
+    .course-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .course-image {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .course-stats {
+        justify-content: center;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dropdown functionality
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close other dropdowns
+            document.querySelectorAll('.dropdown.show').forEach(function(dropdown) {
+                if (dropdown !== toggle.parentElement) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // Toggle current dropdown
+            toggle.parentElement.classList.toggle('show');
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown.show').forEach(function(dropdown) {
+            dropdown.classList.remove('show');
+        });
+    });
+});
+</script>

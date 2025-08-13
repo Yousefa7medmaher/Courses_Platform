@@ -1,0 +1,493 @@
+<!-- Course Form (Create/Edit) -->
+<div class="course-form-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1 class="page-title">
+                        <%= isEdit ? 'Edit Course' : 'Create New Course' %>
+                    </h1>
+                    <p class="page-subtitle">
+                        <%= isEdit ? 'Update your course information' : 'Fill in the details to create your course' %>
+                    </p>
+                </div>
+                <div class="header-actions">
+                    <a href="/instructor/courses" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-section">
+        <div class="container">
+            <form id="courseForm" method="POST" 
+                  action="<%= isEdit ? `/instructor/courses/${course._id}` : '/instructor/courses' %>" 
+                  enctype="multipart/form-data" class="course-form">
+                
+                <div class="form-grid">
+                    <!-- Basic Information -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                Basic Information
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="title" class="form-label">Course Title *</label>
+                                <input type="text" id="title" name="title" class="form-control" 
+                                       value="<%= course ? course.title : '' %>" required
+                                       placeholder="Enter course title">
+                                <div class="form-help">Choose a clear, descriptive title for your course</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description" class="form-label">Course Description *</label>
+                                <textarea id="description" name="description" class="form-control" 
+                                          rows="6" required placeholder="Describe what students will learn in this course"><%= course ? course.description : '' %></textarea>
+                                <div class="form-help">Provide a detailed description of your course content and learning outcomes</div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="category" class="form-label">Category *</label>
+                                    <select id="category" name="category" class="form-control" required>
+                                        <option value="">Select Category</option>
+                                        <% categories.forEach(cat => { %>
+                                            <option value="<%= cat %>" <%= course && course.category === cat ? 'selected' : '' %>>
+                                                <%= cat %>
+                                            </option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="level" class="form-label">Difficulty Level *</label>
+                                    <select id="level" name="level" class="form-control" required>
+                                        <option value="">Select Level</option>
+                                        <% levels.forEach(level => { %>
+                                            <option value="<%= level %>" <%= course && course.level === level ? 'selected' : '' %>>
+                                                <%= level %>
+                                            </option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="price" class="form-label">Price ($) *</label>
+                                    <input type="number" id="price" name="price" class="form-control" 
+                                           value="<%= course ? course.price : '' %>" min="0" step="0.01" required
+                                           placeholder="0.00">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="duration" class="form-label">Duration (hours)</label>
+                                    <input type="number" id="duration" name="duration" class="form-control" 
+                                           value="<%= course ? course.duration : '' %>" min="0.5" step="0.5"
+                                           placeholder="e.g., 10.5">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" id="tags" name="tags" class="form-control" 
+                                       value="<%= course && course.tags ? course.tags.join(', ') : '' %>"
+                                       placeholder="e.g., javascript, web development, programming">
+                                <div class="form-help">Separate tags with commas to help students find your course</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Image -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-image"></i>
+                                Course Image
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="image-upload-section">
+                                <% if (course && course.imageUrl) { %>
+                                    <div class="current-image">
+                                        <img src="<%= course.imageUrl %>" alt="Current course image" id="currentImage">
+                                        <div class="image-overlay">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('image').click()">
+                                                <i class="fas fa-camera"></i>
+                                                Change Image
+                                            </button>
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    <div class="image-placeholder" id="imagePlaceholder">
+                                        <i class="fas fa-image"></i>
+                                        <p>Upload Course Image</p>
+                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('image').click()">
+                                            <i class="fas fa-upload"></i>
+                                            Choose Image
+                                        </button>
+                                    </div>
+                                <% } %>
+                                
+                                <input type="file" id="image" name="image" accept="image/*" style="display: none;">
+                                <div class="form-help">
+                                    Upload a high-quality image (recommended: 1280x720px, max 5MB)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Settings -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-cog"></i>
+                                Course Settings
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="status" class="form-label">Status</label>
+                                <select id="status" name="status" class="form-control">
+                                    <% statusOptions.forEach(option => { %>
+                                        <option value="<%= option.value %>" 
+                                                <%= course && course.status === option.value ? 'selected' : (!course && option.value === 'draft' ? 'selected' : '') %>>
+                                            <%= option.label %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                                <div class="form-help">
+                                    <strong>Draft:</strong> Only visible to you<br>
+                                    <strong>Pending:</strong> Submitted for review<br>
+                                    <strong>Published:</strong> Live and available to students
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="featured" value="true" 
+                                               <%= course && course.featured ? 'checked' : '' %>>
+                                        <span class="checkmark"></span>
+                                        Feature this course
+                                    </label>
+                                    <div class="form-help">Featured courses appear prominently on the homepage</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <div class="actions-left">
+                        <a href="/instructor/courses" class="btn btn-outline">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="actions-right">
+                        <% if (isEdit) { %>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Update Course
+                            </button>
+                        <% } else { %>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Create Course
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.course-form-page {
+    min-height: 100vh;
+    background: var(--bg-secondary);
+}
+
+.page-header {
+    background: var(--bg-primary);
+    padding: var(--spacing-2xl) 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.page-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-size-lg);
+}
+
+.form-section {
+    padding: var(--spacing-2xl) 0;
+}
+
+.course-form {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.form-grid {
+    display: grid;
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.form-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: var(--spacing-xl);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.card-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.card-title i {
+    color: var(--primary);
+}
+
+.card-content {
+    padding: var(--spacing-xl);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-help {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+    line-height: 1.4;
+}
+
+.image-upload-section {
+    text-align: center;
+}
+
+.current-image {
+    position: relative;
+    display: inline-block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    max-width: 400px;
+}
+
+.current-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.current-image:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-placeholder {
+    border: 2px dashed var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4xl);
+    color: var(--text-muted);
+}
+
+.image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-muted);
+}
+
+.image-placeholder p {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.checkbox-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.actions-right {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-lg);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    
+    .actions-right {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const currentImage = document.getElementById('currentImage');
+    
+    // Handle image upload preview
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (currentImage) {
+                    currentImage.src = e.target.result;
+                } else if (imagePlaceholder) {
+                    imagePlaceholder.innerHTML = `
+                        <img src="${e.target.result}" alt="Course preview" style="max-width: 100%; height: auto; border-radius: var(--radius-md);">
+                        <p style="margin-top: var(--spacing-md);">Image selected - ready to upload</p>
+                    `;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Form validation
+    const form = document.getElementById('courseForm');
+    form.addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const category = document.getElementById('category').value;
+        const level = document.getElementById('level').value;
+        const price = document.getElementById('price').value;
+        
+        if (!title || !description || !category || !level || !price) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitButtons = form.querySelectorAll('button[type="submit"]');
+        submitButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+    });
+});
+</script>

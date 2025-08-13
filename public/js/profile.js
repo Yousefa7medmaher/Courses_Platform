@@ -232,26 +232,50 @@ async function handlePersonalInfoSubmit(e) {
     try {
         setButtonLoading(submitBtn, true);
         
-        const response = await JooCourses.apiCall('/api/profile/personal', {
+        const response = await fetch('/api/profile', {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: JSON.stringify({
-                firstName: formData.get('firstName'),
-                lastName: formData.get('lastName'),
-                email: formData.get('email'),
+                name: formData.get('name'),
                 phone: formData.get('phone'),
                 bio: formData.get('bio'),
                 location: formData.get('location')
             })
         });
 
-        if (response.success) {
+        const result = await response.json();
+
+        if (result.success) {
             JooCourses.showFlashMessage('success', 'Personal information updated successfully');
-            
+
             // Update profile display
             const profileName = document.querySelector('.profile-name');
             if (profileName) {
-                profileName.textContent = `${formData.get('firstName')} ${formData.get('lastName')}`;
+                profileName.textContent = formData.get('name');
             }
+
+            // Update location if provided
+            const profileLocation = document.querySelector('.profile-location');
+            const location = formData.get('location');
+            if (location && location.trim()) {
+                if (profileLocation) {
+                    profileLocation.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
+                } else {
+                    // Add location element if it doesn't exist
+                    const profileInfo = document.querySelector('.profile-info');
+                    const locationElement = document.createElement('p');
+                    locationElement.className = 'profile-location';
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
+                    profileInfo.appendChild(locationElement);
+                }
+            } else if (profileLocation) {
+                profileLocation.remove();
+            }
+        } else {
+            JooCourses.showFlashMessage('error', result.message || 'Failed to update personal information');
         }
     } catch (error) {
         console.error('Error updating personal info:', error);
@@ -280,17 +304,26 @@ async function handlePasswordSubmit(e) {
     try {
         setButtonLoading(submitBtn, true);
         
-        const response = await JooCourses.apiCall('/api/profile/password', {
+        const response = await fetch('/api/profile/password', {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: JSON.stringify({
                 currentPassword: formData.get('currentPassword'),
-                newPassword: newPassword
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
             })
         });
 
-        if (response.success) {
+        const result = await response.json();
+
+        if (result.success) {
             JooCourses.showFlashMessage('success', 'Password updated successfully');
             form.reset();
+        } else {
+            JooCourses.showFlashMessage('error', result.message || 'Failed to update password');
         }
     } catch (error) {
         console.error('Error updating password:', error);

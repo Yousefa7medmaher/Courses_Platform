@@ -72,6 +72,20 @@
     word-break: break-word;
 }
 
+.profile-location {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.profile-location i {
+    color: var(--primary);
+}
+
 .profile-stats {
     display: flex;
     flex-direction: column;

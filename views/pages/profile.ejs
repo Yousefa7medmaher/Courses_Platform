@@ -33,7 +33,16 @@
                     <div class="profile-info">
                         <h3 class="profile-name"><%= user.name %></h3>
                         <p class="profile-email"><%= user.email %></p>
-                        <span class="badge badge-<%= user.role %>"><%= user.role %></span>
+                        <span class="badge badge-<%= user.role %>">
+                            <i class="fas fa-<%= user.role === 'instructor' ? 'chalkboard-teacher' : user.role === 'admin' ? 'crown' : 'user-graduate' %>"></i>
+                            <%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %>
+                        </span>
+                        <% if (user.location) { %>
+                            <p class="profile-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%= user.location %>
+                            </p>
+                        <% } %>
                     </div>
                     
                     <div class="profile-stats">
@@ -84,25 +93,18 @@
                         <p class="section-description">Update your personal details and contact information</p>
                     </div>
                     
-                    <form id="personal-info-form" class="profile-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" id="firstName" name="firstName" class="form-control" 
-                                       value="<%= user.name.split(' ')[0] %>" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" class="form-control" 
-                                       value="<%= user.name.split(' ').slice(1).join(' ') %>" required>
-                            </div>
+                    <form id="personal-info-form" class="profile-form" method="POST" action="/profile">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   value="<%= user.name %>" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control" 
-                                   value="<%= user.email %>" required>
-                            <small class="form-help">We'll send a verification email if you change this</small>
+                            <input type="email" id="email" name="email" class="form-control"
+                                   value="<%= user.email %>" readonly>
+                            <small class="form-help">Email cannot be changed. Contact support if needed.</small>
                         </div>
                         
                         <div class="form-group">
@@ -144,7 +146,7 @@
                         <p class="section-description">Manage your password and security preferences</p>
                     </div>
                     
-                    <form id="password-form" class="profile-form">
+                    <form id="password-form" class="profile-form" method="POST" action="/profile/password">
                         <div class="form-group">
                             <label for="currentPassword" class="form-label">Current Password</label>
                             <div class="password-input-group">
@@ -481,8 +483,6 @@
 
 <% contentFor('style') %>
 <link rel="stylesheet" href="/css/profile.css">
-<% end %>
 
 <% contentFor('script') %>
 <script src="/js/profile.js"></script>
-<% end %>

@@ -13,6 +13,8 @@ import expressLayouts from 'express-ejs-layouts';
 import authRoutes from './routes/authRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import instructorRoutes from './routes/instructorRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
 import webRoutes from './routes/webRoutes.js';
 
 dotenv.config();
@@ -89,6 +91,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/users', userRoutes);
+app.use('/instructor', instructorRoutes);
+app.use('/api/instructor', instructorRoutes);
+app.use('/profile', profileRoutes);
+app.use('/api/profile', profileRoutes);
 app.use('/', webRoutes);
 
 // 404 handler

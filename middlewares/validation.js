@@ -83,10 +83,10 @@ export const validateCourse = [
     .isFloat({ min: 0.5 })
     .withMessage('Duration must be at least 0.5 hours'),
   
-  body('tags')
-    .optional()
-    .isArray({ max: 10 })
-    .withMessage('Maximum 10 tags allowed'),
+  // body('tags')
+  //   .optional()
+  //   .isArray({ max:50 })
+  //   .withMessage('Maximum 10 tags allowed'),
   
   handleValidationErrors
 ];
@@ -132,7 +132,39 @@ export const validateCourseUpdate = [
     .optional()
     .isIn(['draft', 'pending', 'published'])
     .withMessage('Status must be draft, pending, or published'),
-  
+
+  body('featured')
+    .optional()
+    .isBoolean()
+    .withMessage('Featured must be a boolean value'),
+
+  body('tags')
+    .optional()
+    .custom((value) => {
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          if (!Array.isArray(parsed)) {
+            throw new Error('Tags must be an array');
+          }
+          return true;
+        } catch (e) {
+          // If not JSON, treat as comma-separated string
+          const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+          if (tags.length > 10) {
+            throw new Error('Maximum 10 tags allowed');
+          }
+          return true;
+        }
+      } else if (Array.isArray(value)) {
+        if (value.length > 10) {
+          throw new Error('Maximum 10 tags allowed');
+        }
+        return true;
+      }
+      throw new Error('Tags must be an array or comma-separated string');
+    }),
+
   handleValidationErrors
 ];
 
@@ -252,11 +284,83 @@ export const validateSearch = [
   handleValidationErrors
 ];
 
+
+
+// Profile update validation
+export const validateProfileUpdate = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+
+  body('phone')
+    .optional()
+    .trim()
+    .custom((value) => {
+      if (value && value.length > 0) {
+        // Basic phone validation - you can make this more strict
+        if (!/^[\+]?[1-9][\d]{0,15}$/.test(value.replace(/[\s\-\(\)]/g, ''))) {
+          throw new Error('Please provide a valid phone number');
+        }
+      }
+      return true;
+    }),
+
+  body('bio')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('Bio cannot exceed 500 characters'),
+
+  body('location')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Location cannot exceed 100 characters'),
+
+  handleValidationErrors
+];
+
+// Password change validation
+export const validatePasswordChange = [
+  body('currentPassword')
+    .notEmpty()
+    .withMessage('Current password is required'),
+
+  body('newPassword')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('New password must contain at least one lowercase letter, one uppercase letter, and one number'),
+
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Password confirmation is required')
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Password confirmation does not match new password');
+      }
+      return true;
+    }),
+
+  handleValidationErrors
+];
+
+// Account deletion validation
+export const validateAccountDeletion = [
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required to delete account'),
+
+  handleValidationErrors
+];
+
 // MongoDB ObjectId validation
 export const validateObjectId = (paramName = 'id') => [
   param(paramName)
     .isMongoId()
     .withMessage(`Invalid ${paramName}`),
-  
+
   handleValidationErrors
 ];
