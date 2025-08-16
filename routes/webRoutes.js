@@ -23,6 +23,19 @@ const router = express.Router();
 // ==================== PUBLIC ROUTES ====================
 
 /**
+ * @route   GET /health
+ * @desc    Health check endpoint
+ * @access  Public
+ */
+router.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    service: 'Course Platform'
+  });
+});
+
+/**
  * @route   GET /
  * @desc    Home page
  * @access  Public
@@ -297,6 +310,13 @@ router.get('/admin/dashboard', auth, authorize('admin'), webController.adminDash
  * @access  Private (Admin only)
  */
 router.get('/admin/users', auth, authorize('admin'), webController.adminUsersPage);
+
+/**
+ * @route   GET /admin/instructors
+ * @desc    Instructor management page
+ * @access  Private (Admin only)
+ */
+router.get('/admin/instructors', auth, authorize('admin'), webController.adminInstructorsPage);
 
 /**
  * @route   GET /admin/courses

@@ -1,0 +1,163 @@
+<!-- Mobile Sidebar Overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full bg-white shadow-xl z-50 sidebar-expanded lg:sidebar-expanded transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <!-- Sidebar Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-shield-alt text-white text-lg"></i>
+            </div>
+            <div class="sidebar-text">
+                <h2 class="text-xl font-bold text-gray-800">Admin Panel</h2>
+                <p class="text-sm text-gray-500">Learning Platform</p>
+            </div>
+        </div>
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+            <i class="fas fa-times text-gray-600"></i>
+        </button>
+    </div>
+    
+    <!-- Admin Profile -->
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                <% if (user && user.avatar) { %>
+                    <img src="<%= user.avatar %>" alt="Admin" class="w-12 h-12 rounded-full object-cover">
+                <% } else { %>
+                    <i class="fas fa-user-shield text-white text-lg"></i>
+                <% } %>
+            </div>
+            <div class="sidebar-text">
+                <h3 class="font-semibold text-gray-800"><%= user ? user.name : 'Admin User' %></h3>
+                <p class="text-sm text-gray-500">Administrator</p>
+                <div class="flex items-center mt-1">
+                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                    <span class="text-xs text-green-600">Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Menu -->
+    <nav class="flex-1 p-4 space-y-2">
+        <!-- Dashboard -->
+        <a href="/admin/dashboard" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-tachometer-alt text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Dashboard</span>
+            <% if (currentPage === 'dashboard') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Users Management -->
+        <a href="/admin/users" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'users' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-users text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Users</span>
+            <% if (stats && stats.pendingUsers > 0) { %>
+                <span class="sidebar-text ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full"><%= stats.pendingUsers %></span>
+            <% } %>
+            <% if (currentPage === 'users') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Instructors Management -->
+        <a href="/admin/instructors" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'instructors' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-chalkboard-teacher text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Instructors</span>
+            <% if (stats && stats.pendingInstructors > 0) { %>
+                <span class="sidebar-text ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full"><%= stats.pendingInstructors %></span>
+            <% } %>
+            <% if (currentPage === 'instructors') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Courses Management -->
+        <a href="/admin/courses" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'courses' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-book text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Courses</span>
+            <% if (currentPage === 'courses') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Analytics -->
+        <a href="/admin/analytics" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'analytics' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-chart-bar text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Analytics</span>
+            <% if (currentPage === 'analytics') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Settings -->
+        <a href="/admin/settings" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'settings' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-cog text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Settings</span>
+            <% if (currentPage === 'settings') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- Divider -->
+        <div class="border-t border-gray-200 my-4"></div>
+        
+        <!-- Reports -->
+        <a href="/admin/reports" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'reports' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-file-alt text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">Reports</span>
+            <% if (currentPage === 'reports') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+        
+        <!-- System Logs -->
+        <a href="/admin/logs" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors group <%= currentPage === 'logs' ? 'bg-blue-50 text-blue-600' : 'text-gray-700' %>">
+            <div class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-list-alt text-lg"></i>
+            </div>
+            <span class="sidebar-text font-medium">System Logs</span>
+            <% if (currentPage === 'logs') { %>
+                <div class="w-2 h-2 bg-blue-600 rounded-full ml-auto"></div>
+            <% } %>
+        </a>
+    </nav>
+    
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-gray-200">
+        <div class="space-y-2">
+            <!-- Back to Site -->
+            <a href="/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-800 transition-colors">
+                <div class="w-8 h-8 flex items-center justify-center">
+                    <i class="fas fa-external-link-alt text-sm"></i>
+                </div>
+                <span class="sidebar-text font-medium">Back to Site</span>
+            </a>
+            
+            <!-- Logout -->
+            <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors">
+                <div class="w-8 h-8 flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-sm"></i>
+                </div>
+                <span class="sidebar-text font-medium">Logout</span>
+            </a>
+        </div>
+    </div>
+</aside>

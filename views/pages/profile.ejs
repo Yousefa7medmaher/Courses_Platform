@@ -15,13 +15,11 @@
                 <div class="profile-card">
                     <div class="profile-avatar-section">
                         <div class="profile-avatar">
-                            <% if (user.photo) { %>
-                                <img src="<%= user.photo %>" alt="<%= user.name %>" id="profile-image">
-                            <% } else { %>
-                                <div class="avatar-placeholder" id="profile-image">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                            <% } %>
+                            <img src="<%= getUserAvatarUrl(user) %>"
+                                 alt="<%= user.name %>"
+                                 id="profile-image"
+                                 class="enhanced-image"
+                                 onerror="this.src='<%= getDefaultImage('user') %>'">
                         </div>
                         <button class="btn btn-outline btn-sm" onclick="document.getElementById('photo-upload').click()">
                             <i class="fas fa-camera"></i>

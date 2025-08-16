@@ -1,0 +1,734 @@
+<%- include('partials/header', { title: 'Instructor Management' }) %>
+
+<%
+// Default stats if not provided
+const defaultStats = {
+    totalUsers: 1247,
+    activeUsers: 1156,
+    totalInstructors: 89,
+    pendingUsers: 12,
+    pendingInstructors: 5,
+    notifications: 3
+};
+
+const displayStats = (typeof stats !== 'undefined' && stats) ? stats : defaultStats;
+
+// Default instructors if not provided
+const defaultInstructors = [
+    {
+        _id: '507f1f77bcf86cd799439021',
+        name: 'Sarah Wilson',
+        email: 'sarah.wilson@example.com',
+        status: 'active',
+        specialization: 'Web Development',
+        experience: 'Expert (5+ years)',
+        coursesCount: 12,
+        createdAt: new Date(Date.now() - 86400000),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439022',
+        name: 'Mike Chen',
+        email: 'mike.chen@example.com',
+        status: 'pending',
+        specialization: 'Data Science',
+        experience: 'Intermediate (3-5 years)',
+        coursesCount: 0,
+        createdAt: new Date(Date.now() - 172800000),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439023',
+        name: 'Emily Rodriguez',
+        email: 'emily.rodriguez@example.com',
+        status: 'active',
+        specialization: 'Design',
+        experience: 'Expert (5+ years)',
+        coursesCount: 8,
+        createdAt: new Date(Date.now() - 259200000),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439024',
+        name: 'David Kim',
+        email: 'david.kim@example.com',
+        status: 'inactive',
+        specialization: 'Mobile Development',
+        experience: 'Beginner (0-2 years)',
+        coursesCount: 2,
+        createdAt: new Date(Date.now() - 345600000),
+        avatar: null
+    }
+];
+
+const displayInstructors = (typeof instructors !== 'undefined' && instructors) ? instructors : defaultInstructors;
+%>
+
+<!-- Main Layout -->
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <%- include('partials/sidebar', { currentPage: 'instructors', user: user, stats: displayStats }) %>
+    
+    <!-- Main Content -->
+    <div class="flex-1 lg:ml-64 flex flex-col overflow-hidden">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center space-x-4">
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bars text-gray-600"></i>
+                    </button>
+                    
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Instructor Management</h1>
+                        <p class="text-sm text-gray-500">Manage instructor applications and permissions</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Pending Applications Badge -->
+                    <% if (displayStats && displayStats.pendingInstructors > 0) { %>
+                        <div class="flex items-center space-x-2 px-3 py-2 bg-orange-100 text-orange-800 rounded-lg">
+                            <i class="fas fa-clock"></i>
+                            <span class="text-sm font-medium"><%= displayStats.pendingInstructors %> Pending</span>
+                        </div>
+                    <% } %>
+                    
+                    <!-- Export Button -->
+                    <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </button>
+                    
+                    <!-- Create Instructor Button -->
+                    <button onclick="openModal('createInstructorModal')" class="px-4 py-2 btn-primary text-white rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Instructor
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Instructors Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Instructors</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayInstructors.length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-purple-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Active Instructors</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayInstructors.filter(i => i.status === 'active').length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-check text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Pending Approval</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayInstructors.filter(i => i.status === 'pending').length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-hourglass-half text-orange-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Courses</p>
+                            <p class="text-2xl font-bold text-gray-800">156</p>
+                        </div>
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-book text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+                    <!-- Search -->
+                    <div class="flex-1 max-w-md">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="instructorSearch" placeholder="Search instructors by name, email..." 
+                                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                   onkeyup="searchTable(this, 'instructorsTable')">
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap items-center space-x-4">
+                        <select id="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="filterTable(this, 'instructorsTable', 3)">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        
+                        <select id="experienceFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">All Experience</option>
+                            <option value="beginner">Beginner (0-2 years)</option>
+                            <option value="intermediate">Intermediate (3-5 years)</option>
+                            <option value="expert">Expert (5+ years)</option>
+                        </select>
+                        
+                        <button onclick="clearInstructorFilters()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <i class="fas fa-times mr-2"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Results Summary -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p id="instructorsTableStats" class="text-sm text-gray-600">
+                        Showing <%= displayInstructors.length %> of <%= displayInstructors.length %> instructors
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Instructors Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table id="instructorsTable" class="w-full table-striped table-hover">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="selectAllInstructors" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructor</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Courses</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% if (displayInstructors && displayInstructors.length > 0) { %>
+                                <% displayInstructors.forEach((instructor, index) => { %>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" value="<%= instructor._id %>">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            #<%= instructor._id ? instructor._id.toString().slice(-6) : (2000 + index) %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <% if (instructor.avatar) { %>
+                                                        <img class="h-10 w-10 rounded-full object-cover" src="<%= instructor.avatar %>" alt="<%= instructor.name %>">
+                                                    <% } else { %>
+                                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                                                            <span class="text-white font-medium text-sm"><%= instructor.name.charAt(0).toUpperCase() %></span>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900"><%= instructor.name %></div>
+                                                    <div class="text-sm text-gray-500"><%= instructor.specialization || 'General' %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= instructor.email %></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span data-status-id="<%= instructor._id %>" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium status-<%= instructor.status %>">
+                                                <%= instructor.status.charAt(0).toUpperCase() + instructor.status.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <%= instructor.coursesCount || 0 %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <%= instructor.experience || 'Not specified' %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <%= new Date(instructor.createdAt || Date.now()).toLocaleDateString() %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-2">
+                                                <% if (instructor.status === 'pending') { %>
+                                                    <button onclick="approveInstructor('<%= instructor._id %>')" class="text-green-600 hover:text-green-900" title="Approve">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button onclick="rejectInstructor('<%= instructor._id %>')" class="text-red-600 hover:text-red-900" title="Reject">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                <% } %>
+                                                <button onclick="viewInstructorProfile('<%= instructor._id %>')" class="text-blue-600 hover:text-blue-900" title="View Profile">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button onclick="editInstructor('<%= instructor._id %>')" class="text-blue-600 hover:text-blue-900" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button data-toggle-id="<%= instructor._id %>" onclick="toggleStatus('<%= instructor._id %>', '<%= instructor.status %>', 'instructor')" 
+                                                        class="<%= instructor.status === 'active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900' %>" 
+                                                        title="<%= instructor.status === 'active' ? 'Deactivate' : 'Activate' %>">
+                                                    <i class="fas fa-<%= instructor.status === 'active' ? 'user-times' : 'user-check' %>"></i>
+                                                </button>
+                                                <button onclick="deleteInstructor('<%= instructor._id %>')" class="text-red-600 hover:text-red-900" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="9" class="px-6 py-12 text-center">
+                                        <div class="text-gray-500">
+                                            <i class="fas fa-chalkboard-teacher text-4xl mb-4"></i>
+                                            <p class="text-lg font-medium mb-2">No instructors found</p>
+                                            <p class="text-sm">Get started by adding your first instructor</p>
+                                            <button onclick="openModal('createInstructorModal')" class="mt-4 px-4 py-2 btn-primary text-white rounded-lg">
+                                                <i class="fas fa-plus mr-2"></i>
+                                                Add Instructor
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </button>
+                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium"><%= displayInstructors.length %></span> results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Create/Edit Instructor Modal -->
+<div id="createInstructorModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 relative z-10 max-h-screen overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Add New Instructor</h3>
+            <button onclick="closeModal('createInstructorModal')" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="createInstructorForm" class="p-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="instructorName" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input type="text" id="instructorName" name="name" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Enter full name">
+                </div>
+
+                <div>
+                    <label for="instructorEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" id="instructorEmail" name="email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Enter email address">
+                </div>
+            </div>
+
+            <div>
+                <label for="instructorPassword" class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                <input type="password" id="instructorPassword" name="password" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter password">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="instructorSpecialization" class="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
+                    <select id="instructorSpecialization" name="specialization"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Specialization</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Mobile Development">Mobile Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                        <option value="Design">Design</option>
+                        <option value="Business">Business</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Photography">Photography</option>
+                        <option value="Music">Music</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="instructorExperience" class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
+                    <select id="instructorExperience" name="experience"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Experience</option>
+                        <option value="Beginner (0-2 years)">Beginner (0-2 years)</option>
+                        <option value="Intermediate (3-5 years)">Intermediate (3-5 years)</option>
+                        <option value="Expert (5+ years)">Expert (5+ years)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="instructorBio" class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <textarea id="instructorBio" name="bio" rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Brief description about the instructor..."></textarea>
+            </div>
+
+            <div>
+                <label for="instructorStatus" class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                <select id="instructorStatus" name="status" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending Approval</option>
+                </select>
+            </div>
+
+            <!-- Permissions Section -->
+            <div class="border-t border-gray-200 pt-4">
+                <h4 class="text-sm font-medium text-gray-700 mb-3">Permissions</h4>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="permissions" value="create_courses" checked
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-700">Create Courses</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="permissions" value="manage_students" checked
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-700">Manage Students</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="permissions" value="view_analytics"
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-700">View Analytics</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="permissions" value="manage_content" checked
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-700">Manage Content</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="sendInstructorWelcomeEmail" name="sendWelcomeEmail"
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label for="sendInstructorWelcomeEmail" class="ml-2 text-sm text-gray-700">Send welcome email with login credentials</label>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="closeModal('createInstructorModal')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 btn-primary text-white rounded-lg">
+                    Add Instructor
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Instructor Profile Modal -->
+<div id="instructorProfileModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 relative z-10 max-h-screen overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Instructor Profile</h3>
+            <button onclick="closeModal('instructorProfileModal')" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div id="instructorProfileContent" class="p-6">
+            <!-- Profile content will be loaded here -->
+            <div class="text-center py-8">
+                <div class="spinner mx-auto mb-4"></div>
+                <p class="text-gray-600">Loading profile...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Instructor management specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initInstructorManagement();
+});
+
+function initInstructorManagement() {
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAllInstructors');
+    const instructorCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            instructorCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateInstructorBulkActionsButton();
+        });
+    }
+
+    // Individual checkbox change
+    instructorCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateInstructorSelectAllState();
+            updateInstructorBulkActionsButton();
+        });
+    });
+
+    // Form submission
+    const createInstructorForm = document.getElementById('createInstructorForm');
+    if (createInstructorForm) {
+        createInstructorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitForm('createInstructorForm', function() {
+                showToast('Instructor added successfully!', 'success');
+                closeModal('createInstructorModal');
+                setTimeout(() => location.reload(), 1000);
+            });
+        });
+    }
+}
+
+function updateInstructorSelectAllState() {
+    const selectAllCheckbox = document.getElementById('selectAllInstructors');
+    const instructorCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+    const checkedBoxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+
+    if (checkedBoxes.length === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedBoxes.length === instructorCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function updateInstructorBulkActionsButton() {
+    const checkedBoxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+    const bulkButton = document.getElementById('instructorBulkActionsBtn');
+
+    if (checkedBoxes.length > 0) {
+        if (!bulkButton) {
+            createInstructorBulkActionsButton(checkedBoxes.length);
+        } else {
+            bulkButton.querySelector('.count').textContent = checkedBoxes.length;
+        }
+    } else {
+        if (bulkButton) {
+            bulkButton.remove();
+        }
+    }
+}
+
+function createInstructorBulkActionsButton(count) {
+    const header = document.querySelector('header .flex.items-center.space-x-4');
+    const button = document.createElement('button');
+    button.id = 'instructorBulkActionsBtn';
+    button.className = 'px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors';
+    button.innerHTML = `<i class="fas fa-tasks mr-2"></i>Bulk Actions (<span class="count">${count}</span>)`;
+    button.onclick = () => showToast('Bulk actions for instructors', 'info');
+
+    header.insertBefore(button, header.lastElementChild);
+}
+
+function approveInstructor(instructorId) {
+    confirmAction('Are you sure you want to approve this instructor?', function() {
+        showPageLoader();
+
+        setTimeout(() => {
+            hidePageLoader();
+            showToast('Instructor approved successfully!', 'success');
+
+            // Update status badge
+            const statusBadge = document.querySelector(`[data-status-id="${instructorId}"]`);
+            if (statusBadge) {
+                statusBadge.className = statusBadge.className.replace(/status-\w+/, 'status-active');
+                statusBadge.textContent = 'Active';
+            }
+
+            // Update action buttons
+            const row = statusBadge.closest('tr');
+            const actionsCell = row.querySelector('td:last-child');
+            actionsCell.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <button onclick="viewInstructorProfile('${instructorId}')" class="text-blue-600 hover:text-blue-900" title="View Profile">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button onclick="editInstructor('${instructorId}')" class="text-blue-600 hover:text-blue-900" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="toggleStatus('${instructorId}', 'active', 'instructor')" class="text-red-600 hover:text-red-900" title="Deactivate">
+                        <i class="fas fa-user-times"></i>
+                    </button>
+                    <button onclick="deleteInstructor('${instructorId}')" class="text-red-600 hover:text-red-900" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }, 1500);
+    });
+}
+
+function rejectInstructor(instructorId) {
+    confirmAction('Are you sure you want to reject this instructor application?', function() {
+        showPageLoader();
+
+        setTimeout(() => {
+            hidePageLoader();
+            showToast('Instructor application rejected', 'warning');
+
+            // Update status badge
+            const statusBadge = document.querySelector(`[data-status-id="${instructorId}"]`);
+            if (statusBadge) {
+                statusBadge.className = statusBadge.className.replace(/status-\w+/, 'status-rejected');
+                statusBadge.textContent = 'Rejected';
+            }
+        }, 1500);
+    });
+}
+
+function viewInstructorProfile(instructorId) {
+    openModal('instructorProfileModal');
+
+    // Simulate loading profile data
+    setTimeout(() => {
+        const profileContent = document.getElementById('instructorProfileContent');
+        profileContent.innerHTML = `
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">JD</span>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-800">John Doe</h4>
+                    <p class="text-gray-600">Web Development Specialist</p>
+                    <div class="flex items-center mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-medium text-gray-800 mb-2">Contact Information</h5>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="text-gray-500">Email:</span> john.doe@example.com</p>
+                        <p><span class="text-gray-500">Phone:</span> +1 (555) 123-4567</p>
+                        <p><span class="text-gray-500">Location:</span> New York, USA</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-medium text-gray-800 mb-2">Statistics</h5>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="text-gray-500">Courses:</span> 12</p>
+                        <p><span class="text-gray-500">Students:</span> 1,234</p>
+                        <p><span class="text-gray-500">Rating:</span> 4.8/5.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h5 class="font-medium text-gray-800 mb-2">Bio</h5>
+                <p class="text-sm text-gray-600">Experienced web developer with over 8 years in the industry. Specializes in modern JavaScript frameworks and full-stack development.</p>
+            </div>
+
+            <div class="mt-6">
+                <h5 class="font-medium text-gray-800 mb-2">Permissions</h5>
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Create Courses</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Manage Students</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Manage Content</span>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function editInstructor(instructorId) {
+    showToast('Edit instructor functionality would be implemented here', 'info');
+}
+
+function deleteInstructor(instructorId) {
+    deleteItem(instructorId, 'instructor', function() {
+        showToast('Instructor deleted successfully!', 'success');
+        setTimeout(() => location.reload(), 1000);
+    });
+}
+
+function clearInstructorFilters() {
+    document.getElementById('instructorSearch').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('experienceFilter').value = '';
+
+    // Show all rows
+    const rows = document.querySelectorAll('#instructorsTable tbody tr');
+    rows.forEach(row => row.style.display = '');
+
+    // Update stats
+    updateTableStats('instructorsTable');
+}
+</script>
+
+<%- include('partials/footer') %>

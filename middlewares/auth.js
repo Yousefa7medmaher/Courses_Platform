@@ -53,6 +53,15 @@ export const authorize = (...roles) => {
       if (req.originalUrl.startsWith('/api/')) {
         return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
       }
+
+      // Check if it's an admin route
+      if (req.originalUrl.startsWith('/admin/')) {
+        return res.render('admin/access-denied', {
+          user: req.user,
+          title: 'Access Denied'
+        });
+      }
+
       return res.status(403).render('error', {
         message: 'Access denied. Insufficient permissions.',
         error: { status: 403 }

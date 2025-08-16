@@ -1,5 +1,6 @@
 import CourseModel from '../models/coursemodel.js';
 import User from '../models/usermodel.js';
+import imageOptimizer from '../utils/imageOptimizer.js';
 
 class CourseService {
   /**
@@ -121,12 +122,39 @@ class CourseService {
    * Create a new course
    * @param {Object} courseData - Course data
    * @param {string} instructorId - Instructor ID
+   * @param {Object} file - Uploaded file (optional)
    * @returns {Object} Created course
    */
-  async createCourse(courseData, instructorId) {
+  async createCourse(courseData, instructorId, file = null) {
     const instructor = await User.findById(instructorId);
     if (!instructor || (instructor.role !== 'instructor' && instructor.role !== 'admin')) {
       throw new Error('Only instructors can create courses');
+    }
+
+    // Process image if provided
+    if (file) {
+      try {
+        // For Cloudinary uploads, generate responsive URLs
+        if (file.path && file.path.includes('cloudinary.com')) {
+          const publicId = file.filename || file.public_id;
+          const responsiveUrls = imageOptimizer.generateCloudinaryUrls(publicId);
+          courseData.imageUrl = file.path;
+          courseData.responsiveImages = responsiveUrls;
+        }
+        // For local uploads, use processed images if available
+        else if (file.processedImages) {
+          courseData.imageUrl = file.optimizedUrl || file.path;
+          courseData.responsiveImages = file.processedImages;
+        }
+        // Fallback to original file
+        else {
+          courseData.imageUrl = file.path;
+        }
+      } catch (error) {
+        console.error('Image processing error during course creation:', error);
+        // Continue with course creation even if image processing fails
+        courseData.imageUrl = file.path;
+      }
     }
 
     const course = new CourseModel({
@@ -145,9 +173,10 @@ class CourseService {
    * @param {string} courseId - Course ID
    * @param {Object} updateData - Update data
    * @param {string} userId - User ID
+   * @param {Object} file - Uploaded file (optional)
    * @returns {Object} Updated course
    */
-  async updateCourse(courseId, updateData, userId) {
+  async updateCourse(courseId, updateData, userId, file = null) {
     const course = await CourseModel.findById(courseId);
     if (!course) {
       throw new Error('Course not found');
@@ -161,6 +190,32 @@ class CourseService {
     // Check permissions
     if (user.role !== 'admin' && course.instructor.toString() !== userId) {
       throw new Error('Access denied. You can only edit your own courses.');
+    }
+
+    // Process new image if provided
+    if (file) {
+      try {
+        // For Cloudinary uploads, generate responsive URLs
+        if (file.path && file.path.includes('cloudinary.com')) {
+          const publicId = file.filename || file.public_id;
+          const responsiveUrls = imageOptimizer.generateCloudinaryUrls(publicId);
+          updateData.imageUrl = file.path;
+          updateData.responsiveImages = responsiveUrls;
+        }
+        // For local uploads, use processed images if available
+        else if (file.processedImages) {
+          updateData.imageUrl = file.optimizedUrl || file.path;
+          updateData.responsiveImages = file.processedImages;
+        }
+        // Fallback to original file
+        else {
+          updateData.imageUrl = file.path;
+        }
+      } catch (error) {
+        console.error('Image processing error during course update:', error);
+        // Continue with course update even if image processing fails
+        updateData.imageUrl = file.path;
+      }
     }
 
     const updatedCourse = await CourseModel.findByIdAndUpdate(

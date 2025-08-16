@@ -1,185 +1,296 @@
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1 class="auth-title">Join JooCourses</h1>
-            <p class="auth-subtitle">Create your account and start learning today</p>
-        </div>
-
-        <div class="auth-body">
-            <form id="register-form" action="/register" method="POST" class="auth-form" novalidate>
-                <div class="form-group">
-                    <label for="name" class="form-label">
-                        <i class="fas fa-user"></i>
-                        Full Name
-                    </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        class="form-control" 
-                        placeholder="Enter your full name"
-                        required
-                        autocomplete="name"
-                    >
-                    <span class="form-error" id="name-error"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="email" class="form-label">
-                        <i class="fas fa-envelope"></i>
-                        Email Address
-                    </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        class="form-control" 
-                        placeholder="Enter your email"
-                        required
-                        autocomplete="email"
-                    >
-                    <span class="form-error" id="email-error"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone" class="form-label">
-                        <i class="fas fa-phone"></i>
-                        Phone Number (Optional)
-                    </label>
-                    <input 
-                        type="tel" 
-                        id="phone" 
-                        name="phone" 
-                        class="form-control" 
-                        placeholder="Enter your phone number"
-                        autocomplete="tel"
-                    >
-                    <span class="form-error" id="phone-error"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="password" class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Password
-                    </label>
-                    <div class="password-input-group">
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            class="form-control" 
-                            placeholder="Create a strong password"
-                            required
-                            autocomplete="new-password"
-                        >
-                        <button type="button" class="password-toggle" id="password-toggle">
-                            <i class="fas fa-eye"></i>
-                        </button>
+<!-- Register Page Container -->
+<div class="auth-page-container">
+    <div class="auth-layout">
+        <!-- Left Side - Registration Form -->
+        <div class="auth-form-section">
+            <div class="auth-form-container">
+                <!-- Brand Logo -->
+                <div class="auth-brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <div class="password-strength" id="password-strength"></div>
-                    <span class="form-error" id="password-error"></span>
+                    <h1 class="brand-name">JooCourses</h1>
                 </div>
 
-                <div class="form-group">
-                    <label for="confirmPassword" class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Confirm Password
-                    </label>
-                    <div class="password-input-group">
-                        <input 
-                            type="password" 
-                            id="confirmPassword" 
-                            name="confirmPassword" 
-                            class="form-control" 
-                            placeholder="Confirm your password"
-                            required
-                            autocomplete="new-password"
-                        >
-                        <button type="button" class="password-toggle" id="confirm-password-toggle">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                <!-- Form Header -->
+                <div class="form-header">
+                    <h2 class="form-title">Create Your Account</h2>
+                    <p class="form-subtitle">Join thousands of learners and start your journey today</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="register-form" action="/register" method="POST" class="modern-form" novalidate>
+                    <!-- Name Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-input"
+                                placeholder="Enter your full name"
+                                required
+                                autocomplete="name"
+                            >
+                            <label for="name" class="input-label">Full Name</label>
+                        </div>
+                        <div class="error-message" id="name-error"></div>
                     </div>
-                    <span class="form-error" id="confirm-password-error"></span>
+
+                    <!-- Email Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-input"
+                                placeholder="Enter your email address"
+                                required
+                                autocomplete="email"
+                            >
+                            <label for="email" class="input-label">Email Address</label>
+                        </div>
+                        <div class="error-message" id="email-error"></div>
+                    </div>
+
+                    <!-- Phone Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="form-input"
+                                placeholder="Enter your phone number (optional)"
+                                autocomplete="tel"
+                            >
+                            <label for="phone" class="input-label">Phone Number (Optional)</label>
+                        </div>
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="Create a strong password"
+                                required
+                                autocomplete="new-password"
+                            >
+                            <label for="password" class="input-label">Password</label>
+                            <button type="button" class="password-toggle" id="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="password-strength"></div>
+                        <div class="error-message" id="password-error"></div>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                class="form-input"
+                                placeholder="Confirm your password"
+                                required
+                                autocomplete="new-password"
+                            >
+                            <label for="confirmPassword" class="input-label">Confirm Password</label>
+                            <button type="button" class="password-toggle" id="confirm-password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="error-message" id="confirm-password-error"></div>
+                    </div>
+
+                    <!-- Role Selection -->
+                    <div class="input-group">
+                        <div class="role-selection">
+                            <label class="role-label">I want to:</label>
+                            <div class="role-options">
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="student" required>
+                                    <div class="role-card">
+                                        <div class="role-icon">
+                                            <i class="fas fa-book-reader"></i>
+                                        </div>
+                                        <div class="role-info">
+                                            <h4 class="role-title">Learn</h4>
+                                            <p class="role-desc">Join as a Student</p>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="instructor" required>
+                                    <div class="role-card">
+                                        <div class="role-icon">
+                                            <i class="fas fa-chalkboard-teacher"></i>
+                                        </div>
+                                        <div class="role-info">
+                                            <h4 class="role-title">Teach</h4>
+                                            <p class="role-desc">Join as an Instructor</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="error-message" id="role-error"></div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="input-group">
+                        <label class="custom-checkbox terms-checkbox">
+                            <input type="checkbox" name="terms" id="terms" required>
+                            <span class="checkbox-mark"></span>
+                            <span class="checkbox-text">
+                                I agree to the <a href="/terms" target="_blank" class="terms-link">Terms of Service</a>
+                                and <a href="/privacy" target="_blank" class="terms-link">Privacy Policy</a>
+                            </span>
+                        </label>
+                        <div class="error-message" id="terms-error"></div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn primary-btn">
+                        <span class="btn-text">
+                            <i class="fas fa-user-plus"></i>
+                            Create Account
+                        </span>
+                        <div class="btn-loader">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <!-- Divider -->
+                    <div class="form-divider">
+                        <span class="divider-text">or continue with</span>
+                    </div>
+
+                    <!-- Social Login -->
+                    <div class="social-login">
+                        <a href="/auth/google" class="social-btn google-btn">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Form Footer -->
+                <div class="form-footer">
+                    <p class="switch-form-text">
+                        Already have an account?
+                        <a href="/login" class="switch-form-link">Sign in here</a>
+                    </p>
                 </div>
-
-                <div class="form-group">
-                    <label for="role" class="form-label">
-                        <i class="fas fa-user-tag"></i>
-                        I want to
-                    </label>
-                    <select id="role" name="role" class="form-control" required>
-                        <option value="">Select your role</option>
-                        <option value="student">Learn (Student)</option>
-                        <option value="instructor">Teach (Instructor)</option>
-                    </select>
-                    <span class="form-error" id="role-error"></span>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="terms" id="terms" required>
-                        <span class="checkmark"></span>
-                        I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
-                    </label>
-                    <span class="form-error" id="terms-error"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block auth-submit">
-                    <i class="fas fa-user-plus"></i>
-                    Create Account
-                </button>
-            </form>
-
-            <div class="auth-divider">
-                <span>or</span>
-            </div>
-
-            <div class="social-auth">
-                <a href="/auth/google" class="btn btn-outline btn-block social-btn">
-                    <i class="fab fa-google"></i>
-                    Sign up with Google
-                </a>
             </div>
         </div>
 
-        <div class="auth-footer">
-            <p class="auth-switch">
-                Already have an account? 
-                <a href="/login" class="auth-link">Sign in here</a>
-            </p>
-        </div>
-    </div>
+        <!-- Right Side - Benefits/Features -->
+        <div class="auth-benefits-section">
+            <div class="benefits-container">
+                <div class="benefits-header">
+                    <h3 class="benefits-title">Start Your Learning Journey</h3>
+                    <p class="benefits-subtitle">Join our community of passionate learners and educators</p>
+                </div>
 
-    <!-- Registration Benefits -->
-    <div class="auth-benefits">
-        <h3>Start Your Learning Journey</h3>
-        <div class="benefits-list">
-            <div class="benefit-item">
-                <i class="fas fa-book-open"></i>
-                <div>
-                    <h4>10,000+ Courses</h4>
-                    <p>Choose from a vast library of courses</p>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4 class="benefit-title">10,000+ Courses</h4>
+                            <p class="benefit-description">Choose from our vast library of expert-created courses</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4 class="benefit-title">Global Community</h4>
+                            <p class="benefit-description">Connect with learners and instructors worldwide</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4 class="benefit-title">Skill Certificates</h4>
+                            <p class="benefit-description">Earn certificates to showcase your achievements</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4 class="benefit-title">Unlimited Access</h4>
+                            <p class="benefit-description">Learn at your own pace with lifetime access</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="benefit-item">
-                <i class="fas fa-users"></i>
-                <div>
-                    <h4>Expert Community</h4>
-                    <p>Connect with learners worldwide</p>
+
+                <!-- Registration Steps -->
+                <div class="registration-steps">
+                    <h4 class="steps-title">Getting Started is Easy</h4>
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-text">Create your account</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-text">Choose your learning path</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-text">Start learning immediately</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="benefit-item">
-                <i class="fas fa-trophy"></i>
-                <div>
-                    <h4>Skill Certificates</h4>
-                    <p>Showcase your achievements</p>
-                </div>
-            </div>
-            <div class="benefit-item">
-                <i class="fas fa-infinity"></i>
-                <div>
-                    <h4>Unlimited Access</h4>
-                    <p>Learn at your own pace</p>
+
+                <!-- Stats -->
+                <div class="auth-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1,000+</div>
+                        <div class="stat-label">Instructors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -157,11 +157,15 @@ const courseSchema = new mongoose.Schema({
     default: '',
     validate: {
       validator: function(v) {
-        return true ; 
+        return true ;
         // return !v || /^https?:\/\/.+/.test(v);
       },
       message: 'Please provide a valid image URL'
     }
+  },
+  responsiveImages: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
   },
   status: {
     type: String,

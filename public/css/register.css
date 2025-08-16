@@ -1,24 +1,36 @@
-/* ===== REGISTER PAGE STYLES ===== */
+/* ===== MODERN REGISTER PAGE STYLES ===== */
 
 /* Import login styles as base */
 @import url('./login.css');
 
 /* ===== REGISTER SPECIFIC OVERRIDES ===== */
 
-.auth-card {
-    max-width: 450px; /* Slightly wider for register form */
+/* Wider form section for register */
+.auth-form-section {
+    padding: var(--spacing-2xl) var(--spacing-3xl);
+}
+
+.auth-form-container {
+    max-width: 450px;
 }
 
 /* ===== ROLE SELECTION ===== */
 .role-selection {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.role-label {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-base);
 }
 
 .role-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-md);
-    margin-top: var(--spacing-sm);
 }
 
 .role-option {
@@ -34,376 +46,420 @@
 
 .role-card {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: var(--spacing-md);
     padding: var(--spacing-lg);
     border: 2px solid var(--border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     background: var(--bg-primary);
     cursor: pointer;
-    transition: all var(--transition-fast);
-    text-align: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.role-card:hover::before {
+    left: 100%;
 }
 
 .role-card:hover {
     border-color: var(--primary);
     background: var(--bg-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .role-option input[type="radio"]:checked + .role-card {
     border-color: var(--primary);
     background: var(--primary-50);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.role-option input[type="radio"]:checked + .role-card::before {
+    display: none;
 }
 
 .role-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: var(--text-white);
-    border-radius: 50%;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    margin-bottom: var(--spacing-sm);
-    transition: all var(--transition-fast);
+    flex-shrink: 0;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .role-option input[type="radio"]:checked + .role-card .role-icon {
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.role-info {
+    flex: 1;
 }
 
 .role-title {
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-base);
+}
+
+.role-desc {
     font-size: var(--font-size-sm);
-}
-
-.role-description {
-    font-size: var(--font-size-xs);
     color: var(--text-secondary);
-    line-height: 1.4;
+    line-height: var(--line-height-relaxed);
+    margin: 0;
 }
 
-/* ===== FORM GRID ===== */
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+.role-option input[type="radio"]:checked + .role-card .role-title {
+    color: var(--primary-dark);
 }
 
-.form-row .form-group {
-    margin-bottom: 0;
+.role-option input[type="radio"]:checked + .role-card .role-desc {
+    color: var(--primary);
 }
 
-/* ===== PASSWORD STRENGTH ===== */
+/* ===== PASSWORD STRENGTH INDICATOR ===== */
 .password-strength {
     margin-top: var(--spacing-sm);
-    display: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all var(--transition-normal);
 }
 
-.password-strength.show {
-    display: block;
+.password-strength.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .strength-bar {
-    height: 4px;
+    height: 6px;
     background: var(--border-light);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+    position: relative;
 }
 
 .strength-fill {
     height: 100%;
     width: 0%;
     transition: all var(--transition-normal);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
+    position: relative;
+}
+
+.strength-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
 .strength-weak .strength-fill {
     width: 33%;
-    background: var(--error);
+    background: linear-gradient(135deg, var(--error), var(--error-dark));
 }
 
 .strength-medium .strength-fill {
     width: 66%;
-    background: var(--warning);
+    background: linear-gradient(135deg, var(--warning), var(--warning-dark));
 }
 
 .strength-strong .strength-fill {
     width: 100%;
-    background: var(--success);
+    background: linear-gradient(135deg, var(--success), var(--success-dark));
 }
 
 .strength-text {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.strength-text::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .strength-weak .strength-text {
     color: var(--error);
 }
 
+.strength-weak .strength-text::before {
+    background: var(--error);
+}
+
 .strength-medium .strength-text {
     color: var(--warning);
+}
+
+.strength-medium .strength-text::before {
+    background: var(--warning);
 }
 
 .strength-strong .strength-text {
     color: var(--success);
 }
 
-/* ===== TERMS AND CONDITIONS ===== */
-.terms-group {
-    margin-bottom: var(--spacing-xl);
+.strength-strong .strength-text::before {
+    background: var(--success);
 }
 
+/* ===== TERMS CHECKBOX ===== */
 .terms-checkbox {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
 }
 
-.terms-checkbox input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary);
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.terms-text {
+.terms-checkbox .checkbox-text {
     font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
     color: var(--text-secondary);
-    line-height: 1.5;
 }
 
-.terms-text a {
+.terms-link {
     color: var(--primary);
     text-decoration: none;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-fast);
+    padding: 1px 2px;
+    border-radius: var(--radius-xs);
 }
 
-.terms-text a:hover {
-    text-decoration: underline;
+.terms-link:hover {
+    color: var(--primary-dark);
+    background: var(--primary-50);
+    text-decoration: none;
 }
 
-/* ===== INSTRUCTOR SPECIFIC FIELDS ===== */
-.instructor-fields {
-    display: none;
-    animation: slideDown 0.3s ease-out;
+/* ===== REGISTRATION STEPS ===== */
+.registration-steps {
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.instructor-fields.show {
-    display: block;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        max-height: 500px;
-        transform: translateY(0);
-    }
-}
-
-.instructor-fields .form-group {
+.steps-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-white);
     margin-bottom: var(--spacing-lg);
+    text-align: center;
 }
 
-.instructor-fields textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* ===== FORM VALIDATION ===== */
-.form-control.valid {
-    border-color: var(--success);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-control.valid + .validation-icon {
-    color: var(--success);
-}
-
-.validation-icon {
-    position: absolute;
-    right: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: var(--font-size-sm);
-    opacity: 0;
-    transition: opacity var(--transition-fast);
-}
-
-.form-control.valid + .validation-icon,
-.form-control.error + .validation-icon {
-    opacity: 1;
-}
-
-.form-control.error + .validation-icon {
-    color: var(--error);
-}
-
-/* ===== PROGRESS INDICATOR ===== */
-.registration-progress {
+.steps-list {
     display: flex;
-    justify-content: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.progress-steps {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: var(--spacing-md);
 }
 
-.progress-step {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--border-light);
-    color: var(--text-muted);
+.step-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    transition: all var(--transition-fast);
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
 }
 
-.progress-step.active {
-    background: var(--primary);
-    color: var(--text-white);
+.step-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
 }
 
-.progress-step.completed {
-    background: var(--success);
-    color: var(--text-white);
-}
-
-.progress-connector {
-    width: 40px;
-    height: 2px;
-    background: var(--border-light);
-    transition: background var(--transition-fast);
-}
-
-.progress-connector.completed {
-    background: var(--success);
-}
-
-/* ===== SUCCESS MESSAGE ===== */
-.registration-success {
-    text-align: center;
-    padding: var(--spacing-2xl);
-    display: none;
-}
-
-.registration-success.show {
-    display: block;
-}
-
-.success-icon {
-    width: 80px;
-    height: 80px;
-    background: var(--success);
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
     color: var(--text-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    margin: 0 auto var(--spacing-lg);
-    animation: bounceIn 0.6s ease-out;
-}
-
-@keyframes bounceIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.3);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.05);
-    }
-    70% {
-        transform: scale(0.9);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.success-title {
-    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    flex-shrink: 0;
 }
 
-.success-message {
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-xl);
-    line-height: 1.6;
+.step-text {
+    color: var(--text-white);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    opacity: 0.9;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+/* ===== FORM VALIDATION ENHANCEMENTS ===== */
+.form-input.valid {
+    border-color: var(--success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.form-input.valid + .input-label {
+    color: var(--success);
+}
+
+.form-input.valid ~ .input-icon {
+    color: var(--success);
+}
+
+/* ===== REGISTER RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .auth-form-section {
+        padding: var(--spacing-2xl);
+    }
+
+    .registration-steps {
+        padding: var(--spacing-lg);
+    }
+
+    .steps-list {
+        gap: var(--spacing-sm);
+    }
+}
+
 @media (max-width: 768px) {
     .role-options {
         grid-template-columns: 1fr;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
-    .form-row .form-group {
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .progress-steps {
         gap: var(--spacing-sm);
     }
-    
-    .progress-connector {
-        width: 20px;
+
+    .role-card {
+        padding: var(--spacing-md);
+    }
+
+    .role-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .registration-steps {
+        margin-bottom: var(--spacing-xl);
+        padding: var(--spacing-md);
+    }
+
+    .steps-list {
+        gap: var(--spacing-xs);
+    }
+
+    .step-item {
+        padding: var(--spacing-sm);
+    }
+
+    .step-number {
+        width: 28px;
+        height: 28px;
+        font-size: var(--font-size-xs);
     }
 }
 
 @media (max-width: 480px) {
-    .auth-card {
+    .auth-form-container {
         max-width: 100%;
     }
-    
+
     .role-card {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
         padding: var(--spacing-md);
+        min-height: 44px; /* Touch-friendly */
     }
-    
+
     .role-icon {
-        width: 35px;
-        height: 35px;
+        width: 36px;
+        height: 36px;
         font-size: 1rem;
     }
-    
-    .progress-step {
-        width: 25px;
-        height: 25px;
+
+    .role-info {
+        flex: none;
+    }
+
+    .registration-steps {
+        padding: var(--spacing-sm);
+    }
+
+    .steps-title {
+        font-size: var(--font-size-base);
+    }
+
+    .step-item {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .step-number {
+        width: 24px;
+        height: 24px;
         font-size: var(--font-size-xs);
     }
-    
+
+    .step-text {
+        font-size: var(--font-size-xs);
+    }
+
+    .password-strength {
+        padding: var(--spacing-sm);
+    }
+
+    .strength-text {
+        font-size: var(--font-size-xs);
+    }
+
+    /* Touch-friendly form inputs */
+    .form-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+        min-height: 44px;
+    }
+
     .terms-checkbox {
-        align-items: flex-start;
+        min-height: 44px;
+        align-items: center;
+    }
+
+    .checkbox-mark {
+        min-width: 20px;
+        min-height: 20px;
     }
 }
 
@@ -420,23 +476,46 @@
 }
 
 /* ===== DARK MODE ADJUSTMENTS ===== */
-[data-theme="dark"] .role-card {
-    background: var(--bg-secondary);
-}
+@media (prefers-color-scheme: dark) {
+    .role-card {
+        background: var(--bg-secondary);
+        border-color: var(--border-medium);
+    }
 
-[data-theme="dark"] .role-option input[type="radio"]:checked + .role-card {
-    background: rgba(37, 99, 235, 0.2);
-}
+    .role-option input[type="radio"]:checked + .role-card {
+        background: rgba(37, 99, 235, 0.2);
+    }
 
-[data-theme="dark"] .strength-bar {
-    background: var(--border-medium);
+    .strength-bar {
+        background: var(--border-medium);
+    }
+
+    .password-strength {
+        background: var(--bg-tertiary);
+        border-color: var(--border-medium);
+    }
+
+    .registration-steps {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
 }
 
 /* ===== PRINT STYLES ===== */
 @media print {
-    .registration-progress,
+    .registration-steps,
     .social-login,
-    .auth-submit {
+    .submit-btn,
+    .auth-benefits-section {
+        display: none;
+    }
+
+    .role-card {
+        border: 1px solid #000;
+        background: white;
+    }
+
+    .password-strength {
         display: none;
     }
 }

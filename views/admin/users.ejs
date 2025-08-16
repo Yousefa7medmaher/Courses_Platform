@@ -1,0 +1,605 @@
+<%- include('partials/header', { title: 'User Management' }) %>
+
+<%
+// Default stats if not provided
+const defaultStats = {
+    totalUsers: 1247,
+    activeUsers: 1156,
+    totalInstructors: 89,
+    pendingUsers: 12,
+    pendingInstructors: 5,
+    notifications: 3
+};
+
+const displayStats = (typeof stats !== 'undefined' && stats) ? stats : defaultStats;
+
+// Default users if not provided
+const defaultUsers = [
+    {
+        _id: '507f1f77bcf86cd799439011',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        role: 'student',
+        status: 'active',
+        createdAt: new Date(),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439012',
+        name: 'Sarah Wilson',
+        email: 'sarah.wilson@example.com',
+        role: 'instructor',
+        status: 'active',
+        createdAt: new Date(Date.now() - 86400000),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439013',
+        name: 'Mike Chen',
+        email: 'mike.chen@example.com',
+        role: 'student',
+        status: 'inactive',
+        createdAt: new Date(Date.now() - 172800000),
+        avatar: null
+    },
+    {
+        _id: '507f1f77bcf86cd799439014',
+        name: 'Emily Rodriguez',
+        email: 'emily.rodriguez@example.com',
+        role: 'admin',
+        status: 'active',
+        createdAt: new Date(Date.now() - 259200000),
+        avatar: null
+    }
+];
+
+const displayUsers = (typeof users !== 'undefined' && users) ? users : defaultUsers;
+%>
+
+<!-- Main Layout -->
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <%- include('partials/sidebar', { currentPage: 'users', user: user, stats: displayStats }) %>
+    
+    <!-- Main Content -->
+    <div class="flex-1 lg:ml-64 flex flex-col overflow-hidden">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center space-x-4">
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bars text-gray-600"></i>
+                    </button>
+                    
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">User Management</h1>
+                        <p class="text-sm text-gray-500">Manage all platform users and their permissions</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Export Button -->
+                    <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </button>
+                    
+                    <!-- Create User Button -->
+                    <button onclick="openModal('createUserModal')" class="px-4 py-2 btn-primary text-white rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create User
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Users Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Users</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayUsers.length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Active Users</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayUsers.filter(u => u.status === 'active').length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-check text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Inactive Users</p>
+                            <p class="text-2xl font-bold text-gray-800"><%= displayUsers.filter(u => u.status === 'inactive').length %></p>
+                        </div>
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-times text-red-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">New This Month</p>
+                            <p class="text-2xl font-bold text-gray-800">24</p>
+                        </div>
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-plus text-purple-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+                    <!-- Search -->
+                    <div class="flex-1 max-w-md">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="userSearch" placeholder="Search users by name, email..." 
+                                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                   onkeyup="searchTable(this, 'usersTable')">
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap items-center space-x-4">
+                        <select id="roleFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="filterTable(this, 'usersTable', 3)">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="instructor">Instructor</option>
+                            <option value="student">Student</option>
+                        </select>
+                        
+                        <select id="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                                onchange="filterTable(this, 'usersTable', 4)">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        
+                        <button onclick="clearFilters()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <i class="fas fa-times mr-2"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Results Summary -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p id="usersTableStats" class="text-sm text-gray-600">
+                        Showing <%= displayUsers.length %> of <%= displayUsers.length %> users
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table id="usersTable" class="w-full table-striped table-hover">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% if (displayUsers && displayUsers.length > 0) { %>
+                                <% displayUsers.forEach((user, index) => { %>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" value="<%= user._id %>">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            #<%= user._id ? user._id.toString().slice(-6) : (1000 + index) %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <% if (user.avatar) { %>
+                                                        <img class="h-10 w-10 rounded-full object-cover" src="<%= user.avatar %>" alt="<%= user.name %>">
+                                                    <% } else { %>
+                                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                                            <span class="text-white font-medium text-sm"><%= user.name.charAt(0).toUpperCase() %></span>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900"><%= user.name %></div>
+                                                    <div class="text-sm text-gray-500">@<%= user.username || user.name.toLowerCase().replace(/\s+/g, '') %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= user.email %></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                <%= user.role === 'admin' ? 'bg-red-100 text-red-800' : 
+                                                    user.role === 'instructor' ? 'bg-purple-100 text-purple-800' : 
+                                                    'bg-blue-100 text-blue-800' %>">
+                                                <%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span data-status-id="<%= user._id %>" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium status-<%= user.status %>">
+                                                <%= user.status.charAt(0).toUpperCase() + user.status.slice(1) %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <%= new Date(user.createdAt || Date.now()).toLocaleDateString() %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-2">
+                                                <button onclick="editUser('<%= user._id %>')" class="text-blue-600 hover:text-blue-900" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button data-toggle-id="<%= user._id %>" onclick="toggleStatus('<%= user._id %>', '<%= user.status %>', 'user')" 
+                                                        class="<%= user.status === 'active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900' %>" 
+                                                        title="<%= user.status === 'active' ? 'Deactivate' : 'Activate' %>">
+                                                    <i class="fas fa-<%= user.status === 'active' ? 'user-times' : 'user-check' %>"></i>
+                                                </button>
+                                                <button onclick="deleteUser('<%= user._id %>')" class="text-red-600 hover:text-red-900" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="8" class="px-6 py-12 text-center">
+                                        <div class="text-gray-500">
+                                            <i class="fas fa-users text-4xl mb-4"></i>
+                                            <p class="text-lg font-medium mb-2">No users found</p>
+                                            <p class="text-sm">Get started by creating your first user</p>
+                                            <button onclick="openModal('createUserModal')" class="mt-4 px-4 py-2 btn-primary text-white rounded-lg">
+                                                <i class="fas fa-plus mr-2"></i>
+                                                Create User
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </button>
+                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium"><%= displayUsers.length %></span> results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                                <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Create/Edit User Modal -->
+<div id="createUserModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 relative z-10">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Create New User</h3>
+            <button onclick="closeModal('createUserModal')" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="createUserForm" class="p-6 space-y-4">
+            <div>
+                <label for="userName" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                <input type="text" id="userName" name="name" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter full name">
+            </div>
+
+            <div>
+                <label for="userEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                <input type="email" id="userEmail" name="email" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter email address">
+            </div>
+
+            <div>
+                <label for="userPassword" class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                <input type="password" id="userPassword" name="password" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter password">
+            </div>
+
+            <div>
+                <label for="userRole" class="block text-sm font-medium text-gray-700 mb-2">Role *</label>
+                <select id="userRole" name="role" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Role</option>
+                    <option value="student">Student</option>
+                    <option value="instructor">Instructor</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="userStatus" class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                <select id="userStatus" name="status" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="sendWelcomeEmail" name="sendWelcomeEmail"
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label for="sendWelcomeEmail" class="ml-2 text-sm text-gray-700">Send welcome email</label>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="closeModal('createUserModal')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 btn-primary text-white rounded-lg">
+                    Create User
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bulk Actions Modal -->
+<div id="bulkActionsModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 relative z-10">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Bulk Actions</h3>
+            <button onclick="closeModal('bulkActionsModal')" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <p class="text-sm text-gray-600 mb-4">Select an action to apply to <span id="selectedCount">0</span> selected users:</p>
+
+            <div class="space-y-3">
+                <button onclick="bulkAction('activate')" class="w-full flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-check text-green-600"></i>
+                        <span class="font-medium text-green-800">Activate Users</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-green-400"></i>
+                </button>
+
+                <button onclick="bulkAction('deactivate')" class="w-full flex items-center justify-between p-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-times text-red-600"></i>
+                        <span class="font-medium text-red-800">Deactivate Users</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-red-400"></i>
+                </button>
+
+                <button onclick="bulkAction('delete')" class="w-full flex items-center justify-between p-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-trash text-red-600"></i>
+                        <span class="font-medium text-red-800">Delete Users</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-red-400"></i>
+                </button>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-6">
+                <button onclick="closeModal('bulkActionsModal')"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// User management specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initUserManagement();
+});
+
+function initUserManagement() {
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const userCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateBulkActionsButton();
+        });
+    }
+
+    // Individual checkbox change
+    userCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectAllState();
+            updateBulkActionsButton();
+        });
+    });
+
+    // Form submission
+    const createUserForm = document.getElementById('createUserForm');
+    if (createUserForm) {
+        createUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitForm('createUserForm', function() {
+                showToast('User created successfully!', 'success');
+                closeModal('createUserModal');
+                // Refresh page or update table
+                setTimeout(() => location.reload(), 1000);
+            });
+        });
+    }
+}
+
+function updateSelectAllState() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const userCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+    const checkedBoxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+
+    if (checkedBoxes.length === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedBoxes.length === userCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function updateBulkActionsButton() {
+    const checkedBoxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+    const bulkButton = document.getElementById('bulkActionsBtn');
+
+    if (checkedBoxes.length > 0) {
+        if (!bulkButton) {
+            createBulkActionsButton(checkedBoxes.length);
+        } else {
+            bulkButton.querySelector('.count').textContent = checkedBoxes.length;
+        }
+    } else {
+        if (bulkButton) {
+            bulkButton.remove();
+        }
+    }
+}
+
+function createBulkActionsButton(count) {
+    const header = document.querySelector('header .flex.items-center.space-x-4');
+    const button = document.createElement('button');
+    button.id = 'bulkActionsBtn';
+    button.className = 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors';
+    button.innerHTML = `<i class="fas fa-tasks mr-2"></i>Bulk Actions (<span class="count">${count}</span>)`;
+    button.onclick = () => openModal('bulkActionsModal');
+
+    header.insertBefore(button, header.lastElementChild);
+}
+
+function editUser(userId) {
+    // Open edit modal with user data
+    showToast('Edit functionality would be implemented here', 'info');
+}
+
+function deleteUser(userId) {
+    deleteItem(userId, 'user', function() {
+        showToast('User deleted successfully!', 'success');
+        // Remove row from table or refresh
+        setTimeout(() => location.reload(), 1000);
+    });
+}
+
+function bulkAction(action) {
+    const checkedBoxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+    const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+    let message = '';
+    switch(action) {
+        case 'activate':
+            message = `Are you sure you want to activate ${userIds.length} users?`;
+            break;
+        case 'deactivate':
+            message = `Are you sure you want to deactivate ${userIds.length} users?`;
+            break;
+        case 'delete':
+            message = `Are you sure you want to delete ${userIds.length} users? This action cannot be undone.`;
+            break;
+    }
+
+    confirmAction(message, function() {
+        showPageLoader();
+
+        // Simulate API call
+        setTimeout(() => {
+            hidePageLoader();
+            closeModal('bulkActionsModal');
+            showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} action completed successfully!`, 'success');
+
+            // Clear selections
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            updateBulkActionsButton();
+
+            // Refresh page
+            setTimeout(() => location.reload(), 1000);
+        }, 2000);
+    });
+}
+
+function clearFilters() {
+    document.getElementById('userSearch').value = '';
+    document.getElementById('roleFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+
+    // Show all rows
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    rows.forEach(row => row.style.display = '');
+
+    // Update stats
+    updateTableStats('usersTable');
+}
+</script>
+
+<%- include('partials/footer') %>

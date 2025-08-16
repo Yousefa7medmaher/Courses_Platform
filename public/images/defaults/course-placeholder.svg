@@ -1,0 +1,10 @@
+<svg width="400" height="225" viewBox="0 0 400 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="225" fill="#F8F9FA"/>
+  <rect x="50" y="50" width="300" height="125" rx="8" fill="#E9ECEF"/>
+  <circle cx="200" cy="112.5" r="25" fill="#6C757D"/>
+  <path d="M190 102.5L210 112.5L190 122.5V102.5Z" fill="#F8F9FA"/>
+  <rect x="75" y="190" width="100" height="8" rx="4" fill="#DEE2E6"/>
+  <rect x="75" y="205" width="150" height="6" rx="3" fill="#DEE2E6"/>
+  <rect x="300" y="190" width="75" height="20" rx="10" fill="#007BFF"/>
+  <text x="337.5" y="203" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="600">COURSE</text>
+</svg>

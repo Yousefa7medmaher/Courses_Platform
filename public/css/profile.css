@@ -1,5 +1,10 @@
 /* ===== PROFILE PAGE STYLES ===== */
-
+.page-title { 
+    color : white ;
+}
+.page-subtitle  { 
+    color : rgba(255, 255, 255, 0.705) ;
+}
 /* ===== PROFILE LAYOUT ===== */
 .profile-layout {
     display: grid;

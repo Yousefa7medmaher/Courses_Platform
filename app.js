@@ -16,6 +16,9 @@ import userRoutes from './routes/userRoutes.js';
 import instructorRoutes from './routes/instructorRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import webRoutes from './routes/webRoutes.js';
+import { serveDefaultImage, addDefaultsToLocals } from './middlewares/imageDefaults.js';
+import { addImageHelpersToLocals } from './utils/imageHelpers.js';
+import { addImageSecurityHeaders } from './middlewares/imageSecurity.js';
 
 dotenv.config();
 
@@ -64,9 +67,15 @@ app.set('layout', 'layouts/layout');
 app.set('layout extractScripts', true);
 app.set('layout extractStyles', true);
 
-// Static files
+// Static files with default image fallback and security headers
+app.use(addImageSecurityHeaders);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(serveDefaultImage);
+
+// Add image helpers to template locals
+app.use(addDefaultsToLocals);
+app.use(addImageHelpersToLocals);
 
 // // CORS
 // const allowedOrigins = [
@@ -108,7 +117,10 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  console.error('🚨 Global Error Handler:', err);
+  console.error('🚨 Error message:', err.message);
+  console.error('🚨 Error stack:', err.stack);
+  console.error('🚨 Request URL:', req.originalUrl);
 
   if (req.originalUrl.startsWith('/api/')) {
     return res.status(err.status || 500).json({
@@ -118,13 +130,17 @@ app.use((err, req, res, next) => {
     });
   }
 
+  // Check if it's an admin route and disable layout
+  const layoutSetting = req.originalUrl.startsWith('/admin/') ? false : undefined;
+
   res.status(err.status || 500).render('error', {
     title: 'Error',
     message: err.message || 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err : { status: err.status || 500 }
+    error: process.env.NODE_ENV === 'development' ? err : { status: err.status || 500 },
+    layout: layoutSetting
   });
 });
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5011;
 
 // HTTPS setup
 const httpsOptions = {

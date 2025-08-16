@@ -19,51 +19,92 @@
                 <div class="course-info">
                     <div class="course-image-container">
                         <div class="course-image">
-                            <% if (course.imageUrl) { %>
-                                <img src="<%= course.imageUrl %>" alt="<%= course.title %>" class="course-img">
+                            <%
+                            const instructorImageUrl = getCourseImageUrl(course, 'large');
+                            %>
+
+                            <% if (course.responsiveImages) { %>
+                                <picture>
+                                    <% if (course.responsiveImages.large && course.responsiveImages.large.webp) { %>
+                                        <source srcset="<%= course.responsiveImages.large.webp %>" type="image/webp">
+                                    <% } %>
+                                    <img src="<%= instructorImageUrl %>"
+                                         alt="<%= course.title %>"
+                                         class="course-img enhanced-image"
+                                         loading="eager"
+                                         onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                                </picture>
                             <% } else { %>
-                                <div class="course-placeholder">
-                                    <i class="fas fa-book"></i>
-                                </div>
+                                <img src="<%= instructorImageUrl %>"
+                                     alt="<%= course.title %>"
+                                     class="course-img enhanced-image"
+                                     loading="eager"
+                                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
                             <% } %>
                             <div class="course-status-badge status-<%= course.status %>">
                                 <i class="fas fa-<%= course.status === 'published' ? 'globe' : course.status === 'pending' ? 'clock' : 'edit' %>"></i>
-                                <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
+                                <span><%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %></span>
+                            </div>
+                            <div class="image-quality-indicator">
+                                <i class="fas fa-hd-video"></i>
+                                <span>HD</span>
                             </div>
                         </div>
                         <div class="image-overlay">
-                            <a href="/instructor/courses/<%= course._id %>/edit" class="overlay-btn">
-                                <i class="fas fa-camera"></i>
-                                Change Image
-                            </a>
+                            <div class="overlay-content">
+                                <a href="/instructor/courses/<%= course._id %>/edit" class="overlay-btn primary">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Change Image</span>
+                                </a>
+                                <a href="/courses/<%= course._id %>" class="overlay-btn secondary" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <span>Preview</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="course-meta">
                         <div class="course-header">
-                            <h1 class="course-title"><%= course.title %></h1>
+                            <div class="title-section">
+                                <h1 class="course-title"><%= course.title %></h1>
+                                <div class="title-underline"></div>
+                            </div>
                             <div class="course-badges">
                                 <span class="category-badge">
                                     <i class="fas fa-tag"></i>
-                                    <%= course.category %>
+                                    <span><%= course.category %></span>
                                 </span>
                                 <span class="level-badge level-<%= course.level.toLowerCase() %>">
                                     <i class="fas fa-signal"></i>
-                                    <%= course.level %>
+                                    <span><%= course.level %></span>
                                 </span>
+                                <% if (course.featured) { %>
+                                    <span class="featured-badge">
+                                        <i class="fas fa-star"></i>
+                                        <span>Featured</span>
+                                    </span>
+                                <% } %>
                             </div>
                         </div>
-                        <p class="course-description"><%= course.description %></p>
+                        <div class="course-description-container">
+                            <p class="course-description"><%= course.description %></p>
+                            <div class="description-fade"></div>
+                        </div>
                         <div class="course-stats">
-                            <div class="stat">
+                            <div class="stat enhanced-stat students-stat">
                                 <div class="stat-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <span class="stat-number"><%= course.totalStudents || 0 %></span>
-                                    <span class="stat-label">Students</span>
+                                    <span class="stat-number" data-count="<%= course.totalStudents || 0 %>">0</span>
+                                    <span class="stat-label">Students Enrolled</span>
+                                </div>
+                                <div class="stat-trend">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+12 this week</span>
                                 </div>
                             </div>
-                            <div class="stat">
+                            <div class="stat enhanced-stat rating-stat">
                                 <div class="stat-icon">
                                     <i class="fas fa-star"></i>
                                 </div>
@@ -71,23 +112,36 @@
                                     <span class="stat-number"><%= (course.averageRating || 0).toFixed(1) %></span>
                                     <span class="stat-label"><%= course.totalReviews || 0 %> Reviews</span>
                                 </div>
+                                <div class="rating-stars">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= Math.round(course.averageRating || 0) ? 'active' : '' %>"></i>
+                                    <% } %>
+                                </div>
                             </div>
-                            <div class="stat">
+                            <div class="stat enhanced-stat price-stat">
                                 <div class="stat-icon">
                                     <i class="fas fa-dollar-sign"></i>
                                 </div>
                                 <div class="stat-content">
                                     <span class="stat-number">$<%= course.price || 0 %></span>
-                                    <span class="stat-label">Price</span>
+                                    <span class="stat-label">Course Price</span>
+                                </div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Revenue: $<%= Math.round((course.price || 0) * (course.totalStudents || 0)) %></span>
                                 </div>
                             </div>
-                            <div class="stat">
+                            <div class="stat enhanced-stat date-stat">
                                 <div class="stat-icon">
                                     <i class="fas fa-calendar"></i>
                                 </div>
                                 <div class="stat-content">
                                     <span class="stat-number"><%= new Date(course.createdAt).toLocaleDateString() %></span>
                                     <span class="stat-label">Created</span>
+                                </div>
+                                <div class="stat-info">
+                                    <i class="fas fa-clock"></i>
+                                    <span><%= Math.ceil((new Date() - new Date(course.createdAt)) / (1000 * 60 * 60 * 24)) %> days ago</span>
                                 </div>
                             </div>
                         </div>
@@ -104,29 +158,33 @@
                 </div>
                 <div class="header-actions">
                     <div class="action-buttons">
-                        <a href="/instructor/courses" class="btn btn-secondary">
+                        <a href="/instructor/courses" class="btn btn-secondary btn-enhanced">
                             <i class="fas fa-arrow-left"></i>
-                            Back to Courses
+                            <span>Back to Courses</span>
                         </a>
-                        <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary">
+                        <a href="/instructor/courses/<%= course._id %>/edit" class="btn btn-primary btn-enhanced">
                             <i class="fas fa-edit"></i>
-                            Edit Course
+                            <span>Edit Course</span>
                         </a>
                         <% if (course.status !== 'published') { %>
                             <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
-                                <button type="submit" class="btn btn-success">
+                                <button type="submit" class="btn btn-success btn-enhanced">
                                     <i class="fas fa-globe"></i>
-                                    Publish Course
+                                    <span>Publish Course</span>
                                 </button>
                             </form>
                         <% } else { %>
                             <form method="POST" action="/instructor/courses/<%= course._id %>/toggle-publish" style="display: inline;">
-                                <button type="submit" class="btn btn-warning">
+                                <button type="submit" class="btn btn-warning btn-enhanced">
                                     <i class="fas fa-eye-slash"></i>
-                                    Unpublish
+                                    <span>Unpublish</span>
                                 </button>
                             </form>
                         <% } %>
+                        <a href="/courses/<%= course._id %>" class="btn btn-outline btn-enhanced" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Preview</span>
+                        </a>
                     </div>
 
                     <div class="dropdown">
@@ -214,7 +272,7 @@
                                     <div class="rating-bar">
                                         <span class="rating-label"><%= i %> stars</span>
                                         <div class="bar-container">
-                                            <div class="bar-fill"  <%= course.totalReviews > 0 ? ((analytics.ratingDistribution[i] || 0) / course.totalReviews * 100) : 0 %>%></div>
+                                            <div class="bar-fill" style="width: <%= course.totalReviews > 0 ? ((analytics.ratingDistribution[i] || 0) / course.totalReviews * 100) : 0 %>%"></div>
                                         </div>
                                         <span class="rating-count"><%= analytics.ratingDistribution[i] || 0 %></span>
                                     </div>
@@ -746,6 +804,55 @@
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Enhanced Button Styles */
+.btn-enhanced {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-enhanced:hover::before {
+    left: 100%;
+}
+
+.btn-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-ghost {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
+    border-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .btn {

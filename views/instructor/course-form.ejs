@@ -1,22 +1,72 @@
-<!-- Course Form (Create/Edit) -->
+<!-- Enhanced Course Form (Create/Edit) -->
 <div class="course-form-page">
-    <!-- Page Header -->
+    <!-- Enhanced Page Header -->
     <div class="page-header">
+        <div class="header-background">
+            <div class="gradient-overlay"></div>
+            <div class="pattern-overlay"></div>
+        </div>
         <div class="container">
+            <div class="breadcrumb-nav">
+                <a href="/instructor/dashboard" class="breadcrumb-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <a href="/instructor/courses" class="breadcrumb-link">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <span class="breadcrumb-current">
+                    <i class="fas fa-<%= isEdit ? 'edit' : 'plus' %>"></i>
+                    <span><%= isEdit ? 'Edit Course' : 'Create Course' %></span>
+                </span>
+            </div>
             <div class="header-content">
                 <div class="header-info">
-                    <h1 class="page-title">
-                        <%= isEdit ? 'Edit Course' : 'Create New Course' %>
-                    </h1>
+                    <div class="title-section">
+                        <h1 class="page-title">
+                            <i class="fas fa-<%= isEdit ? 'edit' : 'plus' %>"></i>
+                            <span><%= isEdit ? 'Edit Course' : 'Create New Course' %></span>
+                        </h1>
+                        <div class="title-underline"></div>
+                    </div>
                     <p class="page-subtitle">
-                        <%= isEdit ? 'Update your course information' : 'Fill in the details to create your course' %>
+                        <%= isEdit ? 'Update your course information to keep it fresh and engaging' : 'Fill in the details to create your course and share your knowledge with the world' %>
                     </p>
+                    <div class="form-progress">
+                        <div class="progress-steps">
+                            <div class="step active" data-step="1">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Basic Info</span>
+                            </div>
+                            <div class="step" data-step="2">
+                                <i class="fas fa-image"></i>
+                                <span>Media</span>
+                            </div>
+                            <div class="step" data-step="3">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="header-actions">
-                    <a href="/instructor/courses" class="btn btn-outline">
+                    <a href="/instructor/courses" class="btn btn-outline btn-enhanced">
                         <i class="fas fa-arrow-left"></i>
-                        Back to Courses
+                        <span>Back to Courses</span>
                     </a>
+                    <% if (isEdit && course) { %>
+                        <a href="/instructor/courses/<%= course._id %>" class="btn btn-secondary btn-enhanced">
+                            <i class="fas fa-eye"></i>
+                            <span>View Course</span>
+                        </a>
+                        <a href="/courses/<%= course._id %>" class="btn btn-ghost btn-enhanced" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Preview</span>
+                        </a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -39,44 +89,123 @@
                             </h2>
                         </div>
                         <div class="card-content">
-                            <div class="form-group">
-                                <label for="title" class="form-label">Course Title *</label>
-                                <input type="text" id="title" name="title" class="form-control" 
-                                       value="<%= course ? course.title : '' %>" required
-                                       placeholder="Enter course title">
-                                <div class="form-help">Choose a clear, descriptive title for your course</div>
+                            <div class="form-group enhanced-form-group">
+                                <label for="title" class="form-label">
+                                    <i class="fas fa-heading"></i>
+                                    <span>Course Title</span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="title" name="title" class="form-control enhanced-input"
+                                           value="<%= course ? course.title : '' %>" required
+                                           placeholder="Enter a compelling course title"
+                                           maxlength="100"
+                                           data-validation="required|min:5|max:100">
+                                    <div class="input-icon">
+                                        <i class="fas fa-heading"></i>
+                                    </div>
+                                    <div class="char-counter">
+                                        <span class="current">0</span>/<span class="max">100</span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Choose a clear, descriptive title that captures what students will learn
+                                </div>
+                                <div class="validation-message"></div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="description" class="form-label">Course Description *</label>
-                                <textarea id="description" name="description" class="form-control" 
-                                          rows="6" required placeholder="Describe what students will learn in this course"><%= course ? course.description : '' %></textarea>
-                                <div class="form-help">Provide a detailed description of your course content and learning outcomes</div>
+                            <div class="form-group enhanced-form-group">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    <span>Course Description</span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <textarea id="description" name="description" class="form-control enhanced-textarea"
+                                              rows="6" required
+                                              placeholder="Describe what students will learn, the skills they'll gain, and why this course is valuable..."
+                                              maxlength="500"
+                                              data-validation="required|min:50|max:500"><%= course ? course.description : '' %></textarea>
+                                    <div class="char-counter">
+                                        <span class="current">0</span>/<span class="max">500</span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Write a compelling description that explains the value and outcomes of your course
+                                </div>
+                                <div class="validation-message"></div>
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label for="category" class="form-label">Category *</label>
-                                    <select id="category" name="category" class="form-control" required>
-                                        <option value="">Select Category</option>
-                                        <% categories.forEach(cat => { %>
-                                            <option value="<%= cat %>" <%= course && course.category === cat ? 'selected' : '' %>>
-                                                <%= cat %>
-                                            </option>
-                                        <% }); %>
-                                    </select>
+                                <div class="form-group enhanced-form-group">
+                                    <label for="category" class="form-label">
+                                        <i class="fas fa-tag"></i>
+                                        <span>Category</span>
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <select id="category" name="category" class="form-control enhanced-select" required
+                                                data-validation="required">
+                                            <option value="">Select a category</option>
+                                            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                                <% categories.forEach(cat => { %>
+                                                    <option value="<%= cat %>" <%= course && course.category === cat ? 'selected' : '' %>>
+                                                        <%= cat === 'Development' ? '💻' : cat === 'Business' ? '💼' : cat === 'Design' ? '🎨' : cat === 'Marketing' ? '📈' : cat === 'Photography' ? '📸' : '🎵' %> <%= cat %>
+                                                    </option>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <option value="Development" <%= course && course.category === 'Development' ? 'selected' : '' %>>💻 Development</option>
+                                                <option value="Business" <%= course && course.category === 'Business' ? 'selected' : '' %>>💼 Business</option>
+                                                <option value="Design" <%= course && course.category === 'Design' ? 'selected' : '' %>>🎨 Design</option>
+                                                <option value="Marketing" <%= course && course.category === 'Marketing' ? 'selected' : '' %>>📈 Marketing</option>
+                                                <option value="Photography" <%= course && course.category === 'Photography' ? 'selected' : '' %>>📸 Photography</option>
+                                                <option value="Music" <%= course && course.category === 'Music' ? 'selected' : '' %>>🎵 Music</option>
+                                            <% } %>
+                                        </select>
+                                        <div class="select-icon">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-help">
+                                        <i class="fas fa-folder"></i>
+                                        Choose the category that best fits your course content
+                                    </div>
+                                    <div class="validation-message"></div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="level" class="form-label">Difficulty Level *</label>
-                                    <select id="level" name="level" class="form-control" required>
-                                        <option value="">Select Level</option>
-                                        <% levels.forEach(level => { %>
-                                            <option value="<%= level %>" <%= course && course.level === level ? 'selected' : '' %>>
-                                                <%= level %>
-                                            </option>
-                                        <% }); %>
-                                    </select>
+                                <div class="form-group enhanced-form-group">
+                                    <label for="level" class="form-label">
+                                        <i class="fas fa-signal"></i>
+                                        <span>Difficulty Level</span>
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <select id="level" name="level" class="form-control enhanced-select" required
+                                                data-validation="required">
+                                            <option value="">Select difficulty level</option>
+                                            <% if (typeof levels !== 'undefined' && levels.length > 0) { %>
+                                                <% levels.forEach(level => { %>
+                                                    <option value="<%= level %>" <%= course && course.level === level ? 'selected' : '' %>>
+                                                        <%= level === 'Beginner' ? '🟢' : level === 'Intermediate' ? '🟡' : '🔴' %> <%= level %> - <%= level === 'Beginner' ? 'No prior experience needed' : level === 'Intermediate' ? 'Some experience helpful' : 'Extensive experience required' %>
+                                                    </option>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <option value="Beginner" <%= course && course.level === 'Beginner' ? 'selected' : '' %>>🟢 Beginner - No prior experience needed</option>
+                                                <option value="Intermediate" <%= course && course.level === 'Intermediate' ? 'selected' : '' %>>🟡 Intermediate - Some experience helpful</option>
+                                                <option value="Advanced" <%= course && course.level === 'Advanced' ? 'selected' : '' %>>🔴 Advanced - Extensive experience required</option>
+                                            <% } %>
+                                        </select>
+                                        <div class="select-icon">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-help">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Set the appropriate difficulty level for your target audience
+                                    </div>
+                                    <div class="validation-message"></div>
                                 </div>
                             </div>
 
@@ -118,7 +247,29 @@
                             <div class="image-upload-section">
                                 <% if (course && course.imageUrl) { %>
                                     <div class="current-image">
-                                        <img src="<%= course.imageUrl %>" alt="Current course image" id="currentImage">
+                                        <%
+                                        const formImageUrl = getCourseImageUrl(course, 'medium');
+                                        %>
+
+                                        <% if (course.responsiveImages) { %>
+                                            <picture>
+                                                <% if (course.responsiveImages.medium && course.responsiveImages.medium.webp) { %>
+                                                    <source srcset="<%= course.responsiveImages.medium.webp %>" type="image/webp">
+                                                <% } %>
+                                                <img src="<%= formImageUrl %>"
+                                                     alt="Current course image"
+                                                     id="currentImage"
+                                                     class="enhanced-image"
+                                                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                                            </picture>
+                                        <% } else { %>
+                                            <img src="<%= formImageUrl %>"
+                                                 alt="Current course image"
+                                                 id="currentImage"
+                                                 class="enhanced-image"
+                                                 onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                                        <% } %>
+
                                         <div class="image-overlay">
                                             <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('image').click()">
                                                 <i class="fas fa-camera"></i>
@@ -154,20 +305,43 @@
                             </h2>
                         </div>
                         <div class="card-content">
-                            <div class="form-group">
-                                <label for="status" class="form-label">Status</label>
-                                <select id="status" name="status" class="form-control">
-                                    <% statusOptions.forEach(option => { %>
-                                        <option value="<%= option.value %>" 
-                                                <%= course && course.status === option.value ? 'selected' : (!course && option.value === 'draft' ? 'selected' : '') %>>
-                                            <%= option.label %>
-                                        </option>
-                                    <% }); %>
-                                </select>
+                            <div class="form-group enhanced-form-group">
+                                <label for="status" class="form-label">
+                                    <i class="fas fa-toggle-on"></i>
+                                    <span>Course Status</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <select id="status" name="status" class="form-control enhanced-select">
+                                        <% if (typeof statusOptions !== 'undefined' && statusOptions.length > 0) { %>
+                                            <% statusOptions.forEach(option => { %>
+                                                <option value="<%= option.value %>"
+                                                        <%= course && course.status === option.value ? 'selected' : (!course && option.value === 'draft' ? 'selected' : '') %>>
+                                                    <%= option.value === 'draft' ? '📝' : option.value === 'pending' ? '⏳' : '🌐' %> <%= option.label %>
+                                                </option>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <option value="draft" <%= !course || course.status === 'draft' ? 'selected' : '' %>>📝 Draft</option>
+                                            <option value="pending" <%= course && course.status === 'pending' ? 'selected' : '' %>>⏳ Pending Review</option>
+                                            <option value="published" <%= course && course.status === 'published' ? 'selected' : '' %>>🌐 Published</option>
+                                        <% } %>
+                                    </select>
+                                    <div class="select-icon">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
                                 <div class="form-help">
-                                    <strong>Draft:</strong> Only visible to you<br>
-                                    <strong>Pending:</strong> Submitted for review<br>
-                                    <strong>Published:</strong> Live and available to students
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="status-help">
+                                        <div class="status-option">
+                                            <strong>📝 Draft:</strong> Only visible to you - perfect for work in progress
+                                        </div>
+                                        <div class="status-option">
+                                            <strong>⏳ Pending:</strong> Submitted for review - awaiting approval
+                                        </div>
+                                        <div class="status-option">
+                                            <strong>🌐 Published:</strong> Live and available to students worldwide
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -186,26 +360,70 @@
                     </div>
                 </div>
 
-                <!-- Form Actions -->
-                <div class="form-actions">
+                <!-- Enhanced Form Actions -->
+                <div class="form-actions enhanced-form-actions">
                     <div class="actions-left">
-                        <a href="/instructor/courses" class="btn btn-outline">
+                        <a href="/instructor/courses" class="btn btn-outline btn-enhanced">
                             <i class="fas fa-times"></i>
-                            Cancel
+                            <span>Cancel</span>
                         </a>
+                        <% if (isEdit) { %>
+                            <button type="button" class="btn btn-ghost btn-enhanced" id="previewBtn">
+                                <i class="fas fa-eye"></i>
+                                <span>Preview</span>
+                            </button>
+                        <% } %>
+                    </div>
+                    <div class="actions-center">
+                        <div class="form-validation-summary" id="validationSummary" style="display: none;">
+                            <div class="validation-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="validation-text">
+                                <span class="validation-title">Please fix the following issues:</span>
+                                <ul class="validation-list" id="validationList"></ul>
+                            </div>
+                        </div>
                     </div>
                     <div class="actions-right">
                         <% if (isEdit) { %>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-secondary btn-enhanced" id="saveDraftBtn">
                                 <i class="fas fa-save"></i>
-                                Update Course
+                                <span>Save Draft</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-enhanced" id="updateBtn">
+                                <i class="fas fa-check"></i>
+                                <span>Update Course</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Updating...</span>
+                                </div>
                             </button>
                         <% } else { %>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-secondary btn-enhanced" id="saveDraftBtn">
+                                <i class="fas fa-save"></i>
+                                <span>Save as Draft</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-enhanced" id="createBtn">
                                 <i class="fas fa-plus"></i>
-                                Create Course
+                                <span>Create Course</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Creating...</span>
+                                </div>
                             </button>
                         <% } %>
+                    </div>
+                </div>
+
+                <!-- Form Progress Indicator -->
+                <div class="form-progress-indicator" id="formProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span class="progress-label">Form Completion</span>
+                        <span class="progress-percentage">0%</span>
                     </div>
                 </div>
             </form>
@@ -404,6 +622,7 @@
     accent-color: var(--primary);
 }
 
+/* Enhanced Form Actions */
 .form-actions {
     display: flex;
     justify-content: space-between;
@@ -412,11 +631,186 @@
     background: var(--bg-primary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    margin-top: var(--spacing-xl);
+}
+
+.enhanced-form-actions {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--spacing-lg);
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.enhanced-form-actions::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success));
+}
+
+.actions-left {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-self: start;
+}
+
+.actions-center {
+    justify-self: center;
 }
 
 .actions-right {
     display: flex;
     gap: var(--spacing-md);
+    justify-self: end;
+}
+
+/* Form Validation Summary */
+.form-validation-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: rgba(var(--error-rgb), 0.1);
+    border: 1px solid rgba(var(--error-rgb), 0.2);
+    border-radius: var(--radius-lg);
+    color: var(--error);
+    max-width: 400px;
+}
+
+.validation-icon {
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.validation-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.validation-title {
+    font-weight: var(--font-weight-semibold);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.validation-list {
+    margin: 0;
+    padding-left: var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.validation-list li {
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Enhanced Button Loading States */
+.btn-enhanced {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.btn-enhanced .btn-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    background: inherit;
+    border-radius: inherit;
+}
+
+.btn-enhanced.loading .btn-loading {
+    display: flex;
+}
+
+.btn-enhanced.loading > span,
+.btn-enhanced.loading > i {
+    opacity: 0;
+}
+
+/* Form Progress Indicator */
+.form-progress-indicator {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-full);
+    transition: width var(--transition-normal);
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.progress-percentage {
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary);
+}
+
+/* Enhanced Status Help */
+.status-help {
+    margin-top: var(--spacing-sm);
+}
+
+.status-option {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.status-option:last-child {
+    border-bottom: none;
 }
 
 @media (max-width: 768px) {
@@ -439,6 +833,451 @@
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Enhanced Mobile Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .page-header {
+        padding: var(--spacing-lg) 0 var(--spacing-xl) 0;
+    }
+
+    .page-title {
+        font-size: var(--font-size-xl);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: var(--spacing-sm);
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+    }
+
+    .form-card {
+        padding: var(--spacing-md);
+        margin: var(--spacing-md) 0;
+    }
+
+    .form-label {
+        font-size: var(--font-size-sm);
+    }
+
+    .enhanced-input,
+    .enhanced-textarea,
+    .enhanced-select {
+        padding: var(--spacing-md);
+        font-size: var(--font-size-base);
+    }
+
+    .char-counter {
+        position: static;
+        margin-top: var(--spacing-sm);
+        text-align: right;
+    }
+
+    .form-help {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    .enhanced-form-actions {
+        padding: var(--spacing-lg);
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        text-align: center;
+    }
+
+    .actions-left,
+    .actions-center,
+    .actions-right {
+        justify-self: center;
+    }
+
+    .actions-left,
+    .actions-right {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 100%;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .enhanced-input,
+    .enhanced-textarea,
+    .enhanced-select,
+    .btn {
+        min-height: 44px;
+    }
+
+    .btn-enhanced:hover {
+        transform: none;
+    }
+}
+
+/* Enhanced Loading and Error States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: inherit;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--primary);
+}
+
+.loading-spinner i {
+    font-size: var(--font-size-xl);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn.loading .btn-loading {
+    display: flex !important;
+}
+
+.btn.loading > span:not(.btn-loading span),
+.btn.loading > i:not(.btn-loading i) {
+    opacity: 0;
+}
+
+/* Preview Modal Styles */
+.preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.preview-modal.show {
+    opacity: 1;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.preview-modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: var(--spacing-xl);
+}
+
+.preview-course-card {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.preview-image {
+    height: 200px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.preview-content {
+    padding: var(--spacing-lg);
+}
+
+.preview-content h4 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.preview-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    background: var(--success);
+    color: white;
+}
+
+.notification-error {
+    background: var(--error);
+    color: white;
+}
+
+.notification-warning {
+    background: var(--warning);
+    color: white;
+}
+
+.notification-info {
+    background: var(--info);
+    color: white;
+}
+
+.notification-icon {
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: 50%;
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.notification-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced Accessibility Styles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 10000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Enhanced focus styles */
+.enhanced-input:focus,
+.enhanced-textarea:focus,
+.enhanced-select:focus,
+.btn:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.enhanced-input:focus-visible,
+.enhanced-textarea:focus-visible,
+.enhanced-select:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .enhanced-form-group,
+    .form-card,
+    .btn {
+        border: 2px solid;
+    }
+
+    .btn {
+        font-weight: bold;
+    }
+
+    .input-icon,
+    .select-icon {
+        background: transparent;
+        border: 1px solid;
+    }
+}
+
+/* Error state accessibility */
+.enhanced-input:invalid,
+.enhanced-textarea:invalid,
+.enhanced-select:invalid {
+    border-color: var(--error);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc2626'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4 5 .4-5'/%3e%3ccircle cx='6' cy='10.2' r='.6' fill='%23dc2626' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.enhanced-input:valid,
+.enhanced-textarea:valid,
+.enhanced-select:valid {
+    border-color: var(--success);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23059669'%3e%3cpath d='m3 5.5 2.5 2.5 3.5-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+/* Required field indicators */
+.required::after {
+    content: ' (required)';
+    font-size: var(--font-size-xs);
+    color: var(--error);
+}
+
+/* Button states */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn[aria-pressed="true"] {
+    background: var(--primary-dark);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Form validation accessibility */
+.validation-message[role="alert"] {
+    display: block;
+}
+
+.form-help[id] {
+    /* Ensure help text is properly associated */
+}
+
+/* Modal accessibility */
+.preview-modal[aria-hidden="true"] {
+    display: none;
+}
+
+.preview-modal[aria-hidden="false"] {
+    display: flex;
+}
+
+.modal-content:focus {
+    outline: none;
 }
 </style>
 

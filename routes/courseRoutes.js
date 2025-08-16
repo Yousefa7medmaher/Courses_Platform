@@ -1,6 +1,7 @@
 import express from 'express';
 import { auth, authorize } from '../middlewares/auth.js';
-import { uploadImage, uploadVideo } from '../middlewares/upload.js';
+import { uploadImage, uploadVideo, processLocalImage } from '../middlewares/upload.js';
+import { validateImageUpload, validateImageUrl } from '../middlewares/imageSecurity.js';
 import {
   validateCourse,
   validateCourseUpdate,
@@ -68,11 +69,14 @@ router.get('/instructor/my-courses',
  * @desc    Create new course
  * @access  Private (Instructor/Admin only)
  */
-router.post('/instructor/create', 
-  auth, 
-  authorize('instructor', 'admin'), 
+router.post('/instructor/create',
+  auth,
+  authorize('instructor', 'admin'),
   uploadImage.single('image'),
-  validateCourse, 
+  processLocalImage,
+  validateImageUpload,
+  validateImageUrl,
+  validateCourse,
   courseController.createCourse
 );
 
@@ -81,11 +85,14 @@ router.post('/instructor/create',
  * @desc    Update course
  * @access  Private (Instructor/Admin only)
  */
-router.put('/instructor/:id', 
-  auth, 
-  authorize('instructor', 'admin'), 
+router.put('/instructor/:id',
+  auth,
+  authorize('instructor', 'admin'),
   uploadImage.single('image'),
-  validateCourseUpdate, 
+  processLocalImage,
+  validateImageUpload,
+  validateImageUrl,
+  validateCourseUpdate,
   courseController.updateCourse
 );
 

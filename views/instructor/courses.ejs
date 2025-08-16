@@ -1,29 +1,72 @@
-<!-- Instructor Courses List -->
+<!-- Enhanced Instructor Courses List -->
 <div class="instructor-courses">
-    <!-- Page Header -->
+    <!-- Enhanced Page Header -->
     <div class="page-header">
+        <div class="header-background">
+            <div class="gradient-overlay"></div>
+            <div class="pattern-overlay"></div>
+        </div>
         <div class="container">
+            <div class="breadcrumb-nav">
+                <a href="/instructor/dashboard" class="breadcrumb-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <span class="breadcrumb-current">
+                    <i class="fas fa-book"></i>
+                    <span>My Courses</span>
+                </span>
+            </div>
             <div class="header-content">
                 <div class="instructor-profile-mini">
                     <div class="instructor-avatar-mini">
-                        <% if (user.photo) { %>
-                            <img src="<%= user.photo %>" alt="<%= user.name %>" class="profile-image">
-                        <% } else { %>
-                            <div class="profile-placeholder">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        <% } %>
+                        <img src="<%= getUserAvatarUrl(user) %>"
+                             alt="<%= user.name %>"
+                             class="profile-image enhanced-image"
+                             onerror="this.src='<%= getDefaultImage('user') %>'">
+                        <div class="avatar-status">
+                            <i class="fas fa-circle"></i>
+                        </div>
                     </div>
                     <div class="header-info">
-                        <h1 class="page-title">My Courses</h1>
-                        <p class="page-subtitle">Manage and track all your courses</p>
+                        <div class="title-section">
+                            <h1 class="page-title">
+                                <i class="fas fa-book"></i>
+                                <span>My Courses</span>
+                            </h1>
+                            <div class="title-underline"></div>
+                        </div>
+                        <p class="page-subtitle">Manage and track all your courses to inspire learners worldwide</p>
+                        <div class="course-stats-summary">
+                            <div class="stat-item">
+                                <span class="stat-number"><%= courses.length %></span>
+                                <span class="stat-label">Total</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number"><%= courses.filter(c => c.status === 'published').length %></span>
+                                <span class="stat-label">Published</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number"><%= courses.reduce((sum, c) => sum + (c.totalStudents || 0), 0) %></span>
+                                <span class="stat-label">Students</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="header-actions">
-                    <a href="/instructor/courses/new" class="btn btn-primary">
+                    <a href="/instructor/courses/new" class="btn btn-primary btn-enhanced">
                         <i class="fas fa-plus"></i>
-                        Create New Course
+                        <span>Create New Course</span>
                     </a>
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" data-view="grid" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="toggle-btn" data-view="list" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,41 +132,96 @@
             <% if (courses && courses.length > 0) { %>
                 <div class="courses-grid">
                     <% courses.forEach(course => { %>
-                        <div class="course-card">
+                        <div class="course-card enhanced-course-card">
                             <div class="course-image">
-                                <% if (course.imageUrl) { %>
-                                    <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
+                                <%
+                                const courseListImageUrl = getCourseImageUrl(course, 'medium');
+                                %>
+
+                                <% if (course.responsiveImages) { %>
+                                    <picture>
+                                        <% if (course.responsiveImages.medium && course.responsiveImages.medium.webp) { %>
+                                            <source srcset="<%= course.responsiveImages.medium.webp %>" type="image/webp">
+                                        <% } %>
+                                        <img src="<%= courseListImageUrl %>"
+                                             alt="<%= course.title %>"
+                                             class="enhanced-image"
+                                             loading="lazy"
+                                             onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                                    </picture>
                                 <% } else { %>
-                                    <div class="course-placeholder">
-                                        <i class="fas fa-book"></i>
+                                    <img src="<%= courseListImageUrl %>"
+                                         alt="<%= course.title %>"
+                                         class="enhanced-image"
+                                         loading="lazy"
+                                         onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                                <% } %>
+
+                                <div class="course-overlay">
+                                    <div class="overlay-actions">
+                                        <a href="/instructor/courses/<%= course._id %>" class="overlay-btn view-btn" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/instructor/courses/<%= course._id %>/edit" class="overlay-btn edit-btn" title="Edit Course">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/courses/<%= course._id %>" class="overlay-btn preview-btn" title="Public View" target="_blank">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="course-status-badge status-<%= course.status %>">
+                                    <i class="fas fa-<%= course.status === 'published' ? 'globe' : course.status === 'pending' ? 'clock' : 'edit' %>"></i>
+                                    <span><%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %></span>
+                                </div>
+
+                                <% if (course.featured) { %>
+                                    <div class="featured-badge">
+                                        <i class="fas fa-star"></i>
+                                        <span>Featured</span>
                                     </div>
                                 <% } %>
-                                <div class="course-status-badge status-<%= course.status %>">
-                                    <%= course.status.charAt(0).toUpperCase() + course.status.slice(1) %>
-                                </div>
                             </div>
                             
                             <div class="course-content">
-                                <h3 class="course-title">
-                                    <a href="/instructor/courses/<%= course._id %>"><%= course.title %></a>
-                                </h3>
-                                
+                                <div class="course-header">
+                                    <h3 class="course-title">
+                                        <a href="/instructor/courses/<%= course._id %>"><%= course.title %></a>
+                                    </h3>
+                                    <div class="course-badges">
+                                        <span class="category-badge">
+                                            <i class="fas fa-tag"></i>
+                                            <span><%= course.category %></span>
+                                        </span>
+                                        <span class="level-badge level-<%= course.level.toLowerCase() %>">
+                                            <i class="fas fa-signal"></i>
+                                            <span><%= course.level %></span>
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <p class="course-description">
-                                    <%= course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description %>
+                                    <%= course.description.length > 120 ? course.description.substring(0, 120) + '...' : course.description %>
                                 </p>
-                                
+
                                 <div class="course-meta">
                                     <div class="meta-item">
                                         <i class="fas fa-users"></i>
-                                        <span><%= course.totalStudents %> students</span>
+                                        <span><%= course.totalStudents || 0 %> students</span>
                                     </div>
                                     <div class="meta-item">
                                         <i class="fas fa-star"></i>
-                                        <span><%= course.averageRating.toFixed(1) %></span>
+                                        <span><%= (course.averageRating || 0).toFixed(1) %></span>
+                                        <div class="rating-stars">
+                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                <i class="fas fa-star <%= i <= Math.round(course.averageRating || 0) ? 'active' : '' %>"></i>
+                                            <% } %>
+                                        </div>
                                     </div>
                                     <div class="meta-item">
                                         <i class="fas fa-dollar-sign"></i>
-                                        <span>$<%= course.price %></span>
+                                        <span>$<%= course.price || 0 %></span>
                                     </div>
                                     <div class="meta-item">
                                         <i class="fas fa-calendar"></i>
@@ -572,10 +670,312 @@
     .courses-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .course-meta {
         grid-template-columns: 1fr;
     }
+
+    .search-filter-bar {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .filter-section {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        width: 100%;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .view-options {
+        justify-self: center;
+    }
+}
+
+/* Enhanced Mobile Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .page-header {
+        padding: var(--spacing-lg) 0 var(--spacing-xl) 0;
+    }
+
+    .page-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: var(--spacing-sm);
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+    }
+
+    .search-filter-section {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .search-filter-bar {
+        gap: var(--spacing-md);
+    }
+
+    .search-input-wrapper {
+        max-width: none;
+    }
+
+    .search-input {
+        padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) var(--spacing-3xl);
+    }
+
+    .filter-section {
+        gap: var(--spacing-sm);
+    }
+
+    .filter-select {
+        padding: var(--spacing-md);
+        font-size: var(--font-size-base);
+        min-height: 44px;
+    }
+
+    .view-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .results-summary {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+
+    .course-card {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .course-content {
+        padding: var(--spacing-md);
+    }
+
+    .course-title {
+        font-size: var(--font-size-base);
+    }
+
+    .course-meta {
+        gap: var(--spacing-sm);
+    }
+
+    .course-actions {
+        padding: var(--spacing-md);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .btn-sm {
+        width: 100%;
+        min-height: 40px;
+    }
+
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: 1px solid var(--border-light);
+        margin-top: var(--spacing-sm);
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .course-card:hover {
+        transform: none;
+    }
+
+    .overlay-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .course-overlay {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .search-input,
+    .filter-select,
+    .view-btn,
+    .btn {
+        min-height: 44px;
+    }
+}
+
+/* Enhanced Accessibility Styles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 10000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Enhanced focus styles */
+.search-input:focus,
+.filter-select:focus,
+.view-btn:focus,
+.course-card:focus,
+.overlay-btn:focus,
+.btn:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.search-input:focus-visible,
+.filter-select:focus-visible,
+.view-btn:focus-visible,
+.course-card:focus-visible,
+.overlay-btn:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .course-card,
+    .search-input,
+    .filter-select,
+    .view-btn,
+    .btn {
+        border: 2px solid;
+    }
+
+    .btn {
+        font-weight: bold;
+    }
+
+    .overlay-btn {
+        border: 2px solid white;
+    }
+}
+
+/* Course card accessibility */
+.course-card[tabindex="0"] {
+    cursor: pointer;
+}
+
+.course-card[aria-pressed="true"] {
+    background: var(--bg-secondary);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Search and filter accessibility */
+.search-input[aria-expanded="true"] + .search-suggestions {
+    display: block;
+}
+
+.filter-select[aria-expanded="true"] + .filter-options {
+    display: block;
+}
+
+/* Results announcement */
+.results-announcement {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Empty state accessibility */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-4xl);
+    color: var(--text-muted);
+}
+
+.empty-state[role="status"] {
+    /* Announce to screen readers */
+}
+
+/* Button states */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.view-btn[aria-pressed="true"] {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+/* Dropdown accessibility */
+.dropdown-menu[aria-hidden="true"] {
+    display: none;
+}
+
+.dropdown-menu[aria-hidden="false"] {
+    display: block;
+}
+
+.dropdown-item:focus {
+    background: var(--bg-secondary);
+    outline: none;
+}
+
+/* Loading state accessibility */
+.course-card[aria-busy="true"] {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.course-card[aria-busy="true"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 </style>
 
@@ -607,5 +1007,212 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdown.classList.remove('show');
         });
     });
+
+    // Enhanced Search and Filter Functionality
+    const searchInput = document.getElementById('courseSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const coursesGrid = document.querySelector('.courses-grid');
+    const courseCards = document.querySelectorAll('.course-card');
+    const visibleCount = document.getElementById('visibleCount');
+    const totalCount = document.getElementById('totalCount');
+
+    let allCourses = Array.from(courseCards);
+    let filteredCourses = [...allCourses];
+
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            filterAndDisplayCourses();
+
+            // Show/hide clear button
+            const clearBtn = document.getElementById('searchClear');
+            if (clearBtn) {
+                clearBtn.style.display = searchTerm ? 'block' : 'none';
+            }
+        });
+
+        // Clear search
+        const clearBtn = document.getElementById('searchClear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                this.style.display = 'none';
+                filterAndDisplayCourses();
+                searchInput.focus();
+            });
+        }
+    }
+
+    // Filter functionality
+    [statusFilter, categoryFilter, sortFilter].forEach(filter => {
+        if (filter) {
+            filter.addEventListener('change', filterAndDisplayCourses);
+        }
+    });
+
+    // View toggle functionality
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            viewBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const view = this.dataset.view;
+            if (view === 'list') {
+                coursesGrid.classList.add('list-view');
+            } else {
+                coursesGrid.classList.remove('list-view');
+            }
+
+            // Save preference
+            localStorage.setItem('coursesView', view);
+        });
+    });
+
+    // Restore view preference
+    const savedView = localStorage.getItem('coursesView');
+    if (savedView === 'list') {
+        document.querySelector('[data-view="list"]')?.click();
+    }
+
+    function filterAndDisplayCourses() {
+        const searchTerm = searchInput?.value.toLowerCase().trim() || '';
+        const statusValue = statusFilter?.value || '';
+        const categoryValue = categoryFilter?.value || '';
+        const sortValue = sortFilter?.value || 'newest';
+
+        // Filter courses
+        filteredCourses = allCourses.filter(card => {
+            const title = card.querySelector('.course-title a')?.textContent.toLowerCase() || '';
+            const description = card.querySelector('.course-description')?.textContent.toLowerCase() || '';
+            const status = card.querySelector('.course-status-badge')?.textContent.toLowerCase() || '';
+            const category = card.querySelector('.category-badge span')?.textContent || '';
+
+            const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesStatus = !statusValue || status.includes(statusValue);
+            const matchesCategory = !categoryValue || category === categoryValue;
+
+            return matchesSearch && matchesStatus && matchesCategory;
+        });
+
+        // Sort courses
+        filteredCourses.sort((a, b) => {
+            switch (sortValue) {
+                case 'title':
+                    const titleA = a.querySelector('.course-title a')?.textContent || '';
+                    const titleB = b.querySelector('.course-title a')?.textContent || '';
+                    return titleA.localeCompare(titleB);
+                case 'students':
+                    const studentsA = parseInt(a.querySelector('.meta-item:first-child span')?.textContent) || 0;
+                    const studentsB = parseInt(b.querySelector('.meta-item:first-child span')?.textContent) || 0;
+                    return studentsB - studentsA;
+                case 'rating':
+                    const ratingA = parseFloat(a.querySelector('.meta-item:nth-child(2) span')?.textContent) || 0;
+                    const ratingB = parseFloat(b.querySelector('.meta-item:nth-child(2) span')?.textContent) || 0;
+                    return ratingB - ratingA;
+                case 'oldest':
+                    return 1; // Keep original order for oldest
+                default: // newest
+                    return -1; // Reverse order for newest
+            }
+        });
+
+        // Hide all courses first
+        allCourses.forEach(card => {
+            card.style.display = 'none';
+        });
+
+        // Show filtered courses with animation
+        filteredCourses.forEach((card, index) => {
+            card.style.display = 'block';
+            card.style.animation = `fadeInUp 0.3s ease forwards ${index * 0.05}s`;
+        });
+
+        // Update count
+        if (visibleCount) {
+            visibleCount.textContent = filteredCourses.length;
+        }
+
+        // Show empty state if no results
+        showEmptyState(filteredCourses.length === 0);
+    }
+
+    function showEmptyState(show) {
+        let emptyState = document.getElementById('emptyState');
+
+        if (show && !emptyState) {
+            emptyState = document.createElement('div');
+            emptyState.id = 'emptyState';
+            emptyState.className = 'empty-state';
+            emptyState.innerHTML = `
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No courses found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+                <button class="btn btn-primary" onclick="clearAllFilters()">
+                    <i class="fas fa-refresh"></i>
+                    Clear Filters
+                </button>
+            `;
+            coursesGrid.appendChild(emptyState);
+        } else if (!show && emptyState) {
+            emptyState.remove();
+        }
+    }
+
+    window.clearAllFilters = function() {
+        if (searchInput) searchInput.value = '';
+        if (statusFilter) statusFilter.value = '';
+        if (categoryFilter) categoryFilter.value = '';
+        if (sortFilter) sortFilter.value = 'newest';
+        document.getElementById('searchClear').style.display = 'none';
+        filterAndDisplayCourses();
+    };
+
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--spacing-4xl);
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-secondary);
+        }
+
+        .empty-state p {
+            margin-bottom: var(--spacing-lg);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize
+    filterAndDisplayCourses();
 });
 </script>

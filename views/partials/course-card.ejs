@@ -1,11 +1,29 @@
 <div class="course-card" data-course-id="<%= course._id %>">
     <div class="course-image">
-        <% if (course.imageUrl) { %>
-            <img src="<%= course.imageUrl %>" alt="<%= course.title %>" loading="lazy">
+        <%
+        const imageData = getImageData(course, 'course');
+        const imageUrl = getCourseImageUrl(course, 'medium');
+        %>
+
+        <% if (course.responsiveImages) { %>
+            <picture>
+                <% if (course.responsiveImages.medium && course.responsiveImages.medium.webp) { %>
+                    <source srcset="<%= generateSrcSet(course.responsiveImages, imageUrl) %>"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            type="image/webp">
+                <% } %>
+                <img src="<%= imageUrl %>"
+                     alt="<%= course.title %>"
+                     loading="lazy"
+                     class="enhanced-image"
+                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+            </picture>
         <% } else { %>
-            <div class="course-image-placeholder">
-                <i class="fas fa-book"></i>
-            </div>
+            <img src="<%= imageUrl %>"
+                 alt="<%= course.title %>"
+                 loading="lazy"
+                 class="enhanced-image"
+                 onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
         <% } %>
         
         <div class="course-badges">

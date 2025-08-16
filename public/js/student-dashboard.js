@@ -115,10 +115,11 @@ function updateContinueLearning(courses) {
     const coursesHtml = courses.slice(0, 3).map(course => `
         <div class="learning-item">
             <div class="learning-thumbnail">
-                ${course.imageUrl ? 
-                    `<img src="${course.imageUrl}" alt="${course.title}">` :
-                    `<div class="thumbnail-placeholder"><i class="fas fa-book"></i></div>`
-                }
+                <img src="${course.imageUrl || '/images/defaults/course-placeholder.svg'}"
+                     alt="${course.title}"
+                     class="enhanced-image"
+                     loading="lazy"
+                     onerror="this.src='/images/defaults/course-placeholder.svg'">
             </div>
             <div class="learning-info">
                 <h4 class="learning-title">${course.title}</h4>
@@ -218,10 +219,11 @@ function updateRecommendations(courses) {
     const coursesHtml = courses.slice(0, 4).map(course => `
         <div class="recommendation-card">
             <div class="recommendation-image">
-                ${course.imageUrl ? 
-                    `<img src="${course.imageUrl}" alt="${course.title}">` :
-                    `<div class="image-placeholder"><i class="fas fa-book"></i></div>`
-                }
+                <img src="${course.imageUrl || '/images/defaults/course-placeholder.svg'}"
+                     alt="${course.title}"
+                     class="enhanced-image"
+                     loading="lazy"
+                     onerror="this.src='/images/defaults/course-placeholder.svg'">
             </div>
             <div class="recommendation-content">
                 <h4 class="recommendation-title">${course.title}</h4>

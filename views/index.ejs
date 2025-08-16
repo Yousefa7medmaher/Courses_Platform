@@ -88,12 +88,29 @@
             <% featuredCourses.forEach(function(course) { %>
                 <div class="course-card">
                     <div class="course-image">
-                        <% if (course.imageUrl) { %>
-                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>" loading="lazy">
+                        <%
+                        const homeImageUrl = getCourseImageUrl(course, 'medium');
+                        %>
+
+                        <% if (course.responsiveImages) { %>
+                            <picture>
+                                <% if (course.responsiveImages.medium && course.responsiveImages.medium.webp) { %>
+                                    <source srcset="<%= generateSrcSet(course.responsiveImages, homeImageUrl) %>"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            type="image/webp">
+                                <% } %>
+                                <img src="<%= homeImageUrl %>"
+                                     alt="<%= course.title %>"
+                                     loading="lazy"
+                                     class="enhanced-image"
+                                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                            </picture>
                         <% } else { %>
-                            <div class="course-image-placeholder">
-                                <i class="fas fa-book"></i>
-                            </div>
+                            <img src="<%= homeImageUrl %>"
+                                 alt="<%= course.title %>"
+                                 loading="lazy"
+                                 class="enhanced-image"
+                                 onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
                         <% } %>
                         <div class="course-badge">
                             <span class="badge badge-<%= course.level.toLowerCase() %>"><%= course.level %></span>

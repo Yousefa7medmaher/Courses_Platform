@@ -127,7 +127,7 @@ class CourseController {
         }
       }
 
-      const course = await courseService.createCourse(courseData, req.user.id);
+      const course = await courseService.createCourse(courseData, req.user.id, req.file);
 
       if (req.originalUrl.startsWith('/api/')) {
         return res.status(201).json({
@@ -177,7 +177,7 @@ class CourseController {
         }
       }
 
-      const course = await courseService.updateCourse(req.params.id, updateData, req.user.id);
+      const course = await courseService.updateCourse(req.params.id, updateData, req.user.id, req.file);
 
       if (req.originalUrl.startsWith('/api/')) {
         return res.status(200).json({

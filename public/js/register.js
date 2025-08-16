@@ -1,9 +1,12 @@
-// ===== REGISTER PAGE JAVASCRIPT =====
+// ===== MODERN REGISTER PAGE JAVASCRIPT =====
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeRegisterForm();
     initializePasswordToggles();
     initializePasswordStrength();
+    initializeRoleSelection();
+    initializeFormAnimations();
+    initializeAccessibility();
 });
 
 // ===== FORM INITIALIZATION =====
@@ -11,43 +14,43 @@ function initializeRegisterForm() {
     const form = document.getElementById('register-form');
     if (!form) return;
 
-    // Real-time validation
+    // Enhanced real-time validation
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const phoneInput = document.getElementById('phone');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
-    const roleSelect = document.getElementById('role');
     const termsCheckbox = document.getElementById('terms');
 
-    // Add event listeners
+    // Add enhanced event listeners
     if (nameInput) {
         nameInput.addEventListener('blur', validateName);
-        nameInput.addEventListener('input', clearError);
+        nameInput.addEventListener('input', handleNameInput);
+        nameInput.addEventListener('focus', handleInputFocus);
     }
 
     if (emailInput) {
         emailInput.addEventListener('blur', validateEmail);
-        emailInput.addEventListener('input', clearError);
+        emailInput.addEventListener('input', handleEmailInput);
+        emailInput.addEventListener('focus', handleInputFocus);
     }
 
     if (phoneInput) {
         phoneInput.addEventListener('blur', validatePhone);
-        phoneInput.addEventListener('input', clearError);
+        phoneInput.addEventListener('input', handlePhoneInput);
+        phoneInput.addEventListener('focus', handleInputFocus);
     }
 
     if (passwordInput) {
-        passwordInput.addEventListener('input', validatePassword);
+        passwordInput.addEventListener('input', handlePasswordInput);
         passwordInput.addEventListener('blur', validatePassword);
+        passwordInput.addEventListener('focus', handleInputFocus);
     }
 
     if (confirmPasswordInput) {
         confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
-        confirmPasswordInput.addEventListener('input', clearError);
-    }
-
-    if (roleSelect) {
-        roleSelect.addEventListener('change', validateRole);
+        confirmPasswordInput.addEventListener('input', handleConfirmPasswordInput);
+        confirmPasswordInput.addEventListener('focus', handleInputFocus);
     }
 
     if (termsCheckbox) {
@@ -56,6 +59,103 @@ function initializeRegisterForm() {
 
     // Form submission
     form.addEventListener('submit', handleRegisterSubmit);
+}
+
+// ===== INPUT HANDLERS =====
+function handleInputFocus(e) {
+    const input = e.target;
+    const wrapper = input.closest('.input-wrapper');
+    if (wrapper) {
+        wrapper.classList.add('focused');
+    }
+    clearFieldError(input);
+}
+
+function handleNameInput(e) {
+    const input = e.target;
+    clearFieldError(input);
+
+    if (input.value.length > 0) {
+        if (input.value.length >= 2 && /^[a-zA-Z\s]+$/.test(input.value)) {
+            input.classList.add('valid');
+            input.classList.remove('error');
+        } else {
+            input.classList.remove('valid');
+        }
+    }
+}
+
+function handleEmailInput(e) {
+    const input = e.target;
+    clearFieldError(input);
+
+    if (input.value.length > 0) {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+        if (isValid) {
+            input.classList.add('valid');
+            input.classList.remove('error');
+        } else {
+            input.classList.remove('valid');
+        }
+    }
+}
+
+function handlePhoneInput(e) {
+    const input = e.target;
+    clearFieldError(input);
+
+    // Format phone number as user types
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 0) {
+        if (value.length <= 3) {
+            value = `(${value}`;
+        } else if (value.length <= 6) {
+            value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+        } else {
+            value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+        }
+        input.value = value;
+
+        if (value.length >= 14) {
+            input.classList.add('valid');
+        }
+    }
+}
+
+function handlePasswordInput(e) {
+    const input = e.target;
+    clearFieldError(input);
+    updatePasswordStrength(input.value);
+
+    if (input.value.length > 0) {
+        if (input.value.length >= 6) {
+            input.classList.add('valid');
+            input.classList.remove('error');
+        } else {
+            input.classList.remove('valid');
+        }
+    }
+
+    // Also validate confirm password if it has a value
+    const confirmInput = document.getElementById('confirmPassword');
+    if (confirmInput && confirmInput.value) {
+        validateConfirmPassword();
+    }
+}
+
+function handleConfirmPasswordInput(e) {
+    const input = e.target;
+    clearFieldError(input);
+
+    const passwordInput = document.getElementById('password');
+    if (input.value.length > 0 && passwordInput.value) {
+        if (input.value === passwordInput.value) {
+            input.classList.add('valid');
+            input.classList.remove('error');
+        } else {
+            input.classList.remove('valid');
+        }
+    }
 }
 
 // ===== PASSWORD TOGGLES =====
@@ -86,35 +186,84 @@ function togglePasswordVisibility(input, toggle) {
     icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 }
 
-// ===== PASSWORD STRENGTH =====
+// ===== ROLE SELECTION =====
+function initializeRoleSelection() {
+    const roleOptions = document.querySelectorAll('input[name="role"]');
+
+    roleOptions.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Remove active class from all role cards
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // Add active class to selected role card
+            if (this.checked) {
+                const roleCard = this.nextElementSibling;
+                if (roleCard) {
+                    roleCard.classList.add('active');
+                }
+            }
+
+            validateRole();
+        });
+
+        // Handle keyboard navigation
+        radio.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.checked = true;
+                this.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+}
+
+// ===== ENHANCED PASSWORD STRENGTH =====
 function initializePasswordStrength() {
     const passwordInput = document.getElementById('password');
     const strengthContainer = document.getElementById('password-strength');
 
     if (passwordInput && strengthContainer) {
         passwordInput.addEventListener('input', function() {
-            updatePasswordStrength(passwordInput.value, strengthContainer);
+            updatePasswordStrength(passwordInput.value);
         });
     }
 }
 
-function updatePasswordStrength(password, container) {
+function updatePasswordStrength(password) {
+    const container = document.getElementById('password-strength');
+    if (!container) return;
+
     if (!password) {
         container.classList.remove('visible');
         return;
     }
 
     container.classList.add('visible');
-    
+
     const strength = calculatePasswordStrength(password);
     const strengthClass = getStrengthClass(strength.score);
-    
+
     container.innerHTML = `
         <div class="strength-bar ${strengthClass}">
             <div class="strength-fill"></div>
         </div>
         <div class="strength-text">${strength.text}</div>
     `;
+
+    // Add requirements list for weak passwords
+    if (strength.score < 3 && strength.feedback.length > 0) {
+        const requirementsList = document.createElement('div');
+        requirementsList.className = 'password-requirements';
+        requirementsList.innerHTML = `
+            <div class="requirements-title">Password should include:</div>
+            <ul class="requirements-list">
+                ${strength.feedback.map(req => `<li>${req}</li>`).join('')}
+            </ul>
+        `;
+        container.appendChild(requirementsList);
+    }
 }
 
 function calculatePasswordStrength(password) {
@@ -159,19 +308,19 @@ function getStrengthClass(score) {
     return 'strength-strong';
 }
 
-// ===== VALIDATION FUNCTIONS =====
+// ===== ENHANCED VALIDATION FUNCTIONS =====
 function validateName() {
     const nameInput = document.getElementById('name');
     const nameError = document.getElementById('name-error');
     const name = nameInput.value.trim();
 
     if (!name) {
-        showFieldError(nameInput, nameError, 'Name is required');
+        showFieldError(nameInput, nameError, 'Full name is required');
         return false;
     }
 
     if (name.length < 2) {
-        showFieldError(nameInput, nameError, 'Name must be at least 2 characters');
+        showFieldError(nameInput, nameError, 'Name must be at least 2 characters long');
         return false;
     }
 
@@ -181,6 +330,7 @@ function validateName() {
     }
 
     clearFieldError(nameInput, nameError);
+    nameInput.classList.add('valid');
     return true;
 }
 
@@ -190,7 +340,7 @@ function validateEmail() {
     const email = emailInput.value.trim();
 
     if (!email) {
-        showFieldError(emailInput, emailError, 'Email is required');
+        showFieldError(emailInput, emailError, 'Email address is required');
         return false;
     }
 
@@ -201,6 +351,7 @@ function validateEmail() {
     }
 
     clearFieldError(emailInput, emailError);
+    emailInput.classList.add('valid');
     return true;
 }
 
@@ -215,14 +366,15 @@ function validatePhone() {
         return true;
     }
 
-    // Basic phone validation (adjust regex as needed)
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+    // Enhanced phone validation
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    if (cleanPhone.length < 10 || cleanPhone.length > 15 || !/^\d+$/.test(cleanPhone)) {
         showFieldError(phoneInput, phoneError, 'Please enter a valid phone number');
         return false;
     }
 
     clearFieldError(phoneInput, phoneError);
+    phoneInput.classList.add('valid');
     return true;
 }
 
@@ -237,11 +389,19 @@ function validatePassword() {
     }
 
     if (password.length < 6) {
-        showFieldError(passwordInput, passwordError, 'Password must be at least 6 characters');
+        showFieldError(passwordInput, passwordError, 'Password must be at least 6 characters long');
+        return false;
+    }
+
+    // Check password strength
+    const strength = calculatePasswordStrength(password);
+    if (strength.score < 2) {
+        showFieldError(passwordInput, passwordError, 'Password is too weak. Please create a stronger password.');
         return false;
     }
 
     clearFieldError(passwordInput, passwordError);
+    passwordInput.classList.add('valid');
     return true;
 }
 
@@ -263,20 +423,21 @@ function validateConfirmPassword() {
     }
 
     clearFieldError(confirmPasswordInput, confirmPasswordError);
+    confirmPasswordInput.classList.add('valid');
     return true;
 }
 
 function validateRole() {
-    const roleSelect = document.getElementById('role');
+    const roleInputs = document.querySelectorAll('input[name="role"]');
     const roleError = document.getElementById('role-error');
-    const role = roleSelect.value;
+    const selectedRole = document.querySelector('input[name="role"]:checked');
 
-    if (!role) {
-        showFieldError(roleSelect, roleError, 'Please select your role');
+    if (!selectedRole) {
+        showFieldError(roleInputs[0], roleError, 'Please select your role');
         return false;
     }
 
-    clearFieldError(roleSelect, roleError);
+    clearFieldError(roleInputs[0], roleError);
     return true;
 }
 
@@ -285,7 +446,7 @@ function validateTerms() {
     const termsError = document.getElementById('terms-error');
 
     if (!termsCheckbox.checked) {
-        showFieldError(termsCheckbox, termsError, 'You must agree to the terms and conditions');
+        showFieldError(termsCheckbox, termsError, 'You must agree to the Terms of Service and Privacy Policy');
         return false;
     }
 
@@ -301,64 +462,252 @@ function validateForm() {
     const isConfirmPasswordValid = validateConfirmPassword();
     const isRoleValid = validateRole();
     const isTermsValid = validateTerms();
-    
-    return isNameValid && isEmailValid && isPhoneValid && isPasswordValid && 
+
+    return isNameValid && isEmailValid && isPhoneValid && isPasswordValid &&
            isConfirmPasswordValid && isRoleValid && isTermsValid;
 }
 
-// ===== FORM SUBMISSION =====
+// ===== ENHANCED FORM SUBMISSION =====
 async function handleRegisterSubmit(e) {
-    // Only prevent default if validation fails
+    e.preventDefault();
+
+    // Add form submission animation
+    const form = e.target;
+    form.classList.add('submitting');
+
     if (!validateForm()) {
-        e.preventDefault();
+        form.classList.remove('submitting');
+        // Focus on first error field
+        const errorField = form.querySelector('.form-input.error');
+        if (errorField) {
+            errorField.focus();
+            errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         return;
     }
 
-    // Show loading state
-    const form = e.target;
-    const submitBtn = form.querySelector('.auth-submit');
+    const submitBtn = form.querySelector('.submit-btn');
     setButtonLoading(submitBtn, true);
 
     // Let the form submit normally to the web endpoint
-    // The server will handle the response and redirect
+    // Add a small delay for better UX
+    setTimeout(() => {
+        form.submit();
+    }, 500);
 }
 
-// ===== UTILITY FUNCTIONS =====
+// ===== ENHANCED UTILITY FUNCTIONS =====
 function showFieldError(input, errorElement, message) {
     input.classList.add('error');
+    input.classList.remove('valid');
+
     if (errorElement) {
         errorElement.textContent = message;
-        errorElement.style.display = 'block';
+        errorElement.classList.add('show');
+
+        // Add shake animation
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 500);
+    }
+
+    // Add error styling to wrapper
+    const wrapper = input.closest('.input-wrapper');
+    if (wrapper) {
+        wrapper.classList.add('error');
     }
 }
 
 function clearFieldError(input, errorElement) {
     input.classList.remove('error');
+
     if (errorElement) {
         errorElement.textContent = '';
-        errorElement.style.display = 'none';
+        errorElement.classList.remove('show');
     }
-}
 
-function clearError(e) {
-    const input = e.target;
-    const errorElement = document.getElementById(input.id + '-error');
-    clearFieldError(input, errorElement);
+    // Remove error styling from wrapper
+    const wrapper = input.closest('.input-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('error');
+    }
 }
 
 function setButtonLoading(button, loading) {
     if (loading) {
         button.disabled = true;
         button.classList.add('loading');
-        const originalText = button.innerHTML;
-        button.setAttribute('data-original-text', originalText);
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
     } else {
         button.disabled = false;
         button.classList.remove('loading');
-        const originalText = button.getAttribute('data-original-text');
-        if (originalText) {
-            button.innerHTML = originalText;
-        }
     }
 }
+
+// ===== FORM ANIMATIONS =====
+function initializeFormAnimations() {
+    // Add CSS for animations (similar to login.js)
+    const style = document.createElement('style');
+    style.textContent = `
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .modern-form.submitting {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .password-requirements {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--warning);
+        }
+
+        .requirements-title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .requirements-list li {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            padding: 2px 0;
+            position: relative;
+            padding-left: var(--spacing-md);
+        }
+
+        .requirements-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--warning);
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ===== ACCESSIBILITY ENHANCEMENTS =====
+function initializeAccessibility() {
+    // Add ARIA labels and descriptions
+    const inputs = ['name', 'email', 'phone', 'password', 'confirmPassword'];
+
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(`${inputId}-error`);
+
+        if (input && error) {
+            input.setAttribute('aria-describedby', `${inputId}-error`);
+            error.setAttribute('role', 'alert');
+            error.setAttribute('aria-live', 'polite');
+        }
+    });
+
+    // Role selection accessibility
+    const roleInputs = document.querySelectorAll('input[name="role"]');
+    roleInputs.forEach(input => {
+        input.setAttribute('aria-describedby', 'role-error');
+    });
+
+    // Terms checkbox accessibility
+    const termsCheckbox = document.getElementById('terms');
+    const termsError = document.getElementById('terms-error');
+    if (termsCheckbox && termsError) {
+        termsCheckbox.setAttribute('aria-describedby', 'terms-error');
+        termsError.setAttribute('role', 'alert');
+        termsError.setAttribute('aria-live', 'polite');
+    }
+}
+
+// ===== FLASH MESSAGE SYSTEM =====
+function createFlashMessage(type, message) {
+    // Create flash messages container if it doesn't exist
+    let container = document.querySelector('.flash-messages');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'flash-messages';
+        document.body.appendChild(container);
+    }
+
+    // Create flash message element
+    const flashMessage = document.createElement('div');
+    flashMessage.className = `flash-message ${type}`;
+
+    // Set icon based on type
+    let icon = '';
+    switch (type) {
+        case 'success':
+            icon = 'fas fa-check-circle';
+            break;
+        case 'error':
+            icon = 'fas fa-exclamation-circle';
+            break;
+        case 'warning':
+            icon = 'fas fa-exclamation-triangle';
+            break;
+        case 'info':
+            icon = 'fas fa-info-circle';
+            break;
+        default:
+            icon = 'fas fa-info-circle';
+    }
+
+    flashMessage.innerHTML = `
+        <div class="flash-message-icon">
+            <i class="${icon}"></i>
+        </div>
+        <div class="flash-message-content">${message}</div>
+        <button type="button" class="flash-message-close" onclick="removeFlashMessage(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    container.appendChild(flashMessage);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        removeFlashMessage(flashMessage.querySelector('.flash-message-close'));
+    }, 5000);
+
+    return flashMessage;
+}
+
+function removeFlashMessage(closeBtn) {
+    const flashMessage = closeBtn.closest('.flash-message');
+    if (flashMessage) {
+        flashMessage.classList.add('fade-out');
+        setTimeout(() => {
+            flashMessage.remove();
+        }, 300);
+    }
+}
+
+// ===== INITIALIZE EXISTING FLASH MESSAGES =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle existing flash messages from server
+    const existingMessages = document.querySelectorAll('.alert');
+    existingMessages.forEach(alert => {
+        let type = 'info';
+        if (alert.classList.contains('alert-success')) type = 'success';
+        else if (alert.classList.contains('alert-error')) type = 'error';
+        else if (alert.classList.contains('alert-warning')) type = 'warning';
+
+        const message = alert.textContent.trim();
+        createFlashMessage(type, message);
+        alert.remove();
+    });
+});

@@ -38,13 +38,10 @@
                         
                         <div class="course-instructor-info">
                             <div class="instructor-avatar">
-                                <% if (course.instructor.photo) { %>
-                                    <img src="<%= course.instructor.photo %>" alt="<%= course.instructor.name %>">
-                                <% } else { %>
-                                    <div class="avatar-placeholder">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                <% } %>
+                                <img src="<%= getUserAvatarUrl(course.instructor) %>"
+                                     alt="<%= course.instructor.name %>"
+                                     class="enhanced-image"
+                                     onerror="this.src='<%= getDefaultImage('user') %>'">
                             </div>
                             <div class="instructor-details">
                                 <h3 class="instructor-name"><%= course.instructor.name %></h3>
@@ -73,12 +70,27 @@
                     </div>
                     
                     <div class="course-image">
-                        <% if (course.imageUrl) { %>
-                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
+                        <%
+                        const imageUrl = getCourseImageUrl(course, 'large');
+                        %>
+
+                        <% if (course.responsiveImages) { %>
+                            <picture>
+                                <% if (course.responsiveImages.large && course.responsiveImages.large.webp) { %>
+                                    <source srcset="<%= generateSrcSet(course.responsiveImages, imageUrl) %>"
+                                            sizes="(max-width: 768px) 100vw, 400px"
+                                            type="image/webp">
+                                <% } %>
+                                <img src="<%= imageUrl %>"
+                                     alt="<%= course.title %>"
+                                     class="enhanced-image"
+                                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                            </picture>
                         <% } else { %>
-                            <div class="course-image-placeholder">
-                                <i class="fas fa-book"></i>
-                            </div>
+                            <img src="<%= imageUrl %>"
+                                 alt="<%= course.title %>"
+                                 class="enhanced-image"
+                                 onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
                         <% } %>
                     </div>
                 </div>
@@ -176,13 +188,10 @@
                                         <% course.videos.forEach(function(video, index) { %>
                                             <div class="video-item">
                                                 <div class="video-thumbnail">
-                                                    <% if (video.thumbnail) { %>
-                                                        <img src="<%= video.thumbnail %>" alt="<%= video.title %>">
-                                                    <% } else { %>
-                                                        <div class="video-placeholder">
-                                                            <i class="fas fa-play"></i>
-                                                        </div>
-                                                    <% } %>
+                                                    <img src="<%= getVideoThumbnailUrl(video) %>"
+                                                         alt="<%= video.title %>"
+                                                         class="enhanced-image"
+                                                         onerror="this.src='<%= getDefaultImage('video') %>'">
                                                     <span class="video-duration"><%= video.duration %>m</span>
                                                 </div>
                                                 <div class="video-info">
@@ -201,13 +210,10 @@
                             <div class="instructor-profile">
                                 <div class="instructor-header">
                                     <div class="instructor-avatar-large">
-                                        <% if (course.instructor.photo) { %>
-                                            <img src="<%= course.instructor.photo %>" alt="<%= course.instructor.name %>">
-                                        <% } else { %>
-                                            <div class="avatar-placeholder">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                        <% } %>
+                                        <img src="<%= getUserAvatarUrl(course.instructor) %>"
+                                             alt="<%= course.instructor.name %>"
+                                             class="enhanced-image"
+                                             onerror="this.src='<%= getDefaultImage('user') %>'">
                                     </div>
                                     <div class="instructor-info">
                                         <h3><%= course.instructor.name %></h3>
@@ -313,12 +319,25 @@
                 <div class="course-card-sidebar">
                     <!-- Course Preview -->
                     <div class="course-preview">
-                        <% if (course.imageUrl) { %>
-                            <img src="<%= course.imageUrl %>" alt="<%= course.title %>" class="preview-image">
+                        <%
+                        const previewImageUrl = getCourseImageUrl(course, 'medium');
+                        %>
+
+                        <% if (course.responsiveImages) { %>
+                            <picture>
+                                <% if (course.responsiveImages.medium && course.responsiveImages.medium.webp) { %>
+                                    <source srcset="<%= course.responsiveImages.medium.webp %>" type="image/webp">
+                                <% } %>
+                                <img src="<%= previewImageUrl %>"
+                                     alt="<%= course.title %>"
+                                     class="preview-image enhanced-image"
+                                     onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
+                            </picture>
                         <% } else { %>
-                            <div class="preview-placeholder">
-                                <i class="fas fa-book"></i>
-                            </div>
+                            <img src="<%= previewImageUrl %>"
+                                 alt="<%= course.title %>"
+                                 class="preview-image enhanced-image"
+                                 onerror="this.src='<%= getDefaultImage('course', course.category) %>'">
                         <% } %>
                         
                         <% if (course.videos && course.videos.length > 0) { %>

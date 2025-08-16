@@ -3,6 +3,8 @@
 const CACHE_NAME = 'joocourses-v1.0.0';
 const STATIC_CACHE = 'joocourses-static-v1.0.0';
 const DYNAMIC_CACHE = 'joocourses-dynamic-v1.0.0';
+const IMAGE_CACHE = 'joocourses-images-v1.0.0';
+const CLOUDINARY_CACHE = 'joocourses-cloudinary-v1.0.0';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
@@ -39,6 +41,30 @@ const CACHE_FIRST_ROUTES = [
     '/about',
     '/contact'
 ];
+
+// Image patterns for caching
+const IMAGE_PATTERNS = [
+    /\.(jpg|jpeg|png|gif|webp|svg)$/i,
+    /\/uploads\//,
+    /\/images\//,
+    /cloudinary\.com/
+];
+
+// Cache configuration
+const CACHE_CONFIG = {
+    images: {
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxEntries: 200
+    },
+    cloudinary: {
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxEntries: 100
+    },
+    static: {
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxEntries: 50
+    }
+};
 
 // ===== INSTALL EVENT =====
 self.addEventListener('install', function(event) {
@@ -99,7 +125,9 @@ self.addEventListener('fetch', function(event) {
     }
     
     // Determine caching strategy based on URL
-    if (isNetworkFirstRoute(url.pathname)) {
+    if (isImageRequest(request)) {
+        event.respondWith(handleImageRequest(request));
+    } else if (isNetworkFirstRoute(url.pathname)) {
         event.respondWith(networkFirst(request));
     } else if (isCacheFirstRoute(url.pathname)) {
         event.respondWith(cacheFirst(request));
@@ -181,6 +209,131 @@ async function staleWhileRevalidate(request) {
     });
     
     return cachedResponse || fetchPromise;
+}
+
+// ===== IMAGE HANDLING =====
+
+// Handle image requests with optimized caching
+async function handleImageRequest(request) {
+    const url = new URL(request.url);
+
+    // Determine cache based on image source
+    const cacheName = url.hostname.includes('cloudinary.com') ? CLOUDINARY_CACHE : IMAGE_CACHE;
+    const config = url.hostname.includes('cloudinary.com') ? CACHE_CONFIG.cloudinary : CACHE_CONFIG.images;
+
+    try {
+        // Try cache first for images
+        const cachedResponse = await caches.match(request);
+
+        if (cachedResponse) {
+            // Check if cached image is still fresh
+            const cachedDate = new Date(cachedResponse.headers.get('date') || 0);
+            const now = new Date();
+
+            if (now - cachedDate < config.maxAge) {
+                return cachedResponse;
+            }
+        }
+
+        // Fetch from network
+        const networkResponse = await fetch(request);
+
+        if (networkResponse.ok) {
+            // Clone response for caching
+            const responseToCache = networkResponse.clone();
+
+            // Cache the image
+            const cache = await caches.open(cacheName);
+            await cache.put(request, responseToCache);
+
+            // Clean up old entries
+            await cleanupImageCache(cacheName, config.maxEntries);
+        }
+
+        return networkResponse;
+
+    } catch (error) {
+        console.log('Image fetch failed, trying cache:', request.url);
+
+        // Return cached version if available
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+
+        // Return default image if available
+        return await getDefaultImage(request);
+    }
+}
+
+// Clean up old cache entries
+async function cleanupImageCache(cacheName, maxEntries) {
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+
+    if (keys.length > maxEntries) {
+        // Sort by date and remove oldest entries
+        const entries = await Promise.all(
+            keys.map(async (key) => {
+                const response = await cache.match(key);
+                const date = new Date(response.headers.get('date') || 0);
+                return { key, date };
+            })
+        );
+
+        entries.sort((a, b) => a.date - b.date);
+        const toDelete = entries.slice(0, keys.length - maxEntries);
+
+        await Promise.all(
+            toDelete.map(entry => cache.delete(entry.key))
+        );
+    }
+}
+
+// Get default image for failed requests
+async function getDefaultImage(request) {
+    const url = new URL(request.url);
+    const pathname = url.pathname.toLowerCase();
+
+    let defaultPath = '/images/defaults/course-placeholder.svg';
+
+    if (pathname.includes('user') || pathname.includes('profile') || pathname.includes('avatar')) {
+        defaultPath = '/images/defaults/user-placeholder.svg';
+    } else if (pathname.includes('video') || pathname.includes('thumbnail')) {
+        defaultPath = '/images/defaults/video-placeholder.svg';
+    }
+
+    try {
+        const defaultRequest = new Request(defaultPath);
+        const cachedDefault = await caches.match(defaultRequest);
+
+        if (cachedDefault) {
+            return cachedDefault;
+        }
+
+        const defaultResponse = await fetch(defaultRequest);
+        if (defaultResponse.ok) {
+            const cache = await caches.open(STATIC_CACHE);
+            cache.put(defaultRequest, defaultResponse.clone());
+            return defaultResponse;
+        }
+    } catch (error) {
+        console.warn('Failed to load default image:', error);
+    }
+
+    // Return empty response if all else fails
+    return new Response('', { status: 404 });
+}
+
+// Check if request is for an image
+function isImageRequest(request) {
+    const url = new URL(request.url);
+    return IMAGE_PATTERNS.some(pattern => {
+        if (pattern instanceof RegExp) {
+            return pattern.test(url.pathname) || pattern.test(url.hostname);
+        }
+        return url.pathname.includes(pattern);
+    });
 }
 
 // ===== HELPER FUNCTIONS =====

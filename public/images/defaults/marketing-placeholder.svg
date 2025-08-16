@@ -1,0 +1,11 @@
+<svg width="400" height="225" viewBox="0 0 400 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="225" fill="#7C3AED"/>
+  <circle cx="200" cy="112" r="50" fill="rgba(255,255,255,0.1)"/>
+  <path d="M180 95 L220 112 L180 129 V95Z" fill="white"/>
+  <circle cx="120" cy="60" r="20" fill="#F59E0B"/>
+  <circle cx="280" cy="60" r="15" fill="#10B981"/>
+  <circle cx="100" cy="160" r="18" fill="#EF4444"/>
+  <circle cx="300" cy="170" r="22" fill="#3B82F6"/>
+  <path d="M200 50 L210 70 L230 65 L220 85 L240 90 L220 95 L230 115 L210 110 L200 130 L190 110 L170 115 L180 95 L160 90 L180 85 L170 65 L190 70 Z" fill="rgba(255,255,255,0.3)"/>
+  <text x="200" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="600">📢 Marketing</text>
+</svg>

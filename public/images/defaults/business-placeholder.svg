@@ -1,0 +1,12 @@
+<svg width="400" height="225" viewBox="0 0 400 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="225" fill="#1F2937"/>
+  <rect x="50" y="50" width="300" height="125" rx="8" fill="#374151"/>
+  <rect x="80" y="80" width="60" height="40" fill="#10B981"/>
+  <rect x="160" y="70" width="60" height="50" fill="#3B82F6"/>
+  <rect x="240" y="90" width="60" height="30" fill="#F59E0B"/>
+  <rect x="80" y="140" width="240" height="8" rx="4" fill="#6B7280"/>
+  <rect x="80" y="155" width="180" height="6" rx="3" fill="#6B7280"/>
+  <circle cx="340" cy="70" r="15" fill="#EF4444"/>
+  <text x="347" y="75" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">$</text>
+  <text x="200" y="200" text-anchor="middle" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="14" font-weight="600">📊 Business</text>
+</svg>
